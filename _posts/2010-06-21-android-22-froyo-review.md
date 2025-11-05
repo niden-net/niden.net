@@ -132,7 +132,7 @@ Everything works perfectly apart from AT&T's EDGE network, which is really slow.
 
 <img class="post-image" src="/assets/files/2010-06-21-hotspot-settings.png" alt="Hotspot Settings" />
 
-On June 2nd AT&T issued [press release](https://www.att.com/gen/press-room?pid=4800&cdvn=news&newsarticleid=30854) where they showed us once again that they don't give a damn about their customers since they lie, deceive and overcharge for a mediocre (at best) service. You can read the press release and draw your own conclusions but to me, it seemed once again a slap in the face.
+On June 2nd AT&T issued press release where they showed us once again that they don't give a damn about their customers since they lie, deceive and overcharge for a mediocre (at best) service. You can read the press release and draw your own conclusions but to me, it seemed once again a slap in the face.
 
 No more unlimited data plans for new customers, yet it is not clear what will happen to existing customers such as myself. I read somewhere in the blogosphere that those plans will remain as is, but this is AT&T that we are talking about - the same company that claims that calls to 1-800 numbers are free, yet they charge you minutes for it.
 

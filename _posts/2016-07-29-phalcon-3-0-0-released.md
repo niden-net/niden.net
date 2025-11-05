@@ -994,7 +994,7 @@ We want to greatly thank everyone who has contributed to accomplish and achieve 
 * [Dmitry Patsura](https://github.com/ovr)
 * [Rian Orie](https://github.com/rianorie)
 * [Mark Johnson](https://github.com/virgofx)
-* [Clay Garland](https://www.agencymatrix.com/)
+* Clay Garland
 * [Radek Crlík](https://github.com/CrNix)
 * [Rudi Servo](https://github.com/rudiservo)
 * [Bas Stottelaar](https://github.com/basilfx)
@@ -1022,7 +1022,7 @@ We want to greatly thank everyone who has contributed to accomplish and achieve 
 * [Studentsov](https://github.com/Studentsov)
 * [Bellardia](https://github.com/Bellardia)
 * [Julian Molina](https://github.com/phalcondroid)
-* [Dmitry Korolev](https://github.com/Chameleon-m)
+* Dmitry Korolev
 * [certainlysylvia](https://github.com/certainlysylvia)
 * [Jaskaran Singh](https://github.com/jaskaransingh156)
 * [Gustavo Verzola](https://github.com/verzola)
