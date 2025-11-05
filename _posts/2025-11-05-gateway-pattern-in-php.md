@@ -148,7 +148,7 @@ declare(strict_types=1);
 
 use Phalcon\Domain\Payload;
 
-interface PaymentGateway
+interface PaymentGatewayInterface
 {
     /**
      * Charge a monetary amount for a given order.
@@ -216,7 +216,7 @@ declare(strict_types=1);
 use PayloadInterop\DomainStatus;
 use Phalcon\Domain\Payload;
 
-final class StripeGateway implements PaymentGateway
+final class StripeGateway implements PaymentGatewayInterface
 {
     /** @var array<string, string> */
     private array $store = [];
@@ -272,7 +272,7 @@ final class OrderProcessor
 {
     public function __construct(
         private OrderRepository $repository,
-        private PaymentGateway $paymentGateway
+        private PaymentGatewayInterface $paymentGateway
     ) {}
 
     /**
