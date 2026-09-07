@@ -1,0 +1,19 @@
+# Redirects for Cloudflare Pages. First match wins, so the most specific
+# patterns come first.
+
+# Legacy URLs carried over from the Jekyll site.
+/post/2010-memorial-day                            /post/2010-memorial-day-usa              301
+/posts/new-beginnings-sleep6566400                 /post/new-beginnings-sleep6566400        301
+/2010/01/design-patterns-singleton-series-how-to/  /post/php-design-patterns-singleton      301
+/2010/01/design-patterns-factory-series-how-to/    /post/php-design-patterns-factory        301
+/2011/11/fast-serialization-of-data-in-php-how*    /post/fast-serialization-of-data-in-php  301
+
+# The per-year, per-month and per-day archives are now one page grouped by
+# year, so they all land on that year's heading.
+/archive/:year/:month/:day/  /archive#y:year  301
+/archive/:year/:month/       /archive#y:year  301
+/archive/:year/              /archive#y:year  301
+/archive/:year               /archive#y:year  301
+
+# Pagination is gone; the archive lists every post.
+/page-*  /archive  301
