@@ -1,0 +1,382 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v7.3.1"><meta name="description" content="I have been advocating for testable code for more than a decade now. Admittedly, I have - in numerous cases - ignored tests and proceeded with rapid application…"><meta name="keywords" content="php, phalcon, phalcon php, php framework, faster php framework"><meta name="author" content="Nikolaos Dimopoulos"><title>Testing Testing Testing | niden.net</title><link rel="canonical" href="https://niden.net/post/testing-testing-testing/"><link rel="icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="niden.net" href="/feed.xml"><meta property="og:type" content="website"><meta property="og:site_name" content="niden.net"><meta property="og:title" content="Testing Testing Testing"><meta property="og:description" content="I have been advocating for testable code for more than a decade now. Admittedly, I have - in numerous cases - ignored tests and proceeded with rapid application…"><meta property="og:url" content="https://niden.net/post/testing-testing-testing/"><meta name="twitter:card" content="summary"><!-- Blocking: sets the theme before the first paint so there is no flash. --><script>
+            (function () {
+                try {
+                    var stored = localStorage.getItem('niden-theme');
+                    var prefersLight = window.matchMedia(
+                        '(prefers-color-scheme: light)'
+                    ).matches;
+
+                    document.documentElement.setAttribute(
+                        'data-theme',
+                        stored || (prefersLight ? 'light' : 'dark')
+                    );
+                } catch (error) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            })();
+        </script><link rel="stylesheet" href="/_astro/prose.D_f8nGPQ.css"><link rel="stylesheet" href="/_astro/Base.DJ4v4ydd.css"><style>.pill[data-astro-cid-qrtwocmw]{border-radius:var(--r-pill);background:var(--chip);color:var(--ink-body);align-items:center;gap:6px;padding:3px 8px;line-height:1.45;display:inline-flex}.pill[data-astro-cid-qrtwocmw].sm{font-family:var(--font-mono);font-size:11px}.pill[data-astro-cid-qrtwocmw].md{font-size:12.5px}.pill[data-astro-cid-qrtwocmw]:hover{background:var(--chip-strong);color:var(--ink)}.count[data-astro-cid-qrtwocmw]{font-family:var(--font-mono);color:var(--ink-dim);font-size:10px}
+.toc[data-astro-cid-7k3pnqyz]{flex-direction:column;gap:12px;display:flex}.list[data-astro-cid-7k3pnqyz]{flex-direction:column;padding:0;list-style:none;display:flex}.entry[data-astro-cid-7k3pnqyz]{border-left:2px solid var(--line);color:var(--ink-muted);padding:5px 0 5px 12px;font-size:13.5px;line-height:1.3;display:block}.entry[data-astro-cid-7k3pnqyz].nested{padding-left:26px;font-size:13px}.entry[data-astro-cid-7k3pnqyz]:hover{color:var(--ink)}.entry[data-astro-cid-7k3pnqyz].active{border-left-color:var(--accent);color:var(--ink);font-weight:500}.split[data-astro-cid-g5songws]{grid-template-columns:1fr 220px;display:grid}.split[data-astro-cid-g5songws].no-toc{grid-template-columns:1fr}.article[data-astro-cid-g5songws]{padding:44px 40px 40px var(--gutter);border-right:1px solid var(--line)}.split[data-astro-cid-g5songws].no-toc .article[data-astro-cid-g5songws]{border-right:0}.rail[data-astro-cid-g5songws]{top:calc(var(--header-h) + 24px);align-self:flex-start;padding:44px 24px;position:sticky}.title-block[data-astro-cid-g5songws]{flex-direction:column;gap:14px;margin-bottom:30px;display:flex}.meta[data-astro-cid-g5songws]{font-family:var(--font-mono);color:var(--ink-dim);align-items:center;gap:10px;font-size:11.5px;line-height:1;display:flex}.dot[data-astro-cid-g5songws]{border-radius:var(--r-pill);background:var(--ink-dim);width:3px;height:3px}.title[data-astro-cid-g5songws]{letter-spacing:-.035em;text-wrap:pretty;max-width:26ch;font-size:44px;font-weight:700;line-height:1.05}.tags[data-astro-cid-g5songws]{flex-wrap:wrap;gap:6px;display:flex}.related[data-astro-cid-g5songws]{border-top:1px solid var(--line);flex-direction:column;gap:2px;margin-top:44px;padding-top:26px;display:flex}.related[data-astro-cid-g5songws] .mono-label{margin-bottom:8px}.related-row[data-astro-cid-g5songws]{color:var(--ink);align-items:baseline;gap:20px;padding:9px 0;display:flex}.related-row[data-astro-cid-g5songws]:hover{background:var(--row-hover)}.related-date[data-astro-cid-g5songws]{width:84px;font-family:var(--font-mono);color:var(--ink-dim);flex-shrink:0;font-size:11.5px}.related-title[data-astro-cid-g5songws]{font-size:15.5px;font-weight:500}.pager[data-astro-cid-g5songws]{grid-template-columns:1fr 1fr;gap:16px;margin-top:32px;display:grid}.card[data-astro-cid-g5songws]{border:1px solid var(--line);border-radius:var(--r-card);color:var(--ink);flex-direction:column;gap:8px;padding:16px 18px;display:flex}.card[data-astro-cid-g5songws].next{text-align:right;align-items:flex-end}.card[data-astro-cid-g5songws].empty{opacity:.45;pointer-events:none}.card[data-astro-cid-g5songws]:not(.empty):hover{background:var(--row-hover)}.card-title[data-astro-cid-g5songws]{font-size:15.5px;font-weight:500;line-height:1.3}@media (width<=900px){.split[data-astro-cid-g5songws],.split[data-astro-cid-g5songws].no-toc{grid-template-columns:1fr}.article[data-astro-cid-g5songws]{border-right:0;padding:32px 24px}.rail[data-astro-cid-g5songws]{padding:0 24px 32px;position:static}}@media (width<=720px){.title[data-astro-cid-g5songws]{font-size:30px}.pager[data-astro-cid-g5songws]{grid-template-columns:1fr}.card[data-astro-cid-g5songws].next{text-align:left;align-items:flex-start}}
+</style></head><body><div class="shell" style="max-width:900px"><div class="sentinel" data-header-sentinel aria-hidden="true" data-astro-cid-nen7h5rs></div><header class="header bordered" data-astro-cid-nen7h5rs><a class="wordmark" href="/" data-astro-cid-nen7h5rs>niden</a><nav class="nav" aria-label="Primary" data-astro-cid-nen7h5rs><a href="/" class="nav-link" data-astro-cid-nen7h5rs>Home</a><a href="/hosting" class="nav-link" data-astro-cid-nen7h5rs>Hosting</a><a href="/tag" class="nav-link" data-astro-cid-nen7h5rs>Tags</a><a href="/archive" class="nav-link" data-astro-cid-nen7h5rs>Archive</a><a href="/about" class="nav-link" data-astro-cid-nen7h5rs>About</a><a href="/contact" class="nav-link" data-astro-cid-nen7h5rs>Contact</a><a href="/disclaimer" class="nav-link" data-astro-cid-nen7h5rs>Disclaimer</a></nav><div class="utility" data-astro-cid-nen7h5rs><button type="button" class="utility-item" data-search-open data-astro-cid-nen7h5rs>Search</button><a class="utility-item" href="https://github.com/niden" data-astro-cid-nen7h5rs>GitHub</a><a class="utility-item" href="/feed.xml" data-astro-cid-nen7h5rs>RSS</a><button type="button" class="toggle" data-theme-toggle aria-label="Switch color theme" data-astro-cid-l6lhmie6><span data-theme-label data-astro-cid-l6lhmie6>Theme</span></button><script type="module">var e=document.documentElement,t=e=>e===`light`?`Dark`:`Light`,n=()=>{let n=e.getAttribute(`data-theme`)??`dark`;document.querySelectorAll(`[data-theme-label]`).forEach(e=>{e.textContent=t(n)})};document.querySelectorAll(`[data-theme-toggle]`).forEach(t=>{t.addEventListener(`click`,()=>{let t=e.getAttribute(`data-theme`)===`light`?`dark`:`light`;e.setAttribute(`data-theme`,t);try{localStorage.setItem(`niden-theme`,t)}catch{}n()})}),n();</script></div></header><script type="module">var e=document.querySelector(`[data-header-sentinel]`),t=document.querySelector(`header.header`);e!==null&&t!==null&&new IntersectionObserver(([e])=>{t.classList.toggle(`stuck`,!e.isIntersecting)},{threshold:0}).observe(e);</script><main><div class="split" data-astro-cid-g5songws><article class="article" data-astro-cid-g5songws><header class="title-block" data-astro-cid-g5songws><div class="meta" data-astro-cid-g5songws><time datetime="2020-10-15T02:10:51.761Z" data-astro-cid-g5songws>15 Oct 2020</time><span class="dot" aria-hidden="true" data-astro-cid-g5songws></span><span data-astro-cid-g5songws>10 min read</span></div><h1 class="title" data-astro-cid-g5songws>Testing Testing Testing</h1><div class="tags" data-astro-cid-g5songws><a class="pill sm" href="/tag/php/" data-astro-cid-qrtwocmw>php</a><a class="pill sm" href="/tag/testing/" data-astro-cid-qrtwocmw>testing</a><a class="pill sm" href="/tag/proxy/" data-astro-cid-qrtwocmw>proxy</a><a class="pill sm" href="/tag/testability/" data-astro-cid-qrtwocmw>testability</a></div></header><div class="prose" data-astro-cid-g5songws><p>I have been advocating for testable code for more than a decade now. Admittedly, I have - in numerous cases - ignored tests and proceeded with rapid application development due to time constraints. However, the best code I ever produced was the one that was fully tested or very close to 100% covered by tests. You should always try your best to have your code covered by tests as much as possible.</p>
+<p>Recently, for the <a href="https://phalcon.io">Phalcon</a> Framework, we decided to move away from <a href="https://zephir-lang.com">Zephir</a> and rewrite the framework in PHP. <a href="https://blog.phalcon.io/post/the-future-of-phalcon">This</a> blog post offers more information regarding this decision.</p>
+<p>So we started rewriting every component/namespace in PHP, translating Zephir code. It is a fairly easy task to do and you can have a set of PHP files ready in no time. The fact that Phalcon has some tests already in its testing suite, makes things a lot easier, since all one does is copy the tests from one repository to another and <em>in theory</em> they should run just fine.</p>
+<p>For the most part, the above is true and indeed the tests run and one can see clearly the code coverage, the optimizations that can be made etc. With the help of <a href="https://scrutinizer-ci.com">Scrutinizer</a>, <a href="https://codacy.com">Codacy</a>, <a href="https://codecov.io">Codecov</a> and of course <a href="https://codeception.com">Codeception</a>, we can easily find spots where optimizations are possible, as well as areas of the code that require additional tests to increase the code coverage.</p>
+<p>One of the biggest problems we have faced while writing tests is when trying to test native PHP methods. An example can be observed when writing the <code>Stream</code> adapter for the <code>Storage</code> class. We need to get some data from the disk and in our class we use the <a href="https://php.net/manual/en/function.file-get-contents.php">file_get_contents</a>. As one would expect, we test what we got to ensure that <code>false</code> was not returned (failure) and if that happens return an empty array.</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">&lt;?</span><span style="color:#CDD1D6">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> fclose</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> file_get_contents</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> flock</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> fopen</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> Stream</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#77818C">    // ....</span></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Gets the file contents and returns an array</span></span>
+<span class="line"><span style="color:#77818C">     * or an error if something went wrong</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> string</span><span style="color:#77818C"> $filepath</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#E3A2F2"> array</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    private</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> getPayload</span><span style="color:#CDD1D6">(</span><span style="color:#E3A2F2">string</span><span style="color:#CDD1D6"> $filepath)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> array</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $payload </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> false</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $pointer </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> fopen</span><span style="color:#CDD1D6">($filepath,</span><span style="color:#EEC469"> &#39;r&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * Cannot open file</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">false</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $pointer) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            return</span><span style="color:#CDD1D6"> [];</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">true</span><span style="color:#E3A2F2"> ===</span><span style="color:#73D3F1"> flock</span><span style="color:#CDD1D6">($pointer,</span><span style="color:#73D3F1"> LOCK_SH</span><span style="color:#CDD1D6">)) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $payload </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> file_get_contents</span><span style="color:#CDD1D6">($filepath);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#73D3F1">        fclose</span><span style="color:#CDD1D6">($pointer);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * No results</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">false</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $payload) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            return</span><span style="color:#CDD1D6"> [];</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // ....</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> $payload;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>The private method shown above has three exit points. The two of them occur when a native PHP method fails (<code>fopen</code> and <code>file_get_contents</code>).</p>
+<p>When we cannot open the file, the method needs to return an empty array. We could in theory simulate this code path in a test by creating a file that cannot be opened by <code>fopen</code> and thus our method will return an empty array. However the next path is much more difficult, because we need to be able to lock the file (<code>flock</code>) and then the <code>file_get_contents</code> needs to return <code>false</code> so that the method can return the empty array back.</p>
+<p>We have tried in the past to achieve the above by creating the file and then marking it as read only or changing its ownership, in order to see if <code>file_get_contents</code> returns indeed <code>false</code>. All these <em>hacks</em> left the whole testing suite in a big mess, with files being left on the system not owned by anyone, and with no real guarantee that the testing suite will test what is needed to be tested. In short, creating the conditions to cover this part of the code, wasted a lot of time and was not reliable. One should write tests to cover code execution and different execution paths. One should not write tests just to say that they have tests.</p>
+<p>So what is the solution to this? <code>file_get_contents</code> is just one method and we could potentially hack our way into making it return <code>false</code> so that the second branch of the code would execute. What happens when we have different methods such as <code>ldap_connect</code>, <code>apcu_inc</code>, <code>unlink</code> and many more?</p>
+<p>There are two approaches that I found:</p>
+<h2 id="runkit">Runkit</h2>
+<p>The <a href="https://www.php.net/manual/en/book.runkit7.php">Runkit</a> extension is very promising as seen by the link to the PHP manual. It does however require the installation of another extension, just to run our tests. This is not always desirable.</p>
+<h2 id="proxy-method">Proxy method</h2>
+<p>In this approach, we use a method to wrap the PHP function we want to proxy. The method contains the same parameters as the native PHP function and returns the same data. The benefit is by declaring this new proxy method as <code>protected</code> we can now stub it and make it return whatever we want it to return, thus having control of the flow of operation. Reminder: <a href="https://codeception.com">Codeception</a> offers the <code>Stub</code> class, offering easy mocking of objects and methods.</p>
+<h3 id="direct">Direct</h3>
+<p>What I call the <em>direct</em> proxy method is nothing more than a method that wraps a native PHP method. It is one for one so if I want to wrap another PHP function, I have to create a new proxy method. For the <code>fopen</code> I have the following method in a trait:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">&lt;?</span><span style="color:#CDD1D6">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> fopen</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">trait</span><span style="color:#96E498"> PhpFileTrait</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> string</span><span style="color:#77818C">   $filename</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> string</span><span style="color:#77818C">   $mode</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> bool</span><span style="color:#77818C">     $use_include_path</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> resource</span><span style="color:#77818C"> $context</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#E3A2F2"> resource</span><span style="color:#CDD1D6">|</span><span style="color:#E3A2F2">false</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@link</span><span style="color:#77818C"> https://php.net/manual/en/function.fopen.php</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> phpFopen</span><span style="color:#CDD1D6">($filename, $mode)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#73D3F1"> fopen</span><span style="color:#CDD1D6">($filename,</span><span style="color:#CDD1D6"> $mode);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>while for <code>file_get_contents</code> the trait becomes:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">&lt;?</span><span style="color:#CDD1D6">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> file_get_contents</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> fopen</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">trait</span><span style="color:#96E498"> PhpFileTrait</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> string</span><span style="color:#77818C">   $filename</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> string</span><span style="color:#77818C">   $mode</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> bool</span><span style="color:#77818C">     $use_include_path</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> resource</span><span style="color:#77818C"> $context</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#E3A2F2"> resource</span><span style="color:#CDD1D6">|</span><span style="color:#E3A2F2">false</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@link</span><span style="color:#77818C"> https://php.net/manual/en/function.fopen.php</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> phpFopen</span><span style="color:#CDD1D6">($filename, $mode)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#73D3F1"> fopen</span><span style="color:#CDD1D6">($filename,</span><span style="color:#CDD1D6"> $mode);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> string</span><span style="color:#77818C">   $filename</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> bool</span><span style="color:#77818C">     $use_include_path</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> resource</span><span style="color:#77818C"> $context</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> int</span><span style="color:#77818C">      $offset</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> int</span><span style="color:#77818C">      $maxlen</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#E3A2F2"> string</span><span style="color:#CDD1D6">|</span><span style="color:#E3A2F2">false</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@link</span><span style="color:#77818C"> https://php.net/manual/en/function.file-get-contents.php</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> phpFileGetContents</span><span style="color:#CDD1D6">($filename)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#73D3F1"> file_get_contents</span><span style="color:#CDD1D6">($filename);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>These proxy methods have been added in a trait, so that I can easily attach it to the part of the code required. The code snippent above becomes:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">&lt;?</span><span style="color:#CDD1D6">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Support\Traits\</span><span style="color:#96E498">PhpFileTrait</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> fclose</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> flock</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> Stream</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    use</span><span style="color:#96E498"> PhpFileTrait</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    // ....</span></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Gets the file contents and returns an array </span></span>
+<span class="line"><span style="color:#77818C">     * or an error if something went wrong</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> string</span><span style="color:#77818C"> $filepath</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#E3A2F2"> array</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    private</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> getPayload</span><span style="color:#CDD1D6">(</span><span style="color:#E3A2F2">string</span><span style="color:#CDD1D6"> $filepath)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> array</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $payload </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> false</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $pointer </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">phpFopen</span><span style="color:#CDD1D6">($filepath, </span><span style="color:#EEC469">&#39;r&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * Cannot open file</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">false</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $pointer) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            return</span><span style="color:#CDD1D6"> [];</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">true</span><span style="color:#E3A2F2"> ===</span><span style="color:#73D3F1"> flock</span><span style="color:#CDD1D6">($pointer,</span><span style="color:#73D3F1"> LOCK_SH</span><span style="color:#CDD1D6">)) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $payload </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">phpFileGetContents</span><span style="color:#CDD1D6">($filepath);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#73D3F1">        fclose</span><span style="color:#CDD1D6">($pointer);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * No results</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">false</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $payload) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            return</span><span style="color:#CDD1D6"> [];</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // ....</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> $payload;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>If I run my tests, they will execute and pass, because this refactoring has not changed the operation or logic of our code. I can now mock the <code>phpFopen</code> method to return <code>false</code> and thus check if the payload returns an empty array. <code>getPayload</code> is used in the <code>has()</code> method, so the test will be as follows:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">&lt;?</span><span style="color:#CDD1D6">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Codeception\Util\</span><span style="color:#96E498">Stub</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Storage\Adapter\</span><span style="color:#96E498">Stream</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Storage\</span><span style="color:#96E498">SerializerFactory</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Support\</span><span style="color:#96E498">HelperFactory</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> outputDir</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> uniqid</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> HasCest</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> storageAdapterStreamHasCannotOpenFile</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">UnitTester</span><span style="color:#CDD1D6"> $I)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $I</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">wantToTest</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;Storage\Adapter\Stream - has() - cannot open file&#39;</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $helper     </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> HelperFactory</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $serializer </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> SerializerFactory</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $adapter    </span><span style="color:#E3A2F2">=</span><span style="color:#96E498"> Stub</span><span style="color:#E3A2F2">::</span><span style="color:#73D3F1">construct</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#96E498">            Stream</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#CDD1D6">            [</span></span>
+<span class="line"><span style="color:#CDD1D6">                $helper,</span></span>
+<span class="line"><span style="color:#CDD1D6">                $serializer,</span></span>
+<span class="line"><span style="color:#CDD1D6">                [</span></span>
+<span class="line"><span style="color:#EEC469">                    &#39;storageDir&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#73D3F1"> outputDir</span><span style="color:#CDD1D6">(),</span></span>
+<span class="line"><span style="color:#CDD1D6">                ],</span></span>
+<span class="line"><span style="color:#CDD1D6">            ],</span></span>
+<span class="line"><span style="color:#CDD1D6">            [</span></span>
+<span class="line"><span style="color:#EEC469">                &#39;phpFopen&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#92B1D3"> false</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#CDD1D6">            ]</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $key    </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> uniqid</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $actual </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $adapter</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">($key, </span><span style="color:#EEC469">&#39;test&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $I</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">($actual);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $actual </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $adapter</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">has</span><span style="color:#CDD1D6">($key);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $I</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertFalse</span><span style="color:#CDD1D6">($actual);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>Using <code>Stub</code> the <code>Stream</code> class has been stubbed and the <code>phpFopen</code> wired to return <code>false</code>. This will force the code to return <code>false</code> when calling this method and thus return an empty array.</p>
+<h3 id="call_user_func_array"><code>call_user_func_array</code></h3>
+<p>The <em>direct</em> implementation above works just fine, but requires the creation of one proxy method per native PHP method that needs to be tested or stubbed. A more generic approach can be achieved by creating a proxy class and internally using the powerful <a href="https://www.php.net/manual/en/function.call-user-func-array.php">call_user_func_array</a>. The class is very simple:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">&lt;?</span><span style="color:#CDD1D6">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> call_user_func_array</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> PhpProxy</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __call</span><span style="color:#CDD1D6">($method, $parameters)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#73D3F1"> call_user_func_array</span><span style="color:#CDD1D6">($method,</span><span style="color:#CDD1D6"> $parameters);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>We can inject this class in our component and use it to execute any PHP native code methods. Because we will be injecting it, we can even inject it mocked, controlling the execution of the native PHP methods for our tests.</p>
+<p>The <code>Stream</code> class will become:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">&lt;?</span><span style="color:#CDD1D6">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Support\</span><span style="color:#96E498">PhpProxy</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">/**</span></span>
+<span class="line"><span style="color:#77818C"> * Class Stream</span></span>
+<span class="line"><span style="color:#77818C"> *</span></span>
+<span class="line"><span style="color:#77818C"> * </span><span style="color:#E3A2F2">@property</span><span style="color:#96E498"> PhpProxy</span><span style="color:#77818C"> $proxy</span></span>
+<span class="line"><span style="color:#77818C"> */</span></span>
+<span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> Stream</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#96E498"> PhpProxy</span><span style="color:#CDD1D6"> $proxy;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __construct</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#96E498">        HelperFactory</span><span style="color:#CDD1D6"> $helper,</span></span>
+<span class="line"><span style="color:#96E498">        SerializerFactory</span><span style="color:#CDD1D6"> $serializer,</span></span>
+<span class="line"><span style="color:#96E498">        PhpProxy</span><span style="color:#CDD1D6"> $proxy,</span></span>
+<span class="line"><span style="color:#E3A2F2">        array</span><span style="color:#CDD1D6"> $options </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> []</span></span>
+<span class="line"><span style="color:#CDD1D6">    ) {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">proxy </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $proxy;</span></span>
+<span class="line"><span style="color:#77818C">        // ....</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    // ....</span></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Gets the file contents and returns an array </span></span>
+<span class="line"><span style="color:#77818C">     * or an error if something went wrong</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> string</span><span style="color:#77818C"> $filepath</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#E3A2F2"> array</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    private</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> getPayload</span><span style="color:#CDD1D6">(</span><span style="color:#E3A2F2">string</span><span style="color:#CDD1D6"> $filepath)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> array</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $payload </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> false</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $pointer </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">proxy</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">fopen</span><span style="color:#CDD1D6">($filepath, </span><span style="color:#EEC469">&#39;r&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * Cannot open file</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">false</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $pointer) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            return</span><span style="color:#CDD1D6"> [];</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">true</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">proxy</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">flock</span><span style="color:#CDD1D6">($pointer, LOCK_SH)) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $payload </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span></span>
+<span class="line"><span style="color:#E3A2F2">                -&gt;</span><span style="color:#CDD1D6">proxy</span></span>
+<span class="line"><span style="color:#E3A2F2">                -&gt;</span><span style="color:#73D3F1">file_get_contents</span><span style="color:#CDD1D6">($filepath);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">proxy</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">fclose</span><span style="color:#CDD1D6">($pointer);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * No results</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">false</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $payload) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            return</span><span style="color:#CDD1D6"> [];</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // ....</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> $payload;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>As you can see above, we can use the proxy class for all the calls to native PHP methods. We can now create a mock <code>PhpProxy</code> object that will allow testing for the <code>fopen</code> failure:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">&lt;?</span><span style="color:#CDD1D6">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Codeception\Util\</span><span style="color:#96E498">Stub</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Storage\Adapter\</span><span style="color:#96E498">Stream</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Storage\</span><span style="color:#96E498">SerializerFactory</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Support\</span><span style="color:#96E498">HelperFactory</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Support\</span><span style="color:#96E498">PhpProxy</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> call_user_func_array</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> outputDir</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#E3A2F2"> function</span><span style="color:#96E498"> uniqid</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> HasCest</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> storageAdapterStreamHasCannotOpenFile</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">UnitTester</span><span style="color:#CDD1D6"> $I)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $I</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">wantToTest</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;Storage\Adapter\Stream - has() - cannot open file&#39;</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $helper     </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> HelperFactory</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $serializer </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> SerializerFactory</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $proxy      </span><span style="color:#E3A2F2">=</span><span style="color:#96E498"> Stub</span><span style="color:#E3A2F2">::</span><span style="color:#73D3F1">make</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#96E498">            PhpProxy</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#CDD1D6">            [</span></span>
+<span class="line"><span style="color:#EEC469">                &#39;__call&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#E3A2F2"> function</span><span style="color:#CDD1D6"> ($method, $parameters) {</span></span>
+<span class="line"><span style="color:#E3A2F2">                    if</span><span style="color:#CDD1D6"> (</span><span style="color:#EEC469">&#39;fopen&#39;</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $method) {</span></span>
+<span class="line"><span style="color:#E3A2F2">                        return</span><span style="color:#92B1D3"> false</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">                    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">                    return</span><span style="color:#73D3F1"> call_user_func_array</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">                        $method,</span><span style="color:#73D3F1"> </span></span>
+<span class="line"><span style="color:#CDD1D6">                        $parameters</span></span>
+<span class="line"><span style="color:#CDD1D6">                    );</span></span>
+<span class="line"><span style="color:#CDD1D6">                }</span></span>
+<span class="line"><span style="color:#CDD1D6">            ]</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $adapter </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Stream</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">            $helper,</span></span>
+<span class="line"><span style="color:#CDD1D6">            $serializer,</span></span>
+<span class="line"><span style="color:#CDD1D6">            $proxy,</span></span>
+<span class="line"><span style="color:#CDD1D6">            [</span></span>
+<span class="line"><span style="color:#EEC469">                &#39;storageDir&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#73D3F1"> outputDir</span><span style="color:#CDD1D6">(),</span></span>
+<span class="line"><span style="color:#CDD1D6">            ]</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#CDD1D6">        $key    </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> uniqid</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $actual </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $adapter</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">($key, </span><span style="color:#EEC469">&#39;test&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $I</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">($actual);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $actual </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $adapter</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">has</span><span style="color:#CDD1D6">($key);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $I</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertFalse</span><span style="color:#CDD1D6">($actual);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<h2 id="conclusion">Conclusion</h2>
+<p>The methodologies above offer flexibility with mocking native PHP functions.</p>
+<p>You will notice in the code above, that the <code>file_get_contents</code> that has been proxied using the direct implementation, only accepts one parameter, where the actual PHP method accepts more. This was intentional, because the usage of that method did not require more parameters to be passed. If in the future we need to add more parameters we could easily change the <code>phpFileGetContents</code> method signature in the trait. Naturally the <code>call_user_func_array</code> implementation does not suffer from this limitation.</p>
+<p>The implementations above come at a cost. You should always be wary of the performance hit you will get when implementing your code this way. Using a proxied method such as <code>phpFileGetContents</code> or <code>call_user_func_array</code> will always be slower than calling the method directly. It will then depend on the requirements you have and whether you can accept the performance hit or not. A simple benchmarking example by calling <code>str_replace</code> natively, using a proxy method or <code>call_user_func_array</code> provides the following results:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">code</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>    benchStrReplace..........I99 [μ Mo]/r: 0.248 0.240 (μs) [μSD μRSD]/r: 0.027μs 10.80%</span></span>
+<span class="line"><span>    benchPhpStrReplace.......I99 [μ Mo]/r: 0.362 0.366 (μs) [μSD μRSD]/r: 0.027μs 7.34%</span></span>
+<span class="line"><span>    benchCallUserFuncArray...I99 [μ Mo]/r: 0.437 0.425 (μs) [μSD μRSD]/r: 0.044μs 10.03%</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>3 subjects, 300 iterations, 3,000 revs, 0 rejects, 0 failures, 0 warnings</span></span>
+<span class="line"><span>(best [mean mode] worst) = 0.226 [0.349 0.343] 0.369 (μs)</span></span>
+<span class="line"><span>⅀T: 104.665μs μSD/r 0.032μs μRSD/r: 9.385%</span></span></code></pre></figure>
+<p>The benchmark above shows as expected, that <code>str_replace</code> will be the fastest implementation and the <code>call_user_func_array</code> will be around 200 μs slower.</p>
+<p>If the area of your code that you use such proxy methods is not very “busy”, then you can afford the few extra microseconds. However, if the area of the code you will use these proxy methods is a main component with numerous executions per request, you might want to run some benchmarks and decide whether you want 100% code coverage or the few extra microseconds.</p>
+<p>Personally I lean towards the 100% code coverage.</p></div><section class="related" data-astro-cid-g5songws><div class="mono-label" data-astro-cid-g5songws>Related — php</div><a class="related-row" href="/post/uploading-coverage-reports-to-codecov-io-and-codacy/" data-astro-cid-g5songws><time class="related-date" datetime="2022-11-26T21:07:57.806Z" data-astro-cid-g5songws>2022-11-26</time><span class="related-title" data-astro-cid-g5songws>Uploading coverage reports to Codecov.io and Codacy</span></a><a class="related-row" href="/post/gateway-pattern-in-php/" data-astro-cid-g5songws><time class="related-date" datetime="2025-11-05T08:39:18.200Z" data-astro-cid-g5songws>2025-11-05</time><span class="related-title" data-astro-cid-g5songws>Design Patterns - Gateway</span></a><a class="related-row" href="/post/php82-deprecation-of-dynamic-properties/" data-astro-cid-g5songws><time class="related-date" datetime="2023-07-18T14:20:18.200Z" data-astro-cid-g5songws>2023-07-18</time><span class="related-title" data-astro-cid-g5songws>PHP 8.2 Deprecation of Dynamic Properties</span></a></section><nav class="pager" aria-label="More posts" data-astro-cid-g5songws><a class="card" href="/post/composer-cache/" data-astro-cid-g5songws><span class="mono-label" data-astro-cid-g5songws>Previous</span><span class="card-title" data-astro-cid-g5songws>Composer cache</span></a><a class="card next" href="/post/making-a-static-copy-of-a-website/" data-astro-cid-g5songws><span class="mono-label" data-astro-cid-g5songws>Next</span><span class="card-title" data-astro-cid-g5songws>Making a static copy of a website</span></a></nav></article><div class="rail" data-astro-cid-g5songws><nav class="toc" aria-label="On this page" data-astro-cid-7k3pnqyz><div class="mono-label" data-astro-cid-7k3pnqyz>On this page</div><ul class="list" data-astro-cid-7k3pnqyz><li data-astro-cid-7k3pnqyz><a class="entry" href="#runkit" data-toc-link="runkit" data-astro-cid-7k3pnqyz>Runkit</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#proxy-method" data-toc-link="proxy-method" data-astro-cid-7k3pnqyz>Proxy method</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#direct" data-toc-link="direct" data-astro-cid-7k3pnqyz>Direct</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#call_user_func_array" data-toc-link="call_user_func_array" data-astro-cid-7k3pnqyz>call_user_func_array</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#conclusion" data-toc-link="conclusion" data-astro-cid-7k3pnqyz>Conclusion</a></li></ul></nav><script type="module">var e=[...document.querySelectorAll(`[data-toc-link]`)];if(e.length>0){let t=e.map(e=>document.getElementById(e.dataset.tocLink??``)).filter(e=>e!==null),n=t=>{e.forEach(e=>{e.classList.toggle(`active`,e.dataset.tocLink===t)})},r=new IntersectionObserver(e=>{let t=e.filter(e=>e.isIntersecting).sort((e,t)=>e.boundingClientRect.top-t.boundingClientRect.top);t[0]?.target.id&&n(t[0].target.id)},{rootMargin:`-24px 0px -70% 0px`,threshold:0});t.forEach(e=>r.observe(e))}</script></div></div><script type="module">document.querySelectorAll(`[data-copy]`).forEach(e=>{e.addEventListener(`click`,async()=>{let t=e.closest(`figure`)?.querySelector(`pre`)?.innerText??``;try{await navigator.clipboard.writeText(t)}catch{return}e.textContent=`Copied`,window.setTimeout(()=>{e.textContent=`Copy`},1500)})});</script></main><footer class="footer" data-astro-cid-jo6i4kqk><div data-astro-cid-jo6i4kqk>&copy; 2022&ndash;present niden.net</div><div data-astro-cid-jo6i4kqk>Astro</div></footer></div><div class="backdrop" data-search-backdrop hidden data-astro-cid-ac66eqjo><div class="modal" role="dialog" aria-modal="true" aria-label="Search" data-search-modal data-astro-cid-ac66eqjo><div class="input-row" data-astro-cid-ac66eqjo><span class="slash" aria-hidden="true" data-astro-cid-ac66eqjo>/</span><input class="input" type="search" placeholder="Search posts and tags" autocomplete="off" spellcheck="false" aria-label="Search posts and tags" data-search-input data-astro-cid-ac66eqjo><kbd class="kbd" data-astro-cid-ac66eqjo>esc</kbd></div><div class="results" data-search-results role="listbox" data-astro-cid-ac66eqjo></div><div class="hints" data-astro-cid-ac66eqjo><span data-astro-cid-ac66eqjo>&uarr;&darr; navigate</span><span data-astro-cid-ac66eqjo>&crarr; open</span></div></div></div><script type="module">var e=document.querySelector(`[data-search-backdrop]`),t=document.querySelector(`[data-search-modal]`),n=document.querySelector(`[data-search-input]`),r=document.querySelector(`[data-search-results]`);if(e&&t&&n&&r){let t=null,i=[],a=0,o=null,s=e=>e.replace(/[&<>"']/g,e=>({"&":`&amp;`,"<":`&lt;`,">":`&gt;`,'"':`&quot;`,"'":`&#39;`})[e]),c=(e,t)=>{let n=e.toLowerCase().indexOf(t.toLowerCase());return t===``||n===-1?s(e):[s(e.slice(0,n)),`<mark>`,s(e.slice(n,n+t.length)),`</mark>`,s(e.slice(n+t.length))].join(``)},l=async()=>(t===null&&(t=await(await fetch(`/search.json`)).json()),t),u=()=>{i.forEach((e,t)=>{e.classList.toggle(`selected`,t===a),e.setAttribute(`aria-selected`,String(t===a))}),i[a]?.scrollIntoView({block:`nearest`})},d=e=>{if(t===null)return;let n=e.trim().toLowerCase(),o=n===``?t.posts.slice(0,6):t.posts.filter(e=>e.title.toLowerCase().includes(n)||e.excerpt.toLowerCase().includes(n)).slice(0,8),l=n===``?[]:t.tags.filter(e=>e.tag.toLowerCase().includes(n)).slice(0,5),d=[];o.length>0&&d.push(`<div class="group-label">Posts</div>`,...o.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-title">${c(e.title,n)}</span><span class="result-date">${s(e.date)}</span></a>`)),l.length>0&&d.push(`<div class="group-label">Tags</div>`,...l.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-pill">${c(e.tag,n)}</span><span class="result-date">${e.count} posts</span></a>`)),r.innerHTML=d.length>0?d.join(``):`<div class="empty">No matches.</div>`,i=[...r.querySelectorAll(`.result`)],a=0,u()},f=async t=>{o=t,e.hidden=!1,document.body.style.overflow=`hidden`,n.value=``,n.focus(),await l(),d(``)},p=()=>{e.hidden=!0,document.body.style.overflow=``,o?.focus(),o=null};document.querySelectorAll(`[data-search-open]`).forEach(e=>{e.addEventListener(`click`,t=>{t.preventDefault(),f(e)})}),n.addEventListener(`input`,()=>d(n.value)),e.addEventListener(`mousedown`,t=>{t.target===e&&p()}),document.addEventListener(`keydown`,t=>{let r=t.target instanceof HTMLElement&&[`INPUT`,`TEXTAREA`,`SELECT`].includes(t.target.tagName);if((t.metaKey||t.ctrlKey)&&t.key.toLowerCase()===`k`){t.preventDefault(),e.hidden?f(null):p();return}if(t.key===`/`&&e.hidden&&!r){t.preventDefault(),f(null);return}e.hidden||(t.key===`Escape`&&(t.preventDefault(),p()),t.key===`ArrowDown`&&i.length>0&&(t.preventDefault(),a=(a+1)%i.length,u()),t.key===`ArrowUp`&&i.length>0&&(t.preventDefault(),a=(a-1+i.length)%i.length,u()),t.key===`Enter`&&i[a]&&(t.preventDefault(),window.location.href=i[a].href),t.key===`Tab`&&(t.preventDefault(),n.focus()))})}</script><script type="module" src="/_astro/Mermaid.astro_astro_type_script_index_0_lang.T979gi6P.js"></script></body></html>

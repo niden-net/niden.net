@@ -1,0 +1,470 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v7.3.1"><meta name="description" content="I am curious by nature. This is probably one of my best attributes as a person, since I can never rest until I find out 'what this thing is' or 'what is it used…"><meta name="keywords" content="php, phalcon, phalcon php, php framework, faster php framework"><meta name="author" content="Nikolaos Dimopoulos"><title>Test Driven Development | niden.net</title><link rel="canonical" href="https://niden.net/post/test-driven-development/"><link rel="icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="niden.net" href="/feed.xml"><meta property="og:type" content="website"><meta property="og:site_name" content="niden.net"><meta property="og:title" content="Test Driven Development"><meta property="og:description" content="I am curious by nature. This is probably one of my best attributes as a person, since I can never rest until I find out 'what this thing is' or 'what is it used…"><meta property="og:url" content="https://niden.net/post/test-driven-development/"><meta name="twitter:card" content="summary"><!-- Blocking: sets the theme before the first paint so there is no flash. --><script>
+            (function () {
+                try {
+                    var stored = localStorage.getItem('niden-theme');
+                    var prefersLight = window.matchMedia(
+                        '(prefers-color-scheme: light)'
+                    ).matches;
+
+                    document.documentElement.setAttribute(
+                        'data-theme',
+                        stored || (prefersLight ? 'light' : 'dark')
+                    );
+                } catch (error) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            })();
+        </script><link rel="stylesheet" href="/_astro/prose.D_f8nGPQ.css"><link rel="stylesheet" href="/_astro/Base.DJ4v4ydd.css"><style>.pill[data-astro-cid-qrtwocmw]{border-radius:var(--r-pill);background:var(--chip);color:var(--ink-body);align-items:center;gap:6px;padding:3px 8px;line-height:1.45;display:inline-flex}.pill[data-astro-cid-qrtwocmw].sm{font-family:var(--font-mono);font-size:11px}.pill[data-astro-cid-qrtwocmw].md{font-size:12.5px}.pill[data-astro-cid-qrtwocmw]:hover{background:var(--chip-strong);color:var(--ink)}.count[data-astro-cid-qrtwocmw]{font-family:var(--font-mono);color:var(--ink-dim);font-size:10px}
+.toc[data-astro-cid-7k3pnqyz]{flex-direction:column;gap:12px;display:flex}.list[data-astro-cid-7k3pnqyz]{flex-direction:column;padding:0;list-style:none;display:flex}.entry[data-astro-cid-7k3pnqyz]{border-left:2px solid var(--line);color:var(--ink-muted);padding:5px 0 5px 12px;font-size:13.5px;line-height:1.3;display:block}.entry[data-astro-cid-7k3pnqyz].nested{padding-left:26px;font-size:13px}.entry[data-astro-cid-7k3pnqyz]:hover{color:var(--ink)}.entry[data-astro-cid-7k3pnqyz].active{border-left-color:var(--accent);color:var(--ink);font-weight:500}.split[data-astro-cid-g5songws]{grid-template-columns:1fr 220px;display:grid}.split[data-astro-cid-g5songws].no-toc{grid-template-columns:1fr}.article[data-astro-cid-g5songws]{padding:44px 40px 40px var(--gutter);border-right:1px solid var(--line)}.split[data-astro-cid-g5songws].no-toc .article[data-astro-cid-g5songws]{border-right:0}.rail[data-astro-cid-g5songws]{top:calc(var(--header-h) + 24px);align-self:flex-start;padding:44px 24px;position:sticky}.title-block[data-astro-cid-g5songws]{flex-direction:column;gap:14px;margin-bottom:30px;display:flex}.meta[data-astro-cid-g5songws]{font-family:var(--font-mono);color:var(--ink-dim);align-items:center;gap:10px;font-size:11.5px;line-height:1;display:flex}.dot[data-astro-cid-g5songws]{border-radius:var(--r-pill);background:var(--ink-dim);width:3px;height:3px}.title[data-astro-cid-g5songws]{letter-spacing:-.035em;text-wrap:pretty;max-width:26ch;font-size:44px;font-weight:700;line-height:1.05}.tags[data-astro-cid-g5songws]{flex-wrap:wrap;gap:6px;display:flex}.related[data-astro-cid-g5songws]{border-top:1px solid var(--line);flex-direction:column;gap:2px;margin-top:44px;padding-top:26px;display:flex}.related[data-astro-cid-g5songws] .mono-label{margin-bottom:8px}.related-row[data-astro-cid-g5songws]{color:var(--ink);align-items:baseline;gap:20px;padding:9px 0;display:flex}.related-row[data-astro-cid-g5songws]:hover{background:var(--row-hover)}.related-date[data-astro-cid-g5songws]{width:84px;font-family:var(--font-mono);color:var(--ink-dim);flex-shrink:0;font-size:11.5px}.related-title[data-astro-cid-g5songws]{font-size:15.5px;font-weight:500}.pager[data-astro-cid-g5songws]{grid-template-columns:1fr 1fr;gap:16px;margin-top:32px;display:grid}.card[data-astro-cid-g5songws]{border:1px solid var(--line);border-radius:var(--r-card);color:var(--ink);flex-direction:column;gap:8px;padding:16px 18px;display:flex}.card[data-astro-cid-g5songws].next{text-align:right;align-items:flex-end}.card[data-astro-cid-g5songws].empty{opacity:.45;pointer-events:none}.card[data-astro-cid-g5songws]:not(.empty):hover{background:var(--row-hover)}.card-title[data-astro-cid-g5songws]{font-size:15.5px;font-weight:500;line-height:1.3}@media (width<=900px){.split[data-astro-cid-g5songws],.split[data-astro-cid-g5songws].no-toc{grid-template-columns:1fr}.article[data-astro-cid-g5songws]{border-right:0;padding:32px 24px}.rail[data-astro-cid-g5songws]{padding:0 24px 32px;position:static}}@media (width<=720px){.title[data-astro-cid-g5songws]{font-size:30px}.pager[data-astro-cid-g5songws]{grid-template-columns:1fr}.card[data-astro-cid-g5songws].next{text-align:left;align-items:flex-start}}
+</style></head><body><div class="shell" style="max-width:900px"><div class="sentinel" data-header-sentinel aria-hidden="true" data-astro-cid-nen7h5rs></div><header class="header bordered" data-astro-cid-nen7h5rs><a class="wordmark" href="/" data-astro-cid-nen7h5rs>niden</a><nav class="nav" aria-label="Primary" data-astro-cid-nen7h5rs><a href="/" class="nav-link" data-astro-cid-nen7h5rs>Home</a><a href="/hosting" class="nav-link" data-astro-cid-nen7h5rs>Hosting</a><a href="/tag" class="nav-link" data-astro-cid-nen7h5rs>Tags</a><a href="/archive" class="nav-link" data-astro-cid-nen7h5rs>Archive</a><a href="/about" class="nav-link" data-astro-cid-nen7h5rs>About</a><a href="/contact" class="nav-link" data-astro-cid-nen7h5rs>Contact</a><a href="/disclaimer" class="nav-link" data-astro-cid-nen7h5rs>Disclaimer</a></nav><div class="utility" data-astro-cid-nen7h5rs><button type="button" class="utility-item" data-search-open data-astro-cid-nen7h5rs>Search</button><a class="utility-item" href="https://github.com/niden" data-astro-cid-nen7h5rs>GitHub</a><a class="utility-item" href="/feed.xml" data-astro-cid-nen7h5rs>RSS</a><button type="button" class="toggle" data-theme-toggle aria-label="Switch color theme" data-astro-cid-l6lhmie6><span data-theme-label data-astro-cid-l6lhmie6>Theme</span></button><script type="module">var e=document.documentElement,t=e=>e===`light`?`Dark`:`Light`,n=()=>{let n=e.getAttribute(`data-theme`)??`dark`;document.querySelectorAll(`[data-theme-label]`).forEach(e=>{e.textContent=t(n)})};document.querySelectorAll(`[data-theme-toggle]`).forEach(t=>{t.addEventListener(`click`,()=>{let t=e.getAttribute(`data-theme`)===`light`?`dark`:`light`;e.setAttribute(`data-theme`,t);try{localStorage.setItem(`niden-theme`,t)}catch{}n()})}),n();</script></div></header><script type="module">var e=document.querySelector(`[data-header-sentinel]`),t=document.querySelector(`header.header`);e!==null&&t!==null&&new IntersectionObserver(([e])=>{t.classList.toggle(`stuck`,!e.isIntersecting)},{threshold:0}).observe(e);</script><main><div class="split" data-astro-cid-g5songws><article class="article" data-astro-cid-g5songws><header class="title-block" data-astro-cid-g5songws><div class="meta" data-astro-cid-g5songws><time datetime="2009-11-09T23:45:00.000Z" data-astro-cid-g5songws>09 Nov 2009</time><span class="dot" aria-hidden="true" data-astro-cid-g5songws></span><span data-astro-cid-g5songws>12 min read</span></div><h1 class="title" data-astro-cid-g5songws>Test Driven Development</h1><div class="tags" data-astro-cid-g5songws><a class="pill sm" href="/tag/php/" data-astro-cid-qrtwocmw>php</a><a class="pill sm" href="/tag/tdd/" data-astro-cid-qrtwocmw>tdd</a><a class="pill sm" href="/tag/test-driven-development/" data-astro-cid-qrtwocmw>test driven development</a><a class="pill sm" href="/tag/phpunit/" data-astro-cid-qrtwocmw>phpunit</a><a class="pill sm" href="/tag/how-to/" data-astro-cid-qrtwocmw>how-to</a></div></header><div class="prose" data-astro-cid-g5songws><p>I am curious by nature. This is probably one of my best attributes as a person, since I can never rest until I find out ‘what this thing is’ or ‘what is it used for’. This curiosity comes in handy in the programming world.</p>
+<p>By being curious, one cannot rest on their laurels and will always explore new ways, learn new things, revise old habits and in short one will become a better programmer. This of course applies to all aspects of life, not just programming.</p>
+<p>One day while I was reading some of my favorite blogs, I stumbled upon a <em>radical</em> post by Miško Hevery. His site seemed fascinating, but it was only when I saw his talks on YouTube that I started looking into this in more detail. I watched some of Miško’s presentations (<a href="https://www.youtube.com/watch?v=wEhu57pih5w&amp;feature=PlayList&amp;p=ED6CA927B41FF5BD&amp;index=1">The Clean Code Talks: Unit Testing</a>, <a href="https://www.youtube.com/watch?v=RlfLCWKxHJ0&amp;feature=PlayList&amp;p=ED6CA927B41FF5BD&amp;index=2%22">The Clean Code Talks: Don’t Look for Things</a>, <a href="https://www.youtube.com/watch?v=4F72VULWFvc&amp;feature=PlayList&amp;p=ED6CA927B41FF5BD&amp;index=0">The Clean Code Talks: Inheritance, Polymorphism and Testing</a>, <a href="https://www.youtube.com/watch?v=-FRm3VPhseI&amp;feature=PlayList&amp;p=ED6CA927B41FF5BD&amp;index=3">The Clean Code Talks: Clean State and Singletons</a>) and I think everyone should take the time to watch them.</p>
+<p>In his presentations, Miško announces that Singletons are pathological liars and that we should approach programming with a Test Driven Development approach. I also followed the links to his site and there I found excellent articles that changed the way I approach programming. <a href="https://archive.ph/WkzL7">When to use Dependency Injection</a>, <a href="https://archive.ph/ZA2BP">Guide to Writing Testable Code</a> and <a href="https://archive.ph/fJMXf">Dependency Injection Myth: Reference Passing</a> are some blog posts that I would definitely recommend reading.</p>
+<p>Reading more and more about Test Driven Development as well as Dependency Injection, I wanted to get as much information as possible prior to diving into coding. I had some questions, so I emailed Miško who replied promptly and pointed me to the right direction. Kudos!</p>
+<h2 id="tdd-bug">TDD bug</h2>
+<p>So off I go with a TDD approach in mind. Aaahhhh testing and Q&amp;A! I must admit I have been the worst person in testing and Q&amp;A, always putting it off till the last minute. The problem was not laziness, the problem was twofold:</p>
+<ul>
+<li>I didn’t know how and</li>
+<li>I considered tests to take so much time that it would be a total waste of time. Clearly I was wrong there.</li>
+</ul>
+<p>Identifying the problem and having a fresh cup of coffee, I loaded Zend Studio on the notebook and decided to start testing - the first step in TDD. I picked one simple class that is used for session management. The class is very small (150 lines inclusive of comments).</p>
+<p>The class is below:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> My_Session</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * The name of the storage</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@var</span><span style="color:#E3A2F2"> string</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    private</span><span style="color:#CDD1D6"> $_storeName </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> &#39;datastore&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Constructor</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __construct</span><span style="color:#CDD1D6">($store </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> &#39;&#39;</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">init</span><span style="color:#CDD1D6">($store);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Destructor</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __destruct</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">destroy</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> init</span><span style="color:#CDD1D6">($store </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> &#39;&#39;</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> ($store </span><span style="color:#E3A2F2">and</span><span style="color:#E3A2F2"> !</span><span style="color:#73D3F1">is_object</span><span style="color:#CDD1D6">($store)) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_storeName </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">string</span><span style="color:#CDD1D6">)$store  </span><span style="color:#E3A2F2">.</span><span style="color:#EEC469"> &#39;_datastore&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#73D3F1">isset</span><span style="color:#CDD1D6">($_SESSION[$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_storeName])) {</span></span>
+<span class="line"><span style="color:#73D3F1">            session_start</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">            $_SESSION[$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_storeName][</span><span style="color:#EEC469">&#39;status&#39;</span><span style="color:#CDD1D6">] </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> true</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Destroys the session handler</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> destroy</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">init</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#77818C">        // Unset all of the session variables.</span></span>
+<span class="line"><span style="color:#73D3F1">        session_destroy</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#73D3F1">isset</span><span style="color:#CDD1D6">($_SESSION[$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_storeName])) {</span></span>
+<span class="line"><span style="color:#73D3F1">            unset</span><span style="color:#CDD1D6">($_SESSION[$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_storeName]);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Magic method to retrieve data from the SESSION array</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2">  string</span><span style="color:#77818C"> $name Name of the element stored</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#E3A2F2"> mixed</span><span style="color:#77818C">        The item stored, null otherwise</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    function</span><span style="color:#73D3F1"> __get</span><span style="color:#CDD1D6">($name)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">init</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $return </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> null</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#73D3F1">isset</span><span style="color:#CDD1D6">($_SESSION[$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_storeName][$name])) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $return </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $_SESSION[$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_storeName][$name];</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> $return;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Magic method to store an element in the SESSION array</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2">  string</span><span style="color:#77818C"> $name  The name of the element to store</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2">  mixed</span><span style="color:#77818C">  $value The value of the element to store</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    function</span><span style="color:#73D3F1"> __set</span><span style="color:#CDD1D6">($name, $value)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">init</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $_SESSION[$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_storeName][$name] </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $value;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Retrieves data from the SESSION array -</span></span>
+<span class="line"><span style="color:#77818C">     * calls the magic method</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2">  string</span><span style="color:#77818C"> $name Name of the element stored</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#E3A2F2"> mixed</span><span style="color:#77818C">        The item stored, null otherwise</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> get</span><span style="color:#CDD1D6">($name)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">init</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">__get</span><span style="color:#CDD1D6">($name);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Stores an element in the SESSION array -</span></span>
+<span class="line"><span style="color:#77818C">     * calls the magic method</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2">  string</span><span style="color:#77818C"> $name  The name of the element to store</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2">  mixed</span><span style="color:#77818C">  $value The value of the element to store</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> set</span><span style="color:#CDD1D6">($name, $value)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">init</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">__set</span><span style="color:#CDD1D6">($name, $value);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Dumps the internal array on screen</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> dump</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">init</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#73D3F1"> print_r</span><span style="color:#CDD1D6">($_SESSION[$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_storeName],</span><span style="color:#92B1D3"> true</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Countable implementation</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> count</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">init</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#73D3F1"> count</span><span style="color:#CDD1D6">($_SESSION[$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_storeName]);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>Pretty simple class.</p>
+<h3 id="first-test">First test</h3>
+<p>So I wanted to write my first test. Where to begin though? How about instantiation of the object with nothing as the store name? Voila the first test!</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for creation null value</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testCreationNullStoreName</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">            $session </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> My_Session</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<p>I run the test as a PHPUnit test through Zend Studio and I was happy to see green lights everywhere! My test passed! I think that right at that moment something changed. I got infected by the TDD bug :). I did however notice something else. The code completion window was reporting 40% for the session.php file. OK so that tells me that with this test I only covered 40% of the code. I need to have 100% so that I can be 100% sure that my code will not ‘break’ under some weird circumstances that I haven’t foreseen.</p>
+<h3 id="more-tests-initialization">More tests (initialization)</h3>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testCreationEmptyStoreName</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">            $session </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> My_Session</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testCreationNotEmptyStoreNameString</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">($session </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testCreationNotEmptyStoreNameInteger</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">1</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">($session </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testCreationNotEmptyStoreNameObject</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $object </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> DOMDocumentType</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">($object);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">($session </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testCreationNotEmptyStoreNameBoolTrue</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#92B1D3">true</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">($session </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testCreationNotEmptyStoreNameBoolFalse</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#92B1D3">false</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">($session </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<p>Again tests have passed but I am at 47% coverage. At least now I know that if I instantiate my class with null, ”, string, object, integer, float or boolean passed as a parameter in the constructor, I will get an object of <code>My_Session</code> back :).</p>
+<p>This you might argue that it is an overkill. It might be but after these tests, if anyone was to ask me whether the constructor will return back a <code>My_Session</code> object, I would be able to reply with 100% certainty <strong>yes</strong>! It is really difficult to do such a thing without testing your code. How do you know that the user will give you what you expect? Are you going to bury your code under a myriad of <code>if...then...else</code> statements hoping that you covered all the possible scenarios? You might be able to do it but I can’t. Hence TDD is here to help me.</p>
+<p>Back to our tests!</p>
+<h3 id="variables">Variables</h3>
+<p>What happens if we store variables? We use the magic <code>__set</code> methods to add data to our class. Since our class acts as a proxy to the <code>$_SESSION</code> array, we do not need to worry about any internal arrays to hold the information passed. As usual we follow the methodical approach, testing everything in a structured/logical matter (i.e. strings, objects, floats, integers, booleans). Note that the set tests have to be accompanied by get tests since you cannot test what you set without getting it back - the class does not expose the contents stored otherwise. I am creating an extra test for the get to have them separate. It is probably an overkill but this way I know that I follow the <em>no stone left unturned</em> method (which is my method :))</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreMagicSetVariableString</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> &#39;1&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;1&#39;</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for retrieving</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreMagicGetVariableString</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> &#39;2&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;2&#39;</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for storing</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreMagicSetVariableInteger</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> 1</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">1</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for retrieving</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreMagicGetVariableInteger</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> 2</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">2</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for storing</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreMagicSetVariableFloat</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> 1</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">1</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for retrieving</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreMagicGetVariableFloat</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> 2</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">2</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for storing</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreMagicSetVariableObject</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $object </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> DOMDocumentType</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $object;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">            $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> DOMDocumentType</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for retrieving</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreMagicGetVariableObject</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $object </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> DOMDocumentType</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $object;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">            $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> DOMDocumentType</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<p>OK done with the magic <code>__get</code> and <code>__set</code> methods! All tests have passed and I have this huge grin on my face. The only thing now is that my code is still not 100% covered - I am at 73%. Since I have also get and set methods (along with the magic ones) working as proxies to the magic <code>__get</code> and <code>__set</code>, I need to test those too. Basically I will copy and paste the same tests I have used for the magic methods but now using the get/set pair.</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for storing</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreSetVariableString</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">&#39;1&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;1&#39;</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">));</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for retrieving</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreGetVariableString</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">&#39;2&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;2&#39;</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">));</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for storing</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreSetVariableInteger</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">1</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">1</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">));</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for retrieving</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreGetVariableInteger</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">2</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">2</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">));</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for storing</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreSetVariableFloat</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">1</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">1</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">));</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for retrieving</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreGetVariableFloat</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">2</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">2</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">));</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for storing</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreSetVariableObject</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $object </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> DOMDocumentType</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">, $object);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">            $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">) </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> DOMDocumentType</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for retrieving</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testStoreGetVariableObject</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $object </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> DOMDocumentType</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">, $object);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">            $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somedata&#39;</span><span style="color:#CDD1D6">) </span><span style="color:#E3A2F2">instanceof</span><span style="color:#96E498"> DOMDocumentType</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<h3 id="bug-identified">Bug identified!</h3>
+<p>There is a problem now. I got red lights from my tests. Despite the fact that the get/set pair are proxies to the <code>__get</code>/<code>__set</code>. I have a bug somewhere. Checking the unit test reveals the problem:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> get</span><span style="color:#CDD1D6">($name)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">init</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">__get</span><span style="color:#CDD1D6">($name);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<p>I never returned the value of the <code>__get</code> method and as a result the get returns always null. 8 out of the 23 tests have failed despite the fact that I have 87% code coverage. Modifying the function to</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> get</span><span style="color:#CDD1D6">($name)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">init</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">__get</span><span style="color:#CDD1D6">($name);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<p>makes all tests pass and the grin is back on my face.</p>
+<p>The beauty of all these tests is that I have made a change in the class that I am testing and although I changed the behavior of one method (returning a value instead of always null) I am again confident that my class will work as I expect it to do. After the change I have corrected a bug and ensured that all the tests have passed. Surprisingly enough this bug has been lurking there for quite some time and it was only until I approached my class with TDD that I found it. The question you should be asking yourself is whether your code has 100% coverage AND it passes all the tests.</p>
+<h3 id="100-coverage">100% coverage</h3>
+<p>The final three tests that I need to create are for specific methods. <code>dump()</code>, <code>count()</code> and <code>destroy()</code>. The tests are as follows:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for dump</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testDump</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> 2</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertTrue</span><span style="color:#CDD1D6">(</span><span style="color:#73D3F1">count</span><span style="color:#CDD1D6">($session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">dump</span><span style="color:#CDD1D6">()) </span><span style="color:#E3A2F2">&gt;</span><span style="color:#EEC469"> 0</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for count</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testGetCount</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> 2</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">2</span><span style="color:#CDD1D6">, $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">count</span><span style="color:#CDD1D6">());</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Test for destroy</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> testDestroy</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> My_Session</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;somestore&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> 2</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">5</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">destroy</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">assertSame</span><span style="color:#CDD1D6">($session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">somedata, </span><span style="color:#92B1D3">null</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#73D3F1">        unset</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<p>Running the above we get to the magic 100% coverage! Now the grin is permanent. I know now for sure that my code is bug free and that it will do what I expect it to do.</p>
+<h2 id="conclusion-and-thoughts">Conclusion and thoughts:</h2>
+<p>The above test took me the best part of 2 hours to complete. After numerous failed attempts I did manage to get the first test to run as a PHPUnit test. After that the time spent was more on the code and the tests themselves. The highlight of this exercise was that I found a lurking bug that I wouldn’t have found otherwise - at least easily.</p>
+<p>Test Driven Development is tedious but only at the beginning. Since I was not used to this kind of development, it took me a lot longer to create each test. In addition to this, since I was thinking about it, I started devising more and more tests. For instance at first I was testing only for strings as input parameters. Later on I added floats, integers, objects etc. into the mix, thus ensuring that my class can handle all data types.</p>
+<p>I would encourage everyone to at least give TDD a try. Don’t despair when the test is not working. Stick with it, ask questions, spend time on it and you will succeed. Give it at least a fair chance and the rewards will be invaluable! I know I have changed my programming style and am approaching every problem/coding request with TDD in mind. This way I know that my code works thus eliminating future bug fixes which in effect take more time than what I have used (or will use) for initial development.</p>
+<p>Some resources that I have used following recommendations from Miško Hevery:</p>
+<ul>
+<li>Dave Astels: <a href="https://www.amazon.com/Test-Driven-Development-Practical-Guide-Coad/dp/0131016490/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1217181313&amp;sr=1-1">Test Driven Development: A Practical Guide</a></li>
+<li>Dave Astels: <a href="https://www.amazon.com/Practical-Guide-eXtreme-Programming-Coad/dp/0130674826/ref=sr_1_2?ie=UTF8&amp;s=books&amp;qid=1217181313&amp;sr=1-2">A Practical guide to eXtreme Programming</a></li>
+</ul>
+<p>Miško writes in his blog:</p>
+<blockquote>
+<p><em>My big aha moment in software development came when I learned to do Test Driven Development. The subjective and objective quality of my code has gone through the roof, and I was hooked.</em></p>
+</blockquote>
+<p>I think I am at that stage too!!! :)</p></div><section class="related" data-astro-cid-g5songws><div class="mono-label" data-astro-cid-g5songws>Related — php</div><a class="related-row" href="/post/gateway-pattern-in-php/" data-astro-cid-g5songws><time class="related-date" datetime="2025-11-05T08:39:18.200Z" data-astro-cid-g5songws>2025-11-05</time><span class="related-title" data-astro-cid-g5songws>Design Patterns - Gateway</span></a><a class="related-row" href="/post/using-traits-to-add-functionality-in-classes-php/" data-astro-cid-g5songws><time class="related-date" datetime="2015-10-18T23:45:00.000Z" data-astro-cid-g5songws>2015-10-18</time><span class="related-title" data-astro-cid-g5songws>Using Traits to add more functionality to your classes in PHP</span></a><a class="related-row" href="/post/let-rdbms-do-more-than-just-store-data/" data-astro-cid-g5songws><time class="related-date" datetime="2013-09-15T23:45:00.000Z" data-astro-cid-g5songws>2013-09-15</time><span class="related-title" data-astro-cid-g5songws>Let the RDBMS do more than just store data</span></a></section><nav class="pager" aria-label="More posts" data-astro-cid-g5songws><a class="card" href="/post/new-blog/" data-astro-cid-g5songws><span class="mono-label" data-astro-cid-g5songws>Previous</span><span class="card-title" data-astro-cid-g5songws>New Blog</span></a><a class="card next" href="/post/google-apps/" data-astro-cid-g5songws><span class="mono-label" data-astro-cid-g5songws>Next</span><span class="card-title" data-astro-cid-g5songws>Google Apps</span></a></nav></article><div class="rail" data-astro-cid-g5songws><nav class="toc" aria-label="On this page" data-astro-cid-7k3pnqyz><div class="mono-label" data-astro-cid-7k3pnqyz>On this page</div><ul class="list" data-astro-cid-7k3pnqyz><li data-astro-cid-7k3pnqyz><a class="entry" href="#tdd-bug" data-toc-link="tdd-bug" data-astro-cid-7k3pnqyz>TDD bug</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#first-test" data-toc-link="first-test" data-astro-cid-7k3pnqyz>First test</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#more-tests-initialization" data-toc-link="more-tests-initialization" data-astro-cid-7k3pnqyz>More tests (initialization)</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#variables" data-toc-link="variables" data-astro-cid-7k3pnqyz>Variables</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#bug-identified" data-toc-link="bug-identified" data-astro-cid-7k3pnqyz>Bug identified!</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#100-coverage" data-toc-link="100-coverage" data-astro-cid-7k3pnqyz>100% coverage</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#conclusion-and-thoughts" data-toc-link="conclusion-and-thoughts" data-astro-cid-7k3pnqyz>Conclusion and thoughts:</a></li></ul></nav><script type="module">var e=[...document.querySelectorAll(`[data-toc-link]`)];if(e.length>0){let t=e.map(e=>document.getElementById(e.dataset.tocLink??``)).filter(e=>e!==null),n=t=>{e.forEach(e=>{e.classList.toggle(`active`,e.dataset.tocLink===t)})},r=new IntersectionObserver(e=>{let t=e.filter(e=>e.isIntersecting).sort((e,t)=>e.boundingClientRect.top-t.boundingClientRect.top);t[0]?.target.id&&n(t[0].target.id)},{rootMargin:`-24px 0px -70% 0px`,threshold:0});t.forEach(e=>r.observe(e))}</script></div></div><script type="module">document.querySelectorAll(`[data-copy]`).forEach(e=>{e.addEventListener(`click`,async()=>{let t=e.closest(`figure`)?.querySelector(`pre`)?.innerText??``;try{await navigator.clipboard.writeText(t)}catch{return}e.textContent=`Copied`,window.setTimeout(()=>{e.textContent=`Copy`},1500)})});</script></main><footer class="footer" data-astro-cid-jo6i4kqk><div data-astro-cid-jo6i4kqk>&copy; 2022&ndash;present niden.net</div><div data-astro-cid-jo6i4kqk>Astro</div></footer></div><div class="backdrop" data-search-backdrop hidden data-astro-cid-ac66eqjo><div class="modal" role="dialog" aria-modal="true" aria-label="Search" data-search-modal data-astro-cid-ac66eqjo><div class="input-row" data-astro-cid-ac66eqjo><span class="slash" aria-hidden="true" data-astro-cid-ac66eqjo>/</span><input class="input" type="search" placeholder="Search posts and tags" autocomplete="off" spellcheck="false" aria-label="Search posts and tags" data-search-input data-astro-cid-ac66eqjo><kbd class="kbd" data-astro-cid-ac66eqjo>esc</kbd></div><div class="results" data-search-results role="listbox" data-astro-cid-ac66eqjo></div><div class="hints" data-astro-cid-ac66eqjo><span data-astro-cid-ac66eqjo>&uarr;&darr; navigate</span><span data-astro-cid-ac66eqjo>&crarr; open</span></div></div></div><script type="module">var e=document.querySelector(`[data-search-backdrop]`),t=document.querySelector(`[data-search-modal]`),n=document.querySelector(`[data-search-input]`),r=document.querySelector(`[data-search-results]`);if(e&&t&&n&&r){let t=null,i=[],a=0,o=null,s=e=>e.replace(/[&<>"']/g,e=>({"&":`&amp;`,"<":`&lt;`,">":`&gt;`,'"':`&quot;`,"'":`&#39;`})[e]),c=(e,t)=>{let n=e.toLowerCase().indexOf(t.toLowerCase());return t===``||n===-1?s(e):[s(e.slice(0,n)),`<mark>`,s(e.slice(n,n+t.length)),`</mark>`,s(e.slice(n+t.length))].join(``)},l=async()=>(t===null&&(t=await(await fetch(`/search.json`)).json()),t),u=()=>{i.forEach((e,t)=>{e.classList.toggle(`selected`,t===a),e.setAttribute(`aria-selected`,String(t===a))}),i[a]?.scrollIntoView({block:`nearest`})},d=e=>{if(t===null)return;let n=e.trim().toLowerCase(),o=n===``?t.posts.slice(0,6):t.posts.filter(e=>e.title.toLowerCase().includes(n)||e.excerpt.toLowerCase().includes(n)).slice(0,8),l=n===``?[]:t.tags.filter(e=>e.tag.toLowerCase().includes(n)).slice(0,5),d=[];o.length>0&&d.push(`<div class="group-label">Posts</div>`,...o.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-title">${c(e.title,n)}</span><span class="result-date">${s(e.date)}</span></a>`)),l.length>0&&d.push(`<div class="group-label">Tags</div>`,...l.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-pill">${c(e.tag,n)}</span><span class="result-date">${e.count} posts</span></a>`)),r.innerHTML=d.length>0?d.join(``):`<div class="empty">No matches.</div>`,i=[...r.querySelectorAll(`.result`)],a=0,u()},f=async t=>{o=t,e.hidden=!1,document.body.style.overflow=`hidden`,n.value=``,n.focus(),await l(),d(``)},p=()=>{e.hidden=!0,document.body.style.overflow=``,o?.focus(),o=null};document.querySelectorAll(`[data-search-open]`).forEach(e=>{e.addEventListener(`click`,t=>{t.preventDefault(),f(e)})}),n.addEventListener(`input`,()=>d(n.value)),e.addEventListener(`mousedown`,t=>{t.target===e&&p()}),document.addEventListener(`keydown`,t=>{let r=t.target instanceof HTMLElement&&[`INPUT`,`TEXTAREA`,`SELECT`].includes(t.target.tagName);if((t.metaKey||t.ctrlKey)&&t.key.toLowerCase()===`k`){t.preventDefault(),e.hidden?f(null):p();return}if(t.key===`/`&&e.hidden&&!r){t.preventDefault(),f(null);return}e.hidden||(t.key===`Escape`&&(t.preventDefault(),p()),t.key===`ArrowDown`&&i.length>0&&(t.preventDefault(),a=(a+1)%i.length,u()),t.key===`ArrowUp`&&i.length>0&&(t.preventDefault(),a=(a-1+i.length)%i.length,u()),t.key===`Enter`&&i[a]&&(t.preventDefault(),window.location.href=i[a].href),t.key===`Tab`&&(t.preventDefault(),n.focus()))})}</script><script type="module" src="/_astro/Mermaid.astro_astro_type_script_index_0_lang.T979gi6P.js"></script></body></html>

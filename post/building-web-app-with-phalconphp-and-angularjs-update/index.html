@@ -1,0 +1,543 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v7.3.1"><meta name="description" content="It's been a while since I last wrote a blog post, so I wanted to touch on the effort to upgrade the application that I wrote for Harry Hog Fottball using Phalco…"><meta name="keywords" content="php, phalcon, phalcon php, php framework, faster php framework"><meta name="author" content="Nikolaos Dimopoulos"><title>Building a web app with PhalconPHP and AngularJS Update | niden.net</title><link rel="canonical" href="https://niden.net/post/building-web-app-with-phalconphp-and-angularjs-update/"><link rel="icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="niden.net" href="/feed.xml"><meta property="og:type" content="website"><meta property="og:site_name" content="niden.net"><meta property="og:title" content="Building a web app with PhalconPHP and AngularJS Update"><meta property="og:description" content="It's been a while since I last wrote a blog post, so I wanted to touch on the effort to upgrade the application that I wrote for Harry Hog Fottball using Phalco…"><meta property="og:url" content="https://niden.net/post/building-web-app-with-phalconphp-and-angularjs-update/"><meta name="twitter:card" content="summary"><!-- Blocking: sets the theme before the first paint so there is no flash. --><script>
+            (function () {
+                try {
+                    var stored = localStorage.getItem('niden-theme');
+                    var prefersLight = window.matchMedia(
+                        '(prefers-color-scheme: light)'
+                    ).matches;
+
+                    document.documentElement.setAttribute(
+                        'data-theme',
+                        stored || (prefersLight ? 'light' : 'dark')
+                    );
+                } catch (error) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            })();
+        </script><link rel="stylesheet" href="/_astro/prose.D_f8nGPQ.css"><link rel="stylesheet" href="/_astro/Base.DJ4v4ydd.css"><style>.pill[data-astro-cid-qrtwocmw]{border-radius:var(--r-pill);background:var(--chip);color:var(--ink-body);align-items:center;gap:6px;padding:3px 8px;line-height:1.45;display:inline-flex}.pill[data-astro-cid-qrtwocmw].sm{font-family:var(--font-mono);font-size:11px}.pill[data-astro-cid-qrtwocmw].md{font-size:12.5px}.pill[data-astro-cid-qrtwocmw]:hover{background:var(--chip-strong);color:var(--ink)}.count[data-astro-cid-qrtwocmw]{font-family:var(--font-mono);color:var(--ink-dim);font-size:10px}
+.toc[data-astro-cid-7k3pnqyz]{flex-direction:column;gap:12px;display:flex}.list[data-astro-cid-7k3pnqyz]{flex-direction:column;padding:0;list-style:none;display:flex}.entry[data-astro-cid-7k3pnqyz]{border-left:2px solid var(--line);color:var(--ink-muted);padding:5px 0 5px 12px;font-size:13.5px;line-height:1.3;display:block}.entry[data-astro-cid-7k3pnqyz].nested{padding-left:26px;font-size:13px}.entry[data-astro-cid-7k3pnqyz]:hover{color:var(--ink)}.entry[data-astro-cid-7k3pnqyz].active{border-left-color:var(--accent);color:var(--ink);font-weight:500}.split[data-astro-cid-g5songws]{grid-template-columns:1fr 220px;display:grid}.split[data-astro-cid-g5songws].no-toc{grid-template-columns:1fr}.article[data-astro-cid-g5songws]{padding:44px 40px 40px var(--gutter);border-right:1px solid var(--line)}.split[data-astro-cid-g5songws].no-toc .article[data-astro-cid-g5songws]{border-right:0}.rail[data-astro-cid-g5songws]{top:calc(var(--header-h) + 24px);align-self:flex-start;padding:44px 24px;position:sticky}.title-block[data-astro-cid-g5songws]{flex-direction:column;gap:14px;margin-bottom:30px;display:flex}.meta[data-astro-cid-g5songws]{font-family:var(--font-mono);color:var(--ink-dim);align-items:center;gap:10px;font-size:11.5px;line-height:1;display:flex}.dot[data-astro-cid-g5songws]{border-radius:var(--r-pill);background:var(--ink-dim);width:3px;height:3px}.title[data-astro-cid-g5songws]{letter-spacing:-.035em;text-wrap:pretty;max-width:26ch;font-size:44px;font-weight:700;line-height:1.05}.tags[data-astro-cid-g5songws]{flex-wrap:wrap;gap:6px;display:flex}.related[data-astro-cid-g5songws]{border-top:1px solid var(--line);flex-direction:column;gap:2px;margin-top:44px;padding-top:26px;display:flex}.related[data-astro-cid-g5songws] .mono-label{margin-bottom:8px}.related-row[data-astro-cid-g5songws]{color:var(--ink);align-items:baseline;gap:20px;padding:9px 0;display:flex}.related-row[data-astro-cid-g5songws]:hover{background:var(--row-hover)}.related-date[data-astro-cid-g5songws]{width:84px;font-family:var(--font-mono);color:var(--ink-dim);flex-shrink:0;font-size:11.5px}.related-title[data-astro-cid-g5songws]{font-size:15.5px;font-weight:500}.pager[data-astro-cid-g5songws]{grid-template-columns:1fr 1fr;gap:16px;margin-top:32px;display:grid}.card[data-astro-cid-g5songws]{border:1px solid var(--line);border-radius:var(--r-card);color:var(--ink);flex-direction:column;gap:8px;padding:16px 18px;display:flex}.card[data-astro-cid-g5songws].next{text-align:right;align-items:flex-end}.card[data-astro-cid-g5songws].empty{opacity:.45;pointer-events:none}.card[data-astro-cid-g5songws]:not(.empty):hover{background:var(--row-hover)}.card-title[data-astro-cid-g5songws]{font-size:15.5px;font-weight:500;line-height:1.3}@media (width<=900px){.split[data-astro-cid-g5songws],.split[data-astro-cid-g5songws].no-toc{grid-template-columns:1fr}.article[data-astro-cid-g5songws]{border-right:0;padding:32px 24px}.rail[data-astro-cid-g5songws]{padding:0 24px 32px;position:static}}@media (width<=720px){.title[data-astro-cid-g5songws]{font-size:30px}.pager[data-astro-cid-g5songws]{grid-template-columns:1fr}.card[data-astro-cid-g5songws].next{text-align:left;align-items:flex-start}}
+</style></head><body><div class="shell" style="max-width:900px"><div class="sentinel" data-header-sentinel aria-hidden="true" data-astro-cid-nen7h5rs></div><header class="header bordered" data-astro-cid-nen7h5rs><a class="wordmark" href="/" data-astro-cid-nen7h5rs>niden</a><nav class="nav" aria-label="Primary" data-astro-cid-nen7h5rs><a href="/" class="nav-link" data-astro-cid-nen7h5rs>Home</a><a href="/hosting" class="nav-link" data-astro-cid-nen7h5rs>Hosting</a><a href="/tag" class="nav-link" data-astro-cid-nen7h5rs>Tags</a><a href="/archive" class="nav-link" data-astro-cid-nen7h5rs>Archive</a><a href="/about" class="nav-link" data-astro-cid-nen7h5rs>About</a><a href="/contact" class="nav-link" data-astro-cid-nen7h5rs>Contact</a><a href="/disclaimer" class="nav-link" data-astro-cid-nen7h5rs>Disclaimer</a></nav><div class="utility" data-astro-cid-nen7h5rs><button type="button" class="utility-item" data-search-open data-astro-cid-nen7h5rs>Search</button><a class="utility-item" href="https://github.com/niden" data-astro-cid-nen7h5rs>GitHub</a><a class="utility-item" href="/feed.xml" data-astro-cid-nen7h5rs>RSS</a><button type="button" class="toggle" data-theme-toggle aria-label="Switch color theme" data-astro-cid-l6lhmie6><span data-theme-label data-astro-cid-l6lhmie6>Theme</span></button><script type="module">var e=document.documentElement,t=e=>e===`light`?`Dark`:`Light`,n=()=>{let n=e.getAttribute(`data-theme`)??`dark`;document.querySelectorAll(`[data-theme-label]`).forEach(e=>{e.textContent=t(n)})};document.querySelectorAll(`[data-theme-toggle]`).forEach(t=>{t.addEventListener(`click`,()=>{let t=e.getAttribute(`data-theme`)===`light`?`dark`:`light`;e.setAttribute(`data-theme`,t);try{localStorage.setItem(`niden-theme`,t)}catch{}n()})}),n();</script></div></header><script type="module">var e=document.querySelector(`[data-header-sentinel]`),t=document.querySelector(`header.header`);e!==null&&t!==null&&new IntersectionObserver(([e])=>{t.classList.toggle(`stuck`,!e.isIntersecting)},{threshold:0}).observe(e);</script><main><div class="split" data-astro-cid-g5songws><article class="article" data-astro-cid-g5songws><header class="title-block" data-astro-cid-g5songws><div class="meta" data-astro-cid-g5songws><time datetime="2012-11-25T23:45:00.000Z" data-astro-cid-g5songws>25 Nov 2012</time><span class="dot" aria-hidden="true" data-astro-cid-g5songws></span><span data-astro-cid-g5songws>13 min read</span></div><h1 class="title" data-astro-cid-g5songws>Building a web app with PhalconPHP and AngularJS Update</h1><div class="tags" data-astro-cid-g5songws><a class="pill sm" href="/tag/php/" data-astro-cid-qrtwocmw>php</a><a class="pill sm" href="/tag/phalcon/" data-astro-cid-qrtwocmw>phalcon</a><a class="pill sm" href="/tag/angularjs/" data-astro-cid-qrtwocmw>angularjs</a><a class="pill sm" href="/tag/how-to/" data-astro-cid-qrtwocmw>how-to</a></div></header><div class="prose" data-astro-cid-g5songws><p>It’s been a while since I last wrote a blog post, so I wanted to touch on the effort to upgrade the application that I <a href="https://github.com/niden/phalcon-angular-harryhogfootball">wrote</a> for Harry Hog Fottball using <a href="https://phalcon.io/">PhalconPHP</a> and <a href="https://angularjs.org/">AngularJS</a></p>
+<p>If you haven’t read it, the first two blog posts were <a href="/post/building-web-app-with-phalconphp-and-angularjs-part-i">here</a> and <a href="/post/building-web-app-with-phalconphp-and-angularjs-part-ii">here</a>.</p>
+<p>The application was written using the 0.4.5 version of <a href="https://phalcon.io/">PhalconPHP</a>. Since then there have been significant changes to the framework, such as the introduction of a DI container, injectable objects and lately interfaces (in 0.7.0, to be released in a couple of days), I had to make some changes.</p>
+<p>There are a couple of things that I as a developer would like to see in <a href="https://phalcon.io/">PhalconPHP</a>, which I am pretty sure will appear later on, since let’s face it the framework is still very young (not even 1.0 version yet). Despite its “<em>youth</em>” it is a robust framework with excellent support, features and a growing community. One of these features is behaviors which I had to implement myself, and this was something new that came with this upgrade.</p>
+<p>Recently a new <a href="https://github.com/phalcon/incubator">repo</a> has been created on Github called the incubator, where developers can share implementations of common tasks, that act as drop ins to the framework and extend it. These implementations are all written in PHP so everyone can just download them and use them. The more submissions come in, the more the framework will grow and eventually these submissions will become part of the framework itself.</p>
+<h2 id="converting-the-04x-application-to-05x">Converting the 0.4.x application to 0.5.x</h2>
+<p>The task of converting everything from 0.4 to 0.5 was a bit challenging. The reason behind it was the DI container and how best to use it to suit the needs of the current application. Now these challenges would not even be an issue if one started writing their application from scratch, but since I had everything in place, I ventured into upgrading vs. rewriting. Note that this kind of upgrade will most likely never happen again, since the framework has been changed accordingly so that future upgrades will not require developers to rewrite their code (like I did now). From 0.5.x onward the framework design has been kind of “<em>frozen</em>”.</p>
+<p>I decided to create a new library that will help me with my tasks. I therefore created a custom bootstrap class, that would instantiate everything I wanted in my code. A short snippet of the class is below (the full code of course is in my Github <a href="https://github.com/niden/phalcon-angular-harryhogfootball">repo</a> which you are more than welcome to download and modify to suit your needs)</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">namespace</span><span style="color:#96E498"> NDN</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> \Phalcon\Config\Adapter\</span><span style="color:#96E498">Ini</span><span style="color:#E3A2F2"> as</span><span style="color:#CDD1D6"> PhConfig;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> \Phalcon\</span><span style="color:#96E498">Loader</span><span style="color:#E3A2F2"> as</span><span style="color:#CDD1D6"> PhLoader;</span></span>
+<span class="line"><span style="color:#E3A2F2">...</span><span style="color:#E3A2F2">.</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> \Phalcon\</span><span style="color:#96E498">Exception</span><span style="color:#E3A2F2"> as</span><span style="color:#CDD1D6"> PhException;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> Bootstrap</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    private</span><span style="color:#CDD1D6"> $_di;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Constructor</span></span>
+<span class="line"><span style="color:#77818C">     * </span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#77818C"> $di</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __construct</span><span style="color:#CDD1D6">($di)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $di;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Runs the application performing all initializations</span></span>
+<span class="line"><span style="color:#77818C">     * </span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#77818C"> $options</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#E3A2F2"> mixed</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> run</span><span style="color:#CDD1D6">($options)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $loaders </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;config&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;loader&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;environment&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;timezone&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;debug&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;flash&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;url&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;dispatcher&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;view&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;logger&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;database&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;session&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;cache&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;behaviors&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        try</span><span style="color:#CDD1D6"> {</span></span>
+<span class="line"><span style="color:#E3A2F2">            foreach</span><span style="color:#CDD1D6"> ($loaders </span><span style="color:#E3A2F2">as</span><span style="color:#CDD1D6"> $service)</span></span>
+<span class="line"><span style="color:#CDD1D6">            {</span></span>
+<span class="line"><span style="color:#CDD1D6">                $function </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> &#39;init&#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#73D3F1"> ucfirst</span><span style="color:#CDD1D6">($service);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">                $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">$function($options);</span></span>
+<span class="line"><span style="color:#CDD1D6">            }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">            $application </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> PhApplication</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">            $application</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">setDI</span><span style="color:#CDD1D6">($</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">            return</span><span style="color:#CDD1D6"> $application</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">handle</span><span style="color:#CDD1D6">()</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getContent</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        } </span><span style="color:#E3A2F2">catch</span><span style="color:#CDD1D6"> (</span><span style="color:#96E498">PhException</span><span style="color:#CDD1D6"> $e) {</span></span>
+<span class="line"><span style="color:#73D3F1">            echo</span><span style="color:#CDD1D6"> $e</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getMessage</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        } </span><span style="color:#E3A2F2">catch</span><span style="color:#CDD1D6"> (\</span><span style="color:#96E498">PDOException</span><span style="color:#CDD1D6"> $e) {</span></span>
+<span class="line"><span style="color:#73D3F1">            echo</span><span style="color:#CDD1D6"> $e</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getMessage</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    // Protected functions</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Initializes the config. Reads it from its location and</span></span>
+<span class="line"><span style="color:#77818C">     * stores it in the Di container for easier access</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> array</span><span style="color:#77818C"> $options</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> initConfig</span><span style="color:#CDD1D6">($options </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $configFile </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#EEC469"> &#39;/app/var/config/config.ini&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // Create the new object</span></span>
+<span class="line"><span style="color:#CDD1D6">        $config </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> PhConfig</span><span style="color:#CDD1D6">($configFile);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // Store it in the Di container</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;config&#39;</span><span style="color:#CDD1D6">, $config);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Initializes the loader</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> array</span><span style="color:#77818C"> $options</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> initLoader</span><span style="color:#CDD1D6">($options </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $config </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;config&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // Creates the autoloader</span></span>
+<span class="line"><span style="color:#CDD1D6">        $loader </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> PhLoader</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $loader</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">registerDirs</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#73D3F1">            array</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">                ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">path</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">controllers,</span></span>
+<span class="line"><span style="color:#CDD1D6">                ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">path</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">models,</span></span>
+<span class="line"><span style="color:#CDD1D6">                ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">path</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">library,</span></span>
+<span class="line"><span style="color:#CDD1D6">            )</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // Register the namespace</span></span>
+<span class="line"><span style="color:#CDD1D6">        $loader</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">registerNamespaces</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#73D3F1">            array</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&quot;NDN&quot;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">path</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">library)</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $loader</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">register</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">    </span></span>
+<span class="line"><span style="color:#E3A2F2">    ...</span><span style="color:#E3A2F2">.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Initializes the view and Volt</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> array</span><span style="color:#77818C"> $options</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> initView</span><span style="color:#CDD1D6">($options </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $config </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;config&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $di     </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;volt&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#E3A2F2">            function</span><span style="color:#CDD1D6">($view, $di) </span><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6">($config)</span></span>
+<span class="line"><span style="color:#CDD1D6">            {</span></span>
+<span class="line"><span style="color:#CDD1D6">                $volt </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> PhVolt</span><span style="color:#CDD1D6">($view,</span><span style="color:#CDD1D6"> $di);</span></span>
+<span class="line"><span style="color:#CDD1D6">                $volt</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">setOptions</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#73D3F1">                    array</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">                        &#39;compiledPath&#39;</span><span style="color:#E3A2F2">      =&gt;</span><span style="color:#CDD1D6"> ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">volt</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">path,</span></span>
+<span class="line"><span style="color:#EEC469">                        &#39;compiledExtension&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">volt</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">extension,</span></span>
+<span class="line"><span style="color:#EEC469">                        &#39;compiledSeparator&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">volt</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">separator,</span></span>
+<span class="line"><span style="color:#EEC469">                        &#39;stat&#39;</span><span style="color:#E3A2F2">              =&gt;</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">bool</span><span style="color:#CDD1D6">) $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">volt</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">stat,</span></span>
+<span class="line"><span style="color:#CDD1D6">                    )</span></span>
+<span class="line"><span style="color:#CDD1D6">                );</span></span>
+<span class="line"><span style="color:#E3A2F2">                return</span><span style="color:#CDD1D6"> $volt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            }</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#E3A2F2">    ...</span><span style="color:#E3A2F2">.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Initializes the model behaviors</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> array</span><span style="color:#77818C"> $options</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> initBehaviors</span><span style="color:#CDD1D6">($options </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getShared</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;session&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // Timestamp</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;Timestamp&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#E3A2F2">            function</span><span style="color:#CDD1D6">() </span><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> ($session)</span></span>
+<span class="line"><span style="color:#CDD1D6">            {</span></span>
+<span class="line"><span style="color:#CDD1D6">                $timestamp </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#CDD1D6"> Models\Behaviors\</span><span style="color:#96E498">Timestamp</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#E3A2F2">                return</span><span style="color:#CDD1D6"> $timestamp;</span></span>
+<span class="line"><span style="color:#CDD1D6">            }</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>I chose to show a few sections of this bootstrap which I will explain shortly. What this bootstrap class does is it initializes my whole environment and keeps my <code>index.php</code> file small.</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#73D3F1">error_reporting</span><span style="color:#CDD1D6">(</span><span style="color:#73D3F1">E_ALL</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">try</span><span style="color:#CDD1D6"> {</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#73D3F1">defined</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;ROOT_PATH&#39;</span><span style="color:#CDD1D6">)) {</span></span>
+<span class="line"><span style="color:#73D3F1">        define</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;ROOT_PATH&#39;</span><span style="color:#CDD1D6">,</span><span style="color:#73D3F1"> dirname</span><span style="color:#CDD1D6">(</span><span style="color:#73D3F1">dirname</span><span style="color:#CDD1D6">(</span><span style="color:#92B1D3">__FILE__</span><span style="color:#CDD1D6">)));</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    // Using require once because I want to get the specific</span></span>
+<span class="line"><span style="color:#77818C">    // bootloader class here. The loader will be initialized</span></span>
+<span class="line"><span style="color:#77818C">    // in my bootstrap class</span></span>
+<span class="line"><span style="color:#E3A2F2">    require_once</span><span style="color:#CDD1D6"> ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#EEC469"> &#39;/app/library/NDN/Bootstrap.php&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">    require_once</span><span style="color:#CDD1D6"> ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#EEC469"> &#39;/app/library/NDN/Error.php&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    // Instantiate the DI container</span></span>
+<span class="line"><span style="color:#CDD1D6">    $di  </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#CDD1D6"> \Phalcon\DI\</span><span style="color:#96E498">FactoryDefault</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    // Instantiate the boostrap class and inject the DI container </span></span>
+<span class="line"><span style="color:#77818C">    // in it so that services can be registered</span></span>
+<span class="line"><span style="color:#CDD1D6">    $app </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#CDD1D6"> \NDN\</span><span style="color:#96E498">Bootstrap</span><span style="color:#CDD1D6">($di);</span></span>
+<span class="line"><span style="color:#CDD1D6">   </span></span>
+<span class="line"><span style="color:#77818C">    // Here we go!</span></span>
+<span class="line"><span style="color:#73D3F1">    echo</span><span style="color:#CDD1D6"> $app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">run</span><span style="color:#CDD1D6">(</span><span style="color:#73D3F1">array</span><span style="color:#CDD1D6">());</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">} </span><span style="color:#E3A2F2">catch</span><span style="color:#CDD1D6"> (\Phalcon\</span><span style="color:#96E498">Exception</span><span style="color:#CDD1D6"> $e) {</span></span>
+<span class="line"><span style="color:#73D3F1">    echo</span><span style="color:#CDD1D6"> $e</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getMessage</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>As you can see the <code>index.php</code> is very small in terms of code.</p>
+<p>Let’s have a look at a couple of the functions that are in the bootstrap.</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Initializes the config. Reads it from its location and</span></span>
+<span class="line"><span style="color:#77818C">     * stores it in the Di container for easier access</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> array</span><span style="color:#77818C"> $options</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> initConfig</span><span style="color:#CDD1D6">($options </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $configFile </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#EEC469"> &#39;/app/var/config/config.ini&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // Create the new object</span></span>
+<span class="line"><span style="color:#CDD1D6">        $config </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> PhConfig</span><span style="color:#CDD1D6">($configFile);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // Store it in the Di container</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;config&#39;</span><span style="color:#CDD1D6">, $config);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<p>Pretty straight forward. The config INI file is read from its location and stored in the DI container. I need to do this first, since a lot of the parameters of the application are controlled from that file.</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Initializes the loader</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> array</span><span style="color:#77818C"> $options</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> initLoader</span><span style="color:#CDD1D6">($options </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $config </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;config&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // Creates the autoloader</span></span>
+<span class="line"><span style="color:#CDD1D6">        $loader </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> PhLoader</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $loader</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">registerDirs</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#73D3F1">            array</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">                ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">path</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">controllers,</span></span>
+<span class="line"><span style="color:#CDD1D6">                ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">path</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">models,</span></span>
+<span class="line"><span style="color:#CDD1D6">                ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">path</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">library,</span></span>
+<span class="line"><span style="color:#CDD1D6">            )</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // Register the namespace</span></span>
+<span class="line"><span style="color:#CDD1D6">        $loader</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">registerNamespaces</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#73D3F1">            array</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&quot;NDN&quot;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">path</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">library)</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $loader</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">register</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<p>The loader is what does all the discovery of classes for me. As you can see I store a lot of the paths in the config INI file, and I register my custom namespace NDN.</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Initializes the view and Volt</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> array</span><span style="color:#77818C"> $options</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> initView</span><span style="color:#CDD1D6">($options </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $config </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;config&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $di     </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;volt&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#E3A2F2">            function</span><span style="color:#CDD1D6">($view, $di) </span><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6">($config)</span></span>
+<span class="line"><span style="color:#CDD1D6">            {</span></span>
+<span class="line"><span style="color:#CDD1D6">                $volt </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> PhVolt</span><span style="color:#CDD1D6">($view,</span><span style="color:#CDD1D6"> $di);</span></span>
+<span class="line"><span style="color:#CDD1D6">                $volt</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">setOptions</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#73D3F1">                    array</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">                        &#39;compiledPath&#39;</span><span style="color:#E3A2F2">      =&gt;</span><span style="color:#CDD1D6"> ROOT_PATH </span><span style="color:#E3A2F2">.</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">volt</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">path,</span></span>
+<span class="line"><span style="color:#EEC469">                        &#39;compiledExtension&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">volt</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">extension,</span></span>
+<span class="line"><span style="color:#EEC469">                        &#39;compiledSeparator&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#CDD1D6"> $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">volt</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">separator,</span></span>
+<span class="line"><span style="color:#EEC469">                        &#39;stat&#39;</span><span style="color:#E3A2F2">              =&gt;</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">bool</span><span style="color:#CDD1D6">) $config</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">app</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">volt</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">stat,</span></span>
+<span class="line"><span style="color:#CDD1D6">                    )</span></span>
+<span class="line"><span style="color:#CDD1D6">                );</span></span>
+<span class="line"><span style="color:#E3A2F2">                return</span><span style="color:#CDD1D6"> $volt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            }</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<p>This is an interesting one. Registering the view and Volt. [Volt](<a href="https://docs.phalcon.io/latest/en/volt">https://docs.phalcon.io/latest/en/volt</a> is the template engine that comes with <a href="https://phalcon.io/">Phalcon</a>. It is inspired by <a href="https://twig.symfony.com">Twig</a> and written in C, thus offering maximum performance. I set the compiled path, extension and separator for the template files, and also I have a variable (set in the config of course) to allow the application to always create template files or not. In a production environment that variable (stat) will be set to false since templates do not change.</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Initializes the model behaviors</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> array</span><span style="color:#77818C"> $options</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> initBehaviors</span><span style="color:#CDD1D6">($options </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $session </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getShared</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;session&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        // Timestamp</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;Timestamp&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#E3A2F2">            function</span><span style="color:#CDD1D6">() </span><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> ($session)</span></span>
+<span class="line"><span style="color:#CDD1D6">            {</span></span>
+<span class="line"><span style="color:#CDD1D6">                $timestamp </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#CDD1D6"> Models\Behaviors\</span><span style="color:#96E498">Timestamp</span><span style="color:#CDD1D6">($session);</span></span>
+<span class="line"><span style="color:#E3A2F2">                return</span><span style="color:#CDD1D6"> $timestamp;</span></span>
+<span class="line"><span style="color:#CDD1D6">            }</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span></code></pre></figure>
+<p>The above is my implementation of behaviors. Of course it is far from perfect but it works the way I want to. A better implementation of this has been written by <a href="https://github.com/theDisco">Wojtek Gancarczyk</a> and is available in the <a href="https://github.com/phalcon/incubator">incubator</a>. All I do here is go through the behaviors I have (Timestamp only for now) and register them in the DI container so that I can reuse them later on with any model that needs them.</p>
+<h2 id="models">Models</h2>
+<p>Every model I have that interacts with my database tables extends the <code>NDN\Model</code>.</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> Model</span><span style="color:#E3A2F2"> extends</span><span style="color:#CDD1D6"> \Phalcon\Mvc\</span><span style="color:#96E498">Model</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#CDD1D6"> $behaviors </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Adds a behavior in the model</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#77818C"> $behavior</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> addBehavior</span><span style="color:#CDD1D6">($behavior)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">behaviors[$behavior] </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> true</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> beforeSave</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $di   </span><span style="color:#E3A2F2">=</span><span style="color:#96E498"> Di</span><span style="color:#E3A2F2">::</span><span style="color:#73D3F1">getDefault</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        foreach</span><span style="color:#CDD1D6"> ($</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">behaviors </span><span style="color:#E3A2F2">as</span><span style="color:#CDD1D6"> $behavior </span><span style="color:#E3A2F2">=&gt;</span><span style="color:#CDD1D6"> $active)</span></span>
+<span class="line"><span style="color:#CDD1D6">        {</span></span>
+<span class="line"><span style="color:#E3A2F2">            if</span><span style="color:#CDD1D6"> ($active </span><span style="color:#E3A2F2">&amp;</span><span style="color:#CDD1D6">amp;</span><span style="color:#E3A2F2">&amp;</span><span style="color:#CDD1D6">amp; $di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">has</span><span style="color:#CDD1D6">($behavior))</span></span>
+<span class="line"><span style="color:#CDD1D6">            {</span></span>
+<span class="line"><span style="color:#CDD1D6">                $di</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">($behavior)</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">beforeSave</span><span style="color:#CDD1D6">($</span><span style="color:#92B1D3">this</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">            }</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> array</span><span style="color:#77818C"> $parameters</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@static</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#96E498"> Phalcon_Model_Resultset</span><span style="color:#77818C"> Model[]</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    static</span><span style="color:#E3A2F2"> public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> find</span><span style="color:#CDD1D6">($parameters </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#E3A2F2"> parent::</span><span style="color:#73D3F1">find</span><span style="color:#CDD1D6">($parameters);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@param</span><span style="color:#E3A2F2"> array</span><span style="color:#77818C"> $parameters</span></span>
+<span class="line"><span style="color:#77818C">     *</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@static</span></span>
+<span class="line"><span style="color:#77818C">     * </span><span style="color:#E3A2F2">@return</span><span style="color:#96E498">  Phalcon_Model_Base</span><span style="color:#77818C">   Models</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    static</span><span style="color:#E3A2F2"> public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> findFirst</span><span style="color:#CDD1D6">($parameters </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#E3A2F2"> parent::</span><span style="color:#73D3F1">findFirst</span><span style="color:#CDD1D6">($parameters);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>The class itself is pretty simple, offering <code>find</code> and <code>findFirst</code> to the class that extends this. The interesting thing is that it also registers behaviors and calls the relevant validator function. So for instance the <code>beforeSave</code> validator checks the registered behaviors (<code>$behaviors</code> array), checks if they are active, checks if they exist in the DI container and gets them from there and then calls the <code>beforeSave</code> in the behavior class.</p>
+<p>The behavior class is equally simple:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> Timestamp</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    protected</span><span style="color:#CDD1D6"> $session;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __construct</span><span style="color:#CDD1D6">($session)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">session </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $session;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * beforeSave hook - called prior to any Save (insert/update)</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> beforeSave</span><span style="color:#CDD1D6">($record)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $auth     </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">session</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;auth&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $userId   </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> (</span><span style="color:#73D3F1">isset</span><span style="color:#CDD1D6">($auth[</span><span style="color:#EEC469">&#39;id&#39;</span><span style="color:#CDD1D6">])) </span><span style="color:#E3A2F2">?</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">int</span><span style="color:#CDD1D6">) $auth[</span><span style="color:#EEC469">&#39;id&#39;</span><span style="color:#CDD1D6">] </span><span style="color:#E3A2F2">:</span><span style="color:#EEC469"> 0</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $datetime </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> date</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Y-m-d H:i:s&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#73D3F1">empty</span><span style="color:#CDD1D6">($record</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">created_at_user_id)) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $record</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">created_at         </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $datetime;</span></span>
+<span class="line"><span style="color:#CDD1D6">            $record</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">created_at_user_id </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $userId;</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">        $record</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">last_update         </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $datetime;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $record</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">last_update_user_id </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $userId;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>So effectively every time I call the <code>save()</code> function on a model, this piece of code will be executed, populating my fields with the date time and the user that created the record and/or updated it.</p>
+<p>In order to get this functionality to work, all I have to do in my model is to register the behavior like so:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> Episodes</span><span style="color:#E3A2F2"> extends</span><span style="color:#CDD1D6"> \NDN\</span><span style="color:#96E498">Model</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#77818C">    /**</span></span>
+<span class="line"><span style="color:#77818C">     * Initializes the class and sets any relationships with other models</span></span>
+<span class="line"><span style="color:#77818C">     */</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> initialize</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">addBehavior</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Timestamp&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">hasMany</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;id&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">&#39;Awards&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">&#39;episode_id&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<h2 id="controllers">Controllers</h2>
+<p>Very little has changed in the controller logic, so that was the easiest part of the upgrade. Of course I tweaked a few things but the code works as is. I still extended my custom <code>NDN\Controller</code> class which takes care of my breadcrumbs (<code>NDN\Breadcrumbs</code>) as well as the construction of the top menu. The biggest difference with the previous version is that I stopped using <a href="https://angularjs.org/">AngularJS</a> to populate the menu (so I am no longer sending a JSON array in the view) and used <a href="https://docs.phalcon.io/latest/en/volt">Volt</a> instead. It was a matter of preference and nothing more.</p>
+<h2 id="views">Views</h2>
+<p>Quite a bit of work had to be done in the views to switch everything to use <a href="https://docs.phalcon.io/latest/en/volt">Volt</a>. Of course every view extension had to be changed to <code>.volt</code> but that was not the only change. I split the layout to use partials so that the header, navigation and footer are different sections (organizing things a bit better) and kept the master layout <code>index.volt</code>.</p>
+<p>I started using the built-in <a href="https://docs.phalcon.io/latest/en/volt">Volt</a> functions to generate content as well as tags, and it was a nice surprise to see that everything was easy to use and it worked!</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">html</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="html"><code><span class="line"><span style="color:#CDD1D6">{% raw %}</span></span>
+<span class="line"><span style="color:#CDD1D6">&lt;!</span><span style="color:#77818C">DOCTYPE</span><span style="color:#73D3F1"> html</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">&lt;</span><span style="color:#77818C">html</span><span style="color:#73D3F1"> ng-app</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;HHF&#39;</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">    {{ partial(&#39;partials/header&#39;) }} </span></span>
+<span class="line"><span style="color:#CDD1D6">    &lt;</span><span style="color:#77818C">body</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;</span><span style="color:#77818C">div</span><span style="color:#73D3F1"> id</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&quot;spinner&quot;</span><span style="color:#73D3F1"> style</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&quot;display: none;&quot;</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            {{ image(&#39;img/ajax-loader.gif&#39;) }} Loading ...</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;/</span><span style="color:#77818C">div</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        </span></span>
+<span class="line"><span style="color:#CDD1D6">        {{ partial(&#39;partials/navbar&#39;) }}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;</span><span style="color:#77818C">div</span><span style="color:#73D3F1"> class</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;container-fluid&#39;</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;</span><span style="color:#77818C">div</span><span style="color:#73D3F1"> class</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;row-fluid&#39;</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                &lt;</span><span style="color:#77818C">ul</span><span style="color:#73D3F1"> class</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;breadcrumb&#39;</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                    &lt;</span><span style="color:#77818C">li</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                        {% for bc in breadcrumbs %}</span></span>
+<span class="line"><span style="color:#CDD1D6">                        {% if (bc[&#39;active&#39;]) %}</span></span>
+<span class="line"><span style="color:#CDD1D6">                        {{ bc[&#39;text&#39;] }}</span></span>
+<span class="line"><span style="color:#CDD1D6">                        {% else %}</span></span>
+<span class="line"><span style="color:#CDD1D6">                        &lt;</span><span style="color:#77818C">a</span><span style="color:#73D3F1"> href</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;{{ bc[&#39;</span><span style="color:#73D3F1">link</span><span style="color:#CDD1D6">&#39;] </span><span style="color:#73D3F1">}}</span><span style="color:#CDD1D6">&#39;&gt;{{ bc[&#39;text&#39;] }}&lt;/</span><span style="color:#77818C">a</span><span style="color:#CDD1D6">&gt; </span></span>
+<span class="line"><span style="color:#CDD1D6">                        &lt;</span><span style="color:#77818C">span</span><span style="color:#73D3F1"> class</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;divider&#39;</span><span style="color:#CDD1D6">&gt;/&lt;/</span><span style="color:#77818C">span</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                        {% endif %}</span></span>
+<span class="line"><span style="color:#CDD1D6">                        {% endfor %}</span></span>
+<span class="line"><span style="color:#CDD1D6">                    &lt;/</span><span style="color:#77818C">li</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                &lt;/</span><span style="color:#77818C">ul</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;/</span><span style="color:#77818C">div</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        </span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;?php echo $this-&gt;flash-&gt;output() ?&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        </span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;</span><span style="color:#77818C">div</span><span style="color:#73D3F1"> class</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&quot;row-fluid&quot;</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                &lt;?php echo $this-&gt;getContent() ?&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;/</span><span style="color:#77818C">div</span><span style="color:#CDD1D6">&gt; </span><span style="color:#77818C">&lt;!-- row --&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        </span></span>
+<span class="line"><span style="color:#CDD1D6">            {{ partial(&#39;partials/footer&#39;) }}</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;/</span><span style="color:#77818C">div</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        </span></span>
+<span class="line"><span style="color:#CDD1D6">        {{ javascript_include(config.app.js.jquery, config.app.js.local) }}</span></span>
+<span class="line"><span style="color:#CDD1D6">        {{ javascript_include(config.app.js.jquery_ui, config.app.js.local) }}</span></span>
+<span class="line"><span style="color:#CDD1D6">        {{ javascript_include(config.app.js.bootstrap, config.app.js.local) }}</span></span>
+<span class="line"><span style="color:#CDD1D6">        {{ javascript_include(config.app.js.angular, config.app.js.local) }}</span></span>
+<span class="line"><span style="color:#CDD1D6">        {{ javascript_include(config.app.js.angular_resource, config.app.js.local) }}</span></span>
+<span class="line"><span style="color:#CDD1D6">        {{ javascript_include(config.app.js.angular_ui, config.app.js.local) }}</span></span>
+<span class="line"><span style="color:#CDD1D6">        {{ javascript_include(&#39;js/utils.js&#39;) }}</span></span>
+<span class="line"><span style="color:#CDD1D6">        </span></span>
+<span class="line"><span style="color:#CDD1D6">    &lt;/</span><span style="color:#77818C">body</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">&lt;/</span><span style="color:#77818C">html</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">{% endraw %}</span></span></code></pre></figure>
+<p>The above is the <code>index.volt</code>. As you can see I call on the <code>partials/header.volt</code>, then the <code>partials/navbar.volt</code> (where the menu is generated) and then I construct the breadcrumbs (note the <code>{% raw %}{% for bc in breadcrumbs %}{% endraw %}</code> block). After that the flash messenger comes into play, the main content displayed, the footer and finally the javascript includes that I need.</p>
+<p>I am still using <a href="https://angularjs.org/">AngularJS</a> to make the necessary AJAX calls so that the relevant controller to retrieve the data but also to display this data on screen (which is cached to avoid unnecessary database hits).</p>
+<p>The Episodes view became</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">html</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="html"><code><span class="line"><span style="color:#CDD1D6">{% raw %}</span></span>
+<span class="line"><span style="color:#CDD1D6">{{ content() }}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">&lt;</span><span style="color:#77818C">div</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">    &lt;</span><span style="color:#77818C">ul</span><span style="color:#73D3F1"> class</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;nav nav-tabs&#39;</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;</span><span style="color:#77818C">li</span><span style="color:#73D3F1"> class</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;pull-right&#39;</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            {{ addButton }}</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;/</span><span style="color:#77818C">li</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">    &lt;/</span><span style="color:#77818C">ul</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">&lt;/</span><span style="color:#77818C">div</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">&lt;</span><span style="color:#77818C">div</span><span style="color:#73D3F1"> ng-controller</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;MainCtrl&#39;</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">    &lt;</span><span style="color:#77818C">table</span><span style="color:#73D3F1"> class</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;table table-bordered table-striped ng-cloak&#39;</span><span style="color:#73D3F1"> ng-cloak</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;</span><span style="color:#77818C">thead</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;</span><span style="color:#77818C">tr</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;</span><span style="color:#77818C">th</span><span style="color:#CDD1D6">&gt;&lt;</span><span style="color:#77818C">a</span><span style="color:#73D3F1"> href</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;&#39;</span><span style="color:#73D3F1"> ng-click</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&quot;predicate=&#39;number&#39;; reverse=!reverse&quot;</span><span style="color:#CDD1D6">&gt;#&lt;/</span><span style="color:#77818C">a</span><span style="color:#CDD1D6">&gt;&lt;/</span><span style="color:#77818C">th</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;</span><span style="color:#77818C">th</span><span style="color:#CDD1D6">&gt;&lt;</span><span style="color:#77818C">a</span><span style="color:#73D3F1"> href</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;&#39;</span><span style="color:#73D3F1"> ng-click</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&quot;predicate=&#39;air_date&#39;; reverse=!reverse&quot;</span><span style="color:#CDD1D6">&gt;Date&lt;/</span><span style="color:#77818C">a</span><span style="color:#CDD1D6">&gt;&lt;/</span><span style="color:#77818C">th</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;</span><span style="color:#77818C">th</span><span style="color:#CDD1D6">&gt;&lt;</span><span style="color:#77818C">a</span><span style="color:#73D3F1"> href</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;&#39;</span><span style="color:#73D3F1"> ng-click</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&quot;predicate=&#39;outcome&#39;; reverse=!reverse&quot;</span><span style="color:#CDD1D6">&gt;W/L&lt;/</span><span style="color:#77818C">a</span><span style="color:#CDD1D6">&gt;&lt;/</span><span style="color:#77818C">th</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;</span><span style="color:#77818C">th</span><span style="color:#CDD1D6">&gt;&lt;</span><span style="color:#77818C">a</span><span style="color:#73D3F1"> href</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;&#39;</span><span style="color:#73D3F1"> ng-click</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&quot;predicate=&#39;summary&#39;; reverse=!reverse&quot;</span><span style="color:#CDD1D6">&gt;Summary&lt;/</span><span style="color:#77818C">a</span><span style="color:#CDD1D6">&gt;&lt;/</span><span style="color:#77818C">th</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;/</span><span style="color:#77818C">tr</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;/</span><span style="color:#77818C">thead</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;</span><span style="color:#77818C">tbody</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;</span><span style="color:#77818C">tr</span><span style="color:#73D3F1"> ng-repeat</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&quot;episode in data.results | orderBy:predicate:reverse&quot;</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                &lt;</span><span style="color:#77818C">td</span><span style="color:#CDD1D6">&gt;[[episode.number]]&lt;/</span><span style="color:#77818C">td</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                &lt;</span><span style="color:#77818C">td</span><span style="color:#73D3F1"> width</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;7%&#39;</span><span style="color:#CDD1D6">&gt;[[episode.air_date]]&lt;/</span><span style="color:#77818C">td</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                &lt;</span><span style="color:#77818C">td</span><span style="color:#CDD1D6">&gt;[[episode.outcome]]&lt;/</span><span style="color:#77818C">td</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                &lt;</span><span style="color:#77818C">td</span><span style="color:#CDD1D6">&gt;[[episode.summary]]&lt;/</span><span style="color:#77818C">td</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                {% if (addButton) %}</span></span>
+<span class="line"><span style="color:#CDD1D6">                &lt;</span><span style="color:#77818C">td</span><span style="color:#73D3F1"> width</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;1%&#39;</span><span style="color:#CDD1D6">&gt;&lt;</span><span style="color:#77818C">a</span><span style="color:#73D3F1"> href</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;/episodes/edit/[[episode.id]]&#39;</span><span style="color:#CDD1D6">&gt;&lt;</span><span style="color:#77818C">i</span><span style="color:#73D3F1"> class</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;icon-pencil&#39;</span><span style="color:#CDD1D6">&gt;&lt;/</span><span style="color:#77818C">i</span><span style="color:#CDD1D6">&gt;&lt;/</span><span style="color:#77818C">a</span><span style="color:#CDD1D6">&gt;&lt;/</span><span style="color:#77818C">td</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                &lt;</span><span style="color:#77818C">td</span><span style="color:#73D3F1"> width</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;1%&#39;</span><span style="color:#CDD1D6">&gt;&lt;</span><span style="color:#77818C">a</span><span style="color:#73D3F1"> href</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;/episodes/delete/[[episode.id]]&#39;</span><span style="color:#CDD1D6">&gt;&lt;</span><span style="color:#77818C">i</span><span style="color:#73D3F1"> class</span><span style="color:#CDD1D6">=</span><span style="color:#EEC469">&#39;icon-remove&#39;</span><span style="color:#CDD1D6">&gt;&lt;/</span><span style="color:#77818C">i</span><span style="color:#CDD1D6">&gt;&lt;/</span><span style="color:#77818C">a</span><span style="color:#CDD1D6">&gt;&lt;/</span><span style="color:#77818C">td</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">                {% endif %}</span></span>
+<span class="line"><span style="color:#CDD1D6">            &lt;/</span><span style="color:#77818C">tr</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">        &lt;/</span><span style="color:#77818C">tbody</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">    &lt;/</span><span style="color:#77818C">table</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">&lt;/</span><span style="color:#77818C">div</span><span style="color:#CDD1D6">&gt;</span></span>
+<span class="line"><span style="color:#CDD1D6">{% endraw %}</span></span></code></pre></figure>
+<p>The beauty of <a href="https://angularjs.org/">AngularJS</a>! I only have to pass a JSON array with my results. <code>ng-repeat</code> with the <code>orderBy</code> filter allows me to present the data to the user and offer sorting capabilities per column. This is all done at the browser level <strong>without</strong> any database hits! Pretty awesome feature!</p>
+<p>For those that have used <a href="https://angularjs.org/">AngularJS</a> in the past, you will note that I had to change the interpolate provider (i.e. the characters that wrap a string or a piece of code that <a href="https://angularjs.org/">AngularJS</a> understands). Usually these characters are the curly brackets <code>{% raw %}{{ }}{% endraw %}</code> but I changed them to <code>[[ ]]</code> to avoid collisions with <a href="https://docs.phalcon.io/latest/en/volt">Volt</a>.</p>
+<p>This was done with a couple of lines of code in my definition of my <a href="https://angularjs.org/">AngularJS</a> model:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">js</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="js"><code><span class="line"><span style="color:#CDD1D6">{</span><span style="color:#E3A2F2">%</span><span style="color:#CDD1D6"> raw </span><span style="color:#E3A2F2">%</span><span style="color:#CDD1D6">}</span></span>
+<span class="line"><span style="color:#E3A2F2">var</span><span style="color:#CDD1D6"> ngModule </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> angular.</span><span style="color:#73D3F1">module</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">        &#39;HHF&#39;</span><span style="color:#CDD1D6">, </span></span>
+<span class="line"><span style="color:#CDD1D6">        [</span><span style="color:#EEC469">&#39;ngResource&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">&#39;ui&#39;</span><span style="color:#CDD1D6">]</span></span>
+<span class="line"><span style="color:#CDD1D6">    )</span></span>
+<span class="line"><span style="color:#CDD1D6">    .</span><span style="color:#73D3F1">config</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#E3A2F2">        function</span><span style="color:#CDD1D6"> ($interpolateProvider) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $interpolateProvider.</span><span style="color:#73D3F1">startSymbol</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;[[&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">            $interpolateProvider.</span><span style="color:#73D3F1">endSymbol</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;]]&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    )</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span><span style="color:#E3A2F2">%</span><span style="color:#CDD1D6"> endraw </span><span style="color:#E3A2F2">%</span><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<h2 id="conclusion">Conclusion</h2>
+<p>I spent at most a day working on this mostly because I wanted to try various things and see how it works. The actual time to convert the application (because let’s face it, it is a small application) was a couple of hours inclusive of the time it took me to rename certain fields, restructure the folder structure, compile the new extension on my server and upload the data upstream.</p>
+<p>I am very satisfied with both <a href="https://angularjs.org/">AngularJS</a>, which helps tremendously in my presentation layer, as well as with <a href="https://phalcon.io/">Phalcon</a>. Phalcon’s new design makes implementation a breeze, while <a href="https://angularjs.org/">AngularJS</a> offers a lot of flexibility on the view layer.</p>
+<p>As written before, you are more than welcome to download the <a href="https://github.com/niden/phalcon-angular-harryhogfootball">source code</a> of this application here and use it for your own needs. Some resources are:</p>
+<h2 id="references">References</h2>
+<ul>
+<li>
+<p><a href="https://angularjs.org/">AngularJS main site</a></p>
+</li>
+<li>
+<p><a href="https://docs.angularjs.org/api">AngularJS documentation</a></p>
+</li>
+<li>
+<p><a href="https://groups.google.com/g/angular">AngularJS group</a></p>
+</li>
+<li>
+<p><a href="https://github.com/angular">AngularJS Github</a></p>
+</li>
+<li>
+<p><a href="https://phalcon.io/">Phalcon PHP main site</a></p>
+</li>
+<li>
+<p><a href="https://docs.phalcon.io/">Phalcon PHP documentation</a></p>
+</li>
+<li>
+<p><a href="https://phalcon.io/discussions">Phalcon Discussions</a></p>
+</li>
+<li>
+<p><a href="https://github.com/phalcon">Phalcon PHP Github</a></p>
+</li>
+</ul></div><section class="related" data-astro-cid-g5songws><div class="mono-label" data-astro-cid-g5songws>Related — php</div><a class="related-row" href="/post/building-web-app-with-phalconphp-and-angularjs-part-ii/" data-astro-cid-g5songws><time class="related-date" datetime="2012-07-12T23:45:00.000Z" data-astro-cid-g5songws>2012-07-12</time><span class="related-title" data-astro-cid-g5songws>Building a web app with PhalconPHP and AngularJS Part II</span></a><a class="related-row" href="/post/building-web-app-with-phalconphp-and-angularjs-part-i/" data-astro-cid-g5songws><time class="related-date" datetime="2012-07-10T23:45:00.000Z" data-astro-cid-g5songws>2012-07-10</time><span class="related-title" data-astro-cid-g5songws>Building a web app with PhalconPHP and AngularJS Part I</span></a><a class="related-row" href="/post/using-traits-to-add-functionality-in-classes-php/" data-astro-cid-g5songws><time class="related-date" datetime="2015-10-18T23:45:00.000Z" data-astro-cid-g5songws>2015-10-18</time><span class="related-title" data-astro-cid-g5songws>Using Traits to add more functionality to your classes in PHP</span></a></section><nav class="pager" aria-label="More posts" data-astro-cid-g5songws><a class="card" href="/post/angularjs-simplicity-in-your-browser/" data-astro-cid-g5songws><span class="mono-label" data-astro-cid-g5songws>Previous</span><span class="card-title" data-astro-cid-g5songws>AngularJS - Simplicity in your browser</span></a><a class="card next" href="/post/2013-memorial-day/" data-astro-cid-g5songws><span class="mono-label" data-astro-cid-g5songws>Next</span><span class="card-title" data-astro-cid-g5songws>2013-memorial-day</span></a></nav></article><div class="rail" data-astro-cid-g5songws><nav class="toc" aria-label="On this page" data-astro-cid-7k3pnqyz><div class="mono-label" data-astro-cid-7k3pnqyz>On this page</div><ul class="list" data-astro-cid-7k3pnqyz><li data-astro-cid-7k3pnqyz><a class="entry" href="#converting-the-04x-application-to-05x" data-toc-link="converting-the-04x-application-to-05x" data-astro-cid-7k3pnqyz>Converting the 0.4.x application to 0.5.x</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#models" data-toc-link="models" data-astro-cid-7k3pnqyz>Models</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#controllers" data-toc-link="controllers" data-astro-cid-7k3pnqyz>Controllers</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#views" data-toc-link="views" data-astro-cid-7k3pnqyz>Views</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#conclusion" data-toc-link="conclusion" data-astro-cid-7k3pnqyz>Conclusion</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#references" data-toc-link="references" data-astro-cid-7k3pnqyz>References</a></li></ul></nav><script type="module">var e=[...document.querySelectorAll(`[data-toc-link]`)];if(e.length>0){let t=e.map(e=>document.getElementById(e.dataset.tocLink??``)).filter(e=>e!==null),n=t=>{e.forEach(e=>{e.classList.toggle(`active`,e.dataset.tocLink===t)})},r=new IntersectionObserver(e=>{let t=e.filter(e=>e.isIntersecting).sort((e,t)=>e.boundingClientRect.top-t.boundingClientRect.top);t[0]?.target.id&&n(t[0].target.id)},{rootMargin:`-24px 0px -70% 0px`,threshold:0});t.forEach(e=>r.observe(e))}</script></div></div><script type="module">document.querySelectorAll(`[data-copy]`).forEach(e=>{e.addEventListener(`click`,async()=>{let t=e.closest(`figure`)?.querySelector(`pre`)?.innerText??``;try{await navigator.clipboard.writeText(t)}catch{return}e.textContent=`Copied`,window.setTimeout(()=>{e.textContent=`Copy`},1500)})});</script></main><footer class="footer" data-astro-cid-jo6i4kqk><div data-astro-cid-jo6i4kqk>&copy; 2022&ndash;present niden.net</div><div data-astro-cid-jo6i4kqk>Astro</div></footer></div><div class="backdrop" data-search-backdrop hidden data-astro-cid-ac66eqjo><div class="modal" role="dialog" aria-modal="true" aria-label="Search" data-search-modal data-astro-cid-ac66eqjo><div class="input-row" data-astro-cid-ac66eqjo><span class="slash" aria-hidden="true" data-astro-cid-ac66eqjo>/</span><input class="input" type="search" placeholder="Search posts and tags" autocomplete="off" spellcheck="false" aria-label="Search posts and tags" data-search-input data-astro-cid-ac66eqjo><kbd class="kbd" data-astro-cid-ac66eqjo>esc</kbd></div><div class="results" data-search-results role="listbox" data-astro-cid-ac66eqjo></div><div class="hints" data-astro-cid-ac66eqjo><span data-astro-cid-ac66eqjo>&uarr;&darr; navigate</span><span data-astro-cid-ac66eqjo>&crarr; open</span></div></div></div><script type="module">var e=document.querySelector(`[data-search-backdrop]`),t=document.querySelector(`[data-search-modal]`),n=document.querySelector(`[data-search-input]`),r=document.querySelector(`[data-search-results]`);if(e&&t&&n&&r){let t=null,i=[],a=0,o=null,s=e=>e.replace(/[&<>"']/g,e=>({"&":`&amp;`,"<":`&lt;`,">":`&gt;`,'"':`&quot;`,"'":`&#39;`})[e]),c=(e,t)=>{let n=e.toLowerCase().indexOf(t.toLowerCase());return t===``||n===-1?s(e):[s(e.slice(0,n)),`<mark>`,s(e.slice(n,n+t.length)),`</mark>`,s(e.slice(n+t.length))].join(``)},l=async()=>(t===null&&(t=await(await fetch(`/search.json`)).json()),t),u=()=>{i.forEach((e,t)=>{e.classList.toggle(`selected`,t===a),e.setAttribute(`aria-selected`,String(t===a))}),i[a]?.scrollIntoView({block:`nearest`})},d=e=>{if(t===null)return;let n=e.trim().toLowerCase(),o=n===``?t.posts.slice(0,6):t.posts.filter(e=>e.title.toLowerCase().includes(n)||e.excerpt.toLowerCase().includes(n)).slice(0,8),l=n===``?[]:t.tags.filter(e=>e.tag.toLowerCase().includes(n)).slice(0,5),d=[];o.length>0&&d.push(`<div class="group-label">Posts</div>`,...o.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-title">${c(e.title,n)}</span><span class="result-date">${s(e.date)}</span></a>`)),l.length>0&&d.push(`<div class="group-label">Tags</div>`,...l.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-pill">${c(e.tag,n)}</span><span class="result-date">${e.count} posts</span></a>`)),r.innerHTML=d.length>0?d.join(``):`<div class="empty">No matches.</div>`,i=[...r.querySelectorAll(`.result`)],a=0,u()},f=async t=>{o=t,e.hidden=!1,document.body.style.overflow=`hidden`,n.value=``,n.focus(),await l(),d(``)},p=()=>{e.hidden=!0,document.body.style.overflow=``,o?.focus(),o=null};document.querySelectorAll(`[data-search-open]`).forEach(e=>{e.addEventListener(`click`,t=>{t.preventDefault(),f(e)})}),n.addEventListener(`input`,()=>d(n.value)),e.addEventListener(`mousedown`,t=>{t.target===e&&p()}),document.addEventListener(`keydown`,t=>{let r=t.target instanceof HTMLElement&&[`INPUT`,`TEXTAREA`,`SELECT`].includes(t.target.tagName);if((t.metaKey||t.ctrlKey)&&t.key.toLowerCase()===`k`){t.preventDefault(),e.hidden?f(null):p();return}if(t.key===`/`&&e.hidden&&!r){t.preventDefault(),f(null);return}e.hidden||(t.key===`Escape`&&(t.preventDefault(),p()),t.key===`ArrowDown`&&i.length>0&&(t.preventDefault(),a=(a+1)%i.length,u()),t.key===`ArrowUp`&&i.length>0&&(t.preventDefault(),a=(a-1+i.length)%i.length,u()),t.key===`Enter`&&i[a]&&(t.preventDefault(),window.location.href=i[a].href),t.key===`Tab`&&(t.preventDefault(),n.focus()))})}</script><script type="module" src="/_astro/Mermaid.astro_astro_type_script_index_0_lang.T979gi6P.js"></script></body></html>

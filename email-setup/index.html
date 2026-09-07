@@ -1,0 +1,336 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v7.3.1"><meta name="description" content="Personal blog of Nikolaos (Nikos) Dimopoulos. Boldly goes where no other coder has gone before.... and other ramblings"><meta name="keywords" content="php, phalcon, phalcon php, php framework, faster php framework"><meta name="author" content="Nikolaos Dimopoulos"><title>Email Setup | niden.net</title><link rel="canonical" href="https://niden.net/email-setup/"><link rel="icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="niden.net" href="/feed.xml"><meta property="og:type" content="website"><meta property="og:site_name" content="niden.net"><meta property="og:title" content="Email Setup"><meta property="og:description" content="Personal blog of Nikolaos (Nikos) Dimopoulos. Boldly goes where no other coder has gone before.... and other ramblings"><meta property="og:url" content="https://niden.net/email-setup/"><meta name="twitter:card" content="summary"><!-- Blocking: sets the theme before the first paint so there is no flash. --><script>
+            (function () {
+                try {
+                    var stored = localStorage.getItem('niden-theme');
+                    var prefersLight = window.matchMedia(
+                        '(prefers-color-scheme: light)'
+                    ).matches;
+
+                    document.documentElement.setAttribute(
+                        'data-theme',
+                        stored || (prefersLight ? 'light' : 'dark')
+                    );
+                } catch (error) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            })();
+        </script><link rel="stylesheet" href="/_astro/prose.D_f8nGPQ.css"><link rel="stylesheet" href="/_astro/Base.DJ4v4ydd.css"><style>.body[data-astro-cid-ybatimd6]{flex-direction:column;gap:26px;padding:44px 36px 40px;display:flex}.head[data-astro-cid-ybatimd6]{align-items:flex-start;gap:22px;display:flex}.avatar[data-astro-cid-ybatimd6]{border-radius:var(--r-card);object-fit:cover;flex-shrink:0;width:76px;height:76px}.head-text[data-astro-cid-ybatimd6]{flex-direction:column;gap:10px;display:flex}.title[data-astro-cid-ybatimd6]{letter-spacing:-.035em;font-size:40px;font-weight:700;line-height:1.05}.lead[data-astro-cid-ybatimd6]{max-width:62ch;color:var(--ink-muted);font-size:16.5px;line-height:1.6}.body[data-astro-cid-ybatimd6] .prose{max-width:62ch}.body[data-astro-cid-ybatimd6] .prose>p:first-child{color:var(--ink-body);border-left:0;padding-left:0;font-size:16px;line-height:1.72}.credentials[data-astro-cid-ybatimd6]{flex-wrap:wrap;gap:8px;display:flex}.badge[data-astro-cid-ybatimd6]{border:1px solid var(--line-strong);border-radius:var(--r-badge);font-family:var(--font-mono);color:var(--ink-muted);padding:6px 11px;font-size:11.5px}.badge[data-astro-cid-ybatimd6]:hover{border-color:var(--accent);color:var(--accent)}@media (width<=900px){.body[data-astro-cid-ybatimd6]{padding:32px 24px 36px}}@media (width<=720px){.head[data-astro-cid-ybatimd6]{flex-direction:column;gap:16px}.title[data-astro-cid-ybatimd6]{font-size:32px}}
+</style></head><body><div class="shell" style="max-width:700px"><div class="sentinel" data-header-sentinel aria-hidden="true" data-astro-cid-nen7h5rs></div><header class="header bordered" data-astro-cid-nen7h5rs><a class="wordmark" href="/" data-astro-cid-nen7h5rs>niden</a><nav class="nav" aria-label="Primary" data-astro-cid-nen7h5rs><a href="/" class="nav-link" data-astro-cid-nen7h5rs>Home</a><a href="/hosting" class="nav-link" data-astro-cid-nen7h5rs>Hosting</a><a href="/tag" class="nav-link" data-astro-cid-nen7h5rs>Tags</a><a href="/archive" class="nav-link" data-astro-cid-nen7h5rs>Archive</a><a href="/about" class="nav-link" data-astro-cid-nen7h5rs>About</a><a href="/contact" class="nav-link" data-astro-cid-nen7h5rs>Contact</a><a href="/disclaimer" class="nav-link" data-astro-cid-nen7h5rs>Disclaimer</a></nav><div class="utility" data-astro-cid-nen7h5rs><button type="button" class="utility-item" data-search-open data-astro-cid-nen7h5rs>Search</button><a class="utility-item" href="https://github.com/niden" data-astro-cid-nen7h5rs>GitHub</a><a class="utility-item" href="/feed.xml" data-astro-cid-nen7h5rs>RSS</a><button type="button" class="toggle" data-theme-toggle aria-label="Switch color theme" data-astro-cid-l6lhmie6><span data-theme-label data-astro-cid-l6lhmie6>Theme</span></button><script type="module">var e=document.documentElement,t=e=>e===`light`?`Dark`:`Light`,n=()=>{let n=e.getAttribute(`data-theme`)??`dark`;document.querySelectorAll(`[data-theme-label]`).forEach(e=>{e.textContent=t(n)})};document.querySelectorAll(`[data-theme-toggle]`).forEach(t=>{t.addEventListener(`click`,()=>{let t=e.getAttribute(`data-theme`)===`light`?`dark`:`light`;e.setAttribute(`data-theme`,t);try{localStorage.setItem(`niden-theme`,t)}catch{}n()})}),n();</script></div></header><script type="module">var e=document.querySelector(`[data-header-sentinel]`),t=document.querySelector(`header.header`);e!==null&&t!==null&&new IntersectionObserver(([e])=>{t.classList.toggle(`stuck`,!e.isIntersecting)},{threshold:0}).observe(e);</script><main><div class="body" data-astro-cid-ybatimd6><header class="head" data-astro-cid-ybatimd6><img src="/_astro/avatar.DrCt7RfN_ye9LI.webp" alt="Nikolaos Dimopoulos" data-astro-cid-ybatimd6="true" loading="lazy" decoding="async" width="76" height="76" class="avatar"><div class="head-text" data-astro-cid-ybatimd6><h1 class="title" data-astro-cid-ybatimd6>Email Setup</h1></div></header><div class="prose" data-astro-cid-ybatimd6><ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#general">General</a></li>
+<li><a href="#outlook-2019">Outlook 2019</a>
+<ul>
+<li><a href="#new-account">New Account</a></li>
+<li><a href="#existing-account">Existing Account</a></li>
+</ul>
+</li>
+<li><a href="#thunderbird">Thunderbird</a></li>
+</ul>
+<h2 id="overview">Overview</h2>
+<p>You can use the guide below to set up your email clients with <a href="https://privateemail.com">PrivateEmail</a>.</p>
+<h2 id="general">General</h2>
+<p>PrivateEmail supports only encrypted connections. The connection information is:</p>
+<ul>
+<li>
+<p><strong>Username</strong>: your email address</p>
+</li>
+<li>
+<p><strong>Password</strong>: password for this email account</p>
+</li>
+<li>
+<p><strong>Incoming/outgoing servers name</strong>: mail.privateemail.com</p>
+</li>
+<li>
+<p><strong>Incoming server type</strong>: IMAP or POP3</p>
+</li>
+<li>
+<p><strong>Incoming server (IMAP)</strong>: 993 port for SSL, 143 for TLS/STARTTLS</p>
+</li>
+<li>
+<p><strong>Incoming server (POP3)</strong>: 995 port for SSL</p>
+</li>
+<li>
+<p><strong>Outgoing server (SMTP)</strong>: 465 port for SSL, 587 for TLS/STARTTLS</p>
+</li>
+<li>
+<p>Outgoing server authentication should be switched on, SPA (secure password authentication) must be disabled.</p>
+</li>
+</ul>
+<h2 id="outlook-2019">Outlook 2019</h2>
+<h3 id="new-account">New Account</h3>
+<ol>
+<li>Open Microsoft Outlook 2019 on your device.</li>
+<li>If you don’t have any mailboxes added yet, you will see the <strong>Account Information page</strong>. Click the <strong>+ Add Account</strong> button there.
+If you have mailboxes set up already, go to <strong>File</strong> tab <strong>&gt;&gt; Info &gt;&gt; Account Information</strong> and click the <strong>+ Add Account</strong> button:</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-10.png" alt="Outlook File"/></p>
+<p><img src="/assets/files/email/pm-outlook-2019-11.png" alt="Outlook Add Account"/></p>
+<ol start="3">
+<li>Type in your full Private Email address and click Connect:</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-12.png" alt="Enter Email"/></p>
+<p>Disregard any warnings that may appear, and proceed to the next step.</p>
+<ol start="4">
+<li>Type in the password you are using for this email address and click Connect:</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-13.png" alt="Enter Password"/></p>
+<p>If you are not able to proceed, you may need to repeat the process using the manual setup. The detailed instructions can be found below.</p>
+<ol start="5">
+<li>Select the Change account settings option and click Next. On the next page, select the POP or IMAP option:</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-14.png" alt="POP - IMAP"/></p>
+<p><strong>POP3</strong> stands for Post Office Protocol, and was designed as a simple way to access a remote email server. POP works by downloading your emails from your provider’s mail server and then marking them for deletion there. This means you can only ever read those email messages in that email client, on that computer. You will not be able to access any previously downloaded emails from any other device, or with any other email client, or through webmail.</p>
+<p><strong>IMAP</strong> stands for Internet Message Access Protocol, and was designed specifically to eliminate the limitations of POP. IMAP allows you to access your emails from any client, and any device, and webmail login at any time, until you delete them. You can also use different devices and email/webmail clients to access the same mailbox and check, send and receive email, which is not available with POP3 connection.</p>
+<ol start="6">
+<li>If you choose IMAP account setup, enter the following server details:</li>
+</ol>
+<ul>
+<li>
+<p><strong>Incoming mail server</strong>:  mail.privateemail.com (same for all accounts)</p>
+</li>
+<li>
+<p><strong>Incoming mail port</strong>: 993 (or 143 with STARTTLS)</p>
+</li>
+<li>
+<p><strong>Encryption method</strong>: SSL/TLS (or STARTTLS if 143 port is used)</p>
+</li>
+<li>
+<p><strong>Require logon using Secure Password Authentication (SPA)</strong>: should be unchecked</p>
+</li>
+<li>
+<p><strong>Outgoing mail server</strong>:  mail.privateemail.com (same for all accounts)</p>
+</li>
+<li>
+<p><strong>Outgoing mail port</strong>: 465 (or 587 with STARTTLS)</p>
+</li>
+<li>
+<p><strong>Encryption method</strong>: SSL/TLS (or STARTTLS if 587 port is used)</p>
+</li>
+<li>
+<p><strong>Require logon using Secure Password Authentication (SPA)</strong>: should be unchecked</p>
+</li>
+</ul>
+<p><img src="/assets/files/email/pm-outlook-2019-15.png" alt="IMAP Credentials"/></p>
+<ol start="7">
+<li>If you choose POP account setup, enter the following server details:</li>
+</ol>
+<ul>
+<li>
+<p><strong>Incoming mail server</strong>:  mail.privateemail.com (same for all accounts)</p>
+</li>
+<li>
+<p><strong>Incoming mail port</strong>: 995 (or 110 with STARTTLS)</p>
+</li>
+<li>
+<p><strong>This server requires an encrypted connection(SSL/TLS)</strong>: should be checked</p>
+</li>
+<li>
+<p><strong>Require logon using Secure Password Authentication (SPA)</strong>: should be unchecked</p>
+</li>
+<li>
+<p><strong>Outgoing mail server</strong>:  mail.privateemail.com (same for all accounts)</p>
+</li>
+<li>
+<p><strong>Outgoing mail port</strong>: 465 (or 587 with STARTTLS)</p>
+</li>
+<li>
+<p><strong>Encryption method</strong>: SSL/TLS (or STARTTLS if 587 port is used)</p>
+</li>
+<li>
+<p><strong>Require logon using Secure Password Authentication (SPA)</strong>: should be unchecked</p>
+</li>
+</ul>
+<p><img src="/assets/files/email/pm-outlook-2019-16.png" alt="POP Credentials"/></p>
+<ol start="8">
+<li>
+<p>Once all the details are filled, click <strong>Next</strong>.</p>
+</li>
+<li>
+<p>After that, type in your password for this Private Email account and click <strong>Connect</strong>:</p>
+</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-17.png" alt="IMAP Password"/></p>
+<ol start="10">
+<li>If all the settings are correct, you will receive the following message.</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-18.png" alt="IMAP Success"/></p>
+<p>Click <strong>Done</strong> to complete the setup.</p>
+<h3 id="existing-account">Existing Account</h3>
+<p>In order to check or update the configuration of an existing email account, follow these steps:</p>
+<ol>
+<li>
+<p>Open Microsoft Outlook 2019 on your device.</p>
+</li>
+<li>
+<p>Go to the <strong>File</strong> tab <strong>&gt;&gt; Info &gt;&gt; Account Information</strong> page and click on <strong>Account Settings</strong>:</p>
+</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-19.png" alt="Add Account"/></p>
+<ol start="3">
+<li>Select the mailbox in question and click Repair:</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-20.png" alt="Repair Mailbox"/></p>
+<ol start="4">
+<li>In the next window, click on Advanced options, check <em>Let me repair my account manually</em> and click on <em>Repair</em>:</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-21.png" alt="Manual Repair"/></p>
+<ol start="5">
+<li>On the next page, you will see incoming and outgoing server settings.
+Make sure all of them are set properly. If any information is set incorrectly, update it for both Incoming mail and Outgoing mail configurations:</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-22.png" alt="IMAP Settings"/></p>
+<ol start="6">
+<li>Once all details for the outgoing connection are updated, click Repair:</li>
+</ol>
+<p><img src="/assets/files/email/pm-outlook-2019-23.png" alt="Click Repair"/></p>
+<h2 id="thunderbird">Thunderbird</h2>
+<p>PrivateEmail service supports autoconfig feature, which allows to set up email account automatically in Thunderbird.</p>
+<ol>
+<li>Go to <strong>File &gt; New &gt; Existing Mail Account</strong>:</li>
+</ol>
+<p><img src="/assets/files/email/pm-thunderbird-01.png" alt="Existing Email Account"/></p>
+<ol start="2">
+<li>In <strong>Mail Account Setup</strong> window enter the following details:</li>
+</ol>
+<p><strong>Your Name</strong>: the name you would like the recipients of your emails to see
+<strong>E-Mail Address</strong>: your full Private Email address
+<strong>Password</strong>: password for your Private Email account.</p>
+<ol start="3">
+<li>Once all the fields are filled, click <strong>Continue</strong>:</li>
+</ol>
+<p><img src="/assets/files/email/pm-thunderbird-02.png" alt="Click Continue"/></p>
+<ol start="4">
+<li>You will see <strong>Configuration found at email provider</strong> message.
+Make sure that your Incoming and Outgoing configuration was detected properly and matches the one you can see on the screenshot below:</li>
+</ol>
+<p><img src="/assets/files/email/pm-thunderbird-03.png" alt="Incoming Outgoing configuration"/></p>
+<p>Click <strong>Done</strong> if it is the same.</p>
+<p>If you do not see <strong>Configuration found at email provider message</strong> or if configuration was not detected properly for some reason, you can complete the first two steps and continue configuring Thunderbird <strong>manually</strong> in this way:</p>
+<ol>
+<li>After the first two steps are completed you will either see manual config window (in case Thunderbird fails to detect configuration automatically) or will need to click on <strong>Manual Config</strong> to see that window:</li>
+</ol>
+<p><img src="/assets/files/email/pm-thunderbird-04.png" alt="Manual Config"/></p>
+<ol start="2">
+<li>In the next screen, select <strong>POP3</strong> or <strong>IMAP</strong> from the Account Type list, and enter your details as follows:</li>
+</ol>
+<p>For <strong>IMAP</strong> protocol use the following settings:</p>
+<p><strong>Incoming and Outgoing server</strong>: mail.privateemail.com</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Protocol</th><th>Port</th><th>SSL</th><th>Authentication</th></tr></thead><tbody><tr><td>IMAP</td><td>993</td><td>SSL/TLS</td><td>Normal Password</td></tr><tr><td>SMTP</td><td>465</td><td>SSL/TLS</td><td>Normal Password</td></tr></tbody></table>
+<p><img src="/assets/files/email/pm-thunderbird-05.png" alt="Click Done"/></p>
+<p>For <strong>POP3</strong> protocol use the following settings:</p>
+<p><strong>Incoming and Outgoing server</strong>: mail.privateemail.com</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Protocol</th><th>Port</th><th>SSL</th><th>Authentication</th></tr></thead><tbody><tr><td>POP3</td><td>995</td><td>SSL/TLS</td><td>Normal Password</td></tr><tr><td>SMTP</td><td>465</td><td>SSL/TLS</td><td>Normal Password</td></tr></tbody></table>
+<p><img src="/assets/files/email/pm-thunderbird-06.png" alt="Click Done"/></p>
+<p>Alternatively, you can use following settings for <strong>IMAP</strong> protocol:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Protocol</th><th>Port</th><th>SSL</th><th>Authentication</th></tr></thead><tbody><tr><td>IMAP</td><td>143</td><td>None</td><td>Normal Password</td></tr><tr><td>SMTP</td><td>587</td><td>None</td><td>Normal Password</td></tr></tbody></table>
+<p>For <strong>POP3</strong> protocol:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Protocol</th><th>Port</th><th>SSL</th><th>Authentication</th></tr></thead><tbody><tr><td>POP3</td><td>995</td><td>SSL/TLS</td><td>Normal Password</td></tr><tr><td>SMTP</td><td>587</td><td>None</td><td>Normal Password</td></tr></tbody></table>
+<p>NOTE: if Add Security Exception window appears, click Confirm Security Exception button.</p>
+<p><strong>Advanced Settings</strong></p>
+<p>Once your account has been created, you will be able to choose additional settings for <strong>IMAP</strong> or <strong>POP3</strong> incoming/outgoing server.</p>
+<ol>
+<li>Right-Click on your account in the list of accounts:</li>
+</ol>
+<p><img src="/assets/files/email/pm-thunderbird-07.png" alt="Thunderbird Settings"/></p>
+<ol start="2">
+<li>To manage incoming server, go to <strong>Server Settings</strong>:</li>
+</ol>
+<p><img src="/assets/files/email/pm-thunderbird-08.png" alt="Incoming Server Settings"/></p>
+<ol start="3">
+<li>If you need to change settings for outgoing server, select <strong>Outgoing Server (SMTP)</strong>:</li>
+</ol>
+<p><img src="/assets/files/email/pm-thunderbird-09.png" alt="Outgoing Server Settings"/></p>
+<p>Here you can find your current settings for accounts you have and click on <strong>Edit…</strong> to make changes in the next window:</p>
+<p><img src="/assets/files/email/pm-thunderbird-10.png" alt="Account settings"/></p></div></div></main><footer class="footer" data-astro-cid-jo6i4kqk><div data-astro-cid-jo6i4kqk>&copy; 2022&ndash;present niden.net</div><div data-astro-cid-jo6i4kqk>Astro</div></footer></div><div class="backdrop" data-search-backdrop hidden data-astro-cid-ac66eqjo><div class="modal" role="dialog" aria-modal="true" aria-label="Search" data-search-modal data-astro-cid-ac66eqjo><div class="input-row" data-astro-cid-ac66eqjo><span class="slash" aria-hidden="true" data-astro-cid-ac66eqjo>/</span><input class="input" type="search" placeholder="Search posts and tags" autocomplete="off" spellcheck="false" aria-label="Search posts and tags" data-search-input data-astro-cid-ac66eqjo><kbd class="kbd" data-astro-cid-ac66eqjo>esc</kbd></div><div class="results" data-search-results role="listbox" data-astro-cid-ac66eqjo></div><div class="hints" data-astro-cid-ac66eqjo><span data-astro-cid-ac66eqjo>&uarr;&darr; navigate</span><span data-astro-cid-ac66eqjo>&crarr; open</span></div></div></div><script type="module">var e=document.querySelector(`[data-search-backdrop]`),t=document.querySelector(`[data-search-modal]`),n=document.querySelector(`[data-search-input]`),r=document.querySelector(`[data-search-results]`);if(e&&t&&n&&r){let t=null,i=[],a=0,o=null,s=e=>e.replace(/[&<>"']/g,e=>({"&":`&amp;`,"<":`&lt;`,">":`&gt;`,'"':`&quot;`,"'":`&#39;`})[e]),c=(e,t)=>{let n=e.toLowerCase().indexOf(t.toLowerCase());return t===``||n===-1?s(e):[s(e.slice(0,n)),`<mark>`,s(e.slice(n,n+t.length)),`</mark>`,s(e.slice(n+t.length))].join(``)},l=async()=>(t===null&&(t=await(await fetch(`/search.json`)).json()),t),u=()=>{i.forEach((e,t)=>{e.classList.toggle(`selected`,t===a),e.setAttribute(`aria-selected`,String(t===a))}),i[a]?.scrollIntoView({block:`nearest`})},d=e=>{if(t===null)return;let n=e.trim().toLowerCase(),o=n===``?t.posts.slice(0,6):t.posts.filter(e=>e.title.toLowerCase().includes(n)||e.excerpt.toLowerCase().includes(n)).slice(0,8),l=n===``?[]:t.tags.filter(e=>e.tag.toLowerCase().includes(n)).slice(0,5),d=[];o.length>0&&d.push(`<div class="group-label">Posts</div>`,...o.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-title">${c(e.title,n)}</span><span class="result-date">${s(e.date)}</span></a>`)),l.length>0&&d.push(`<div class="group-label">Tags</div>`,...l.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-pill">${c(e.tag,n)}</span><span class="result-date">${e.count} posts</span></a>`)),r.innerHTML=d.length>0?d.join(``):`<div class="empty">No matches.</div>`,i=[...r.querySelectorAll(`.result`)],a=0,u()},f=async t=>{o=t,e.hidden=!1,document.body.style.overflow=`hidden`,n.value=``,n.focus(),await l(),d(``)},p=()=>{e.hidden=!0,document.body.style.overflow=``,o?.focus(),o=null};document.querySelectorAll(`[data-search-open]`).forEach(e=>{e.addEventListener(`click`,t=>{t.preventDefault(),f(e)})}),n.addEventListener(`input`,()=>d(n.value)),e.addEventListener(`mousedown`,t=>{t.target===e&&p()}),document.addEventListener(`keydown`,t=>{let r=t.target instanceof HTMLElement&&[`INPUT`,`TEXTAREA`,`SELECT`].includes(t.target.tagName);if((t.metaKey||t.ctrlKey)&&t.key.toLowerCase()===`k`){t.preventDefault(),e.hidden?f(null):p();return}if(t.key===`/`&&e.hidden&&!r){t.preventDefault(),f(null);return}e.hidden||(t.key===`Escape`&&(t.preventDefault(),p()),t.key===`ArrowDown`&&i.length>0&&(t.preventDefault(),a=(a+1)%i.length,u()),t.key===`ArrowUp`&&i.length>0&&(t.preventDefault(),a=(a-1+i.length)%i.length,u()),t.key===`Enter`&&i[a]&&(t.preventDefault(),window.location.href=i[a].href),t.key===`Tab`&&(t.preventDefault(),n.focus()))})}</script><script type="module" src="/_astro/Mermaid.astro_astro_type_script_index_0_lang.T979gi6P.js"></script></body></html>

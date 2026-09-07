@@ -1,0 +1,306 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v7.3.1"><meta name="description" content="A note about these series. It appears that Giorgio Sironi and I had the same idea regarding Design Patterns and blogging about them. He covers the Factory desig…"><meta name="keywords" content="php, phalcon, phalcon php, php framework, faster php framework"><meta name="author" content="Nikolaos Dimopoulos"><title>Design Patterns - Factory | niden.net</title><link rel="canonical" href="https://niden.net/post/php-design-patterns-factory/"><link rel="icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="niden.net" href="/feed.xml"><meta property="og:type" content="website"><meta property="og:site_name" content="niden.net"><meta property="og:title" content="Design Patterns - Factory"><meta property="og:description" content="A note about these series. It appears that Giorgio Sironi and I had the same idea regarding Design Patterns and blogging about them. He covers the Factory desig…"><meta property="og:url" content="https://niden.net/post/php-design-patterns-factory/"><meta name="twitter:card" content="summary"><!-- Blocking: sets the theme before the first paint so there is no flash. --><script>
+            (function () {
+                try {
+                    var stored = localStorage.getItem('niden-theme');
+                    var prefersLight = window.matchMedia(
+                        '(prefers-color-scheme: light)'
+                    ).matches;
+
+                    document.documentElement.setAttribute(
+                        'data-theme',
+                        stored || (prefersLight ? 'light' : 'dark')
+                    );
+                } catch (error) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            })();
+        </script><link rel="stylesheet" href="/_astro/prose.D_f8nGPQ.css"><link rel="stylesheet" href="/_astro/Base.DJ4v4ydd.css"><style>.pill[data-astro-cid-qrtwocmw]{border-radius:var(--r-pill);background:var(--chip);color:var(--ink-body);align-items:center;gap:6px;padding:3px 8px;line-height:1.45;display:inline-flex}.pill[data-astro-cid-qrtwocmw].sm{font-family:var(--font-mono);font-size:11px}.pill[data-astro-cid-qrtwocmw].md{font-size:12.5px}.pill[data-astro-cid-qrtwocmw]:hover{background:var(--chip-strong);color:var(--ink)}.count[data-astro-cid-qrtwocmw]{font-family:var(--font-mono);color:var(--ink-dim);font-size:10px}
+.toc[data-astro-cid-7k3pnqyz]{flex-direction:column;gap:12px;display:flex}.list[data-astro-cid-7k3pnqyz]{flex-direction:column;padding:0;list-style:none;display:flex}.entry[data-astro-cid-7k3pnqyz]{border-left:2px solid var(--line);color:var(--ink-muted);padding:5px 0 5px 12px;font-size:13.5px;line-height:1.3;display:block}.entry[data-astro-cid-7k3pnqyz].nested{padding-left:26px;font-size:13px}.entry[data-astro-cid-7k3pnqyz]:hover{color:var(--ink)}.entry[data-astro-cid-7k3pnqyz].active{border-left-color:var(--accent);color:var(--ink);font-weight:500}.split[data-astro-cid-g5songws]{grid-template-columns:1fr 220px;display:grid}.split[data-astro-cid-g5songws].no-toc{grid-template-columns:1fr}.article[data-astro-cid-g5songws]{padding:44px 40px 40px var(--gutter);border-right:1px solid var(--line)}.split[data-astro-cid-g5songws].no-toc .article[data-astro-cid-g5songws]{border-right:0}.rail[data-astro-cid-g5songws]{top:calc(var(--header-h) + 24px);align-self:flex-start;padding:44px 24px;position:sticky}.title-block[data-astro-cid-g5songws]{flex-direction:column;gap:14px;margin-bottom:30px;display:flex}.meta[data-astro-cid-g5songws]{font-family:var(--font-mono);color:var(--ink-dim);align-items:center;gap:10px;font-size:11.5px;line-height:1;display:flex}.dot[data-astro-cid-g5songws]{border-radius:var(--r-pill);background:var(--ink-dim);width:3px;height:3px}.title[data-astro-cid-g5songws]{letter-spacing:-.035em;text-wrap:pretty;max-width:26ch;font-size:44px;font-weight:700;line-height:1.05}.tags[data-astro-cid-g5songws]{flex-wrap:wrap;gap:6px;display:flex}.related[data-astro-cid-g5songws]{border-top:1px solid var(--line);flex-direction:column;gap:2px;margin-top:44px;padding-top:26px;display:flex}.related[data-astro-cid-g5songws] .mono-label{margin-bottom:8px}.related-row[data-astro-cid-g5songws]{color:var(--ink);align-items:baseline;gap:20px;padding:9px 0;display:flex}.related-row[data-astro-cid-g5songws]:hover{background:var(--row-hover)}.related-date[data-astro-cid-g5songws]{width:84px;font-family:var(--font-mono);color:var(--ink-dim);flex-shrink:0;font-size:11.5px}.related-title[data-astro-cid-g5songws]{font-size:15.5px;font-weight:500}.pager[data-astro-cid-g5songws]{grid-template-columns:1fr 1fr;gap:16px;margin-top:32px;display:grid}.card[data-astro-cid-g5songws]{border:1px solid var(--line);border-radius:var(--r-card);color:var(--ink);flex-direction:column;gap:8px;padding:16px 18px;display:flex}.card[data-astro-cid-g5songws].next{text-align:right;align-items:flex-end}.card[data-astro-cid-g5songws].empty{opacity:.45;pointer-events:none}.card[data-astro-cid-g5songws]:not(.empty):hover{background:var(--row-hover)}.card-title[data-astro-cid-g5songws]{font-size:15.5px;font-weight:500;line-height:1.3}@media (width<=900px){.split[data-astro-cid-g5songws],.split[data-astro-cid-g5songws].no-toc{grid-template-columns:1fr}.article[data-astro-cid-g5songws]{border-right:0;padding:32px 24px}.rail[data-astro-cid-g5songws]{padding:0 24px 32px;position:static}}@media (width<=720px){.title[data-astro-cid-g5songws]{font-size:30px}.pager[data-astro-cid-g5songws]{grid-template-columns:1fr}.card[data-astro-cid-g5songws].next{text-align:left;align-items:flex-start}}
+</style></head><body><div class="shell" style="max-width:900px"><div class="sentinel" data-header-sentinel aria-hidden="true" data-astro-cid-nen7h5rs></div><header class="header bordered" data-astro-cid-nen7h5rs><a class="wordmark" href="/" data-astro-cid-nen7h5rs>niden</a><nav class="nav" aria-label="Primary" data-astro-cid-nen7h5rs><a href="/" class="nav-link" data-astro-cid-nen7h5rs>Home</a><a href="/hosting" class="nav-link" data-astro-cid-nen7h5rs>Hosting</a><a href="/tag" class="nav-link" data-astro-cid-nen7h5rs>Tags</a><a href="/archive" class="nav-link" data-astro-cid-nen7h5rs>Archive</a><a href="/about" class="nav-link" data-astro-cid-nen7h5rs>About</a><a href="/contact" class="nav-link" data-astro-cid-nen7h5rs>Contact</a><a href="/disclaimer" class="nav-link" data-astro-cid-nen7h5rs>Disclaimer</a></nav><div class="utility" data-astro-cid-nen7h5rs><button type="button" class="utility-item" data-search-open data-astro-cid-nen7h5rs>Search</button><a class="utility-item" href="https://github.com/niden" data-astro-cid-nen7h5rs>GitHub</a><a class="utility-item" href="/feed.xml" data-astro-cid-nen7h5rs>RSS</a><button type="button" class="toggle" data-theme-toggle aria-label="Switch color theme" data-astro-cid-l6lhmie6><span data-theme-label data-astro-cid-l6lhmie6>Theme</span></button><script type="module">var e=document.documentElement,t=e=>e===`light`?`Dark`:`Light`,n=()=>{let n=e.getAttribute(`data-theme`)??`dark`;document.querySelectorAll(`[data-theme-label]`).forEach(e=>{e.textContent=t(n)})};document.querySelectorAll(`[data-theme-toggle]`).forEach(t=>{t.addEventListener(`click`,()=>{let t=e.getAttribute(`data-theme`)===`light`?`dark`:`light`;e.setAttribute(`data-theme`,t);try{localStorage.setItem(`niden-theme`,t)}catch{}n()})}),n();</script></div></header><script type="module">var e=document.querySelector(`[data-header-sentinel]`),t=document.querySelector(`header.header`);e!==null&&t!==null&&new IntersectionObserver(([e])=>{t.classList.toggle(`stuck`,!e.isIntersecting)},{threshold:0}).observe(e);</script><main><div class="split" data-astro-cid-g5songws><article class="article" data-astro-cid-g5songws><header class="title-block" data-astro-cid-g5songws><div class="meta" data-astro-cid-g5songws><time datetime="2010-02-02T23:45:00.000Z" data-astro-cid-g5songws>02 Feb 2010</time><span class="dot" aria-hidden="true" data-astro-cid-g5songws></span><span data-astro-cid-g5songws>8 min read</span></div><h1 class="title" data-astro-cid-g5songws>Design Patterns - Factory</h1><div class="tags" data-astro-cid-g5songws><a class="pill sm" href="/tag/design-patterns/" data-astro-cid-qrtwocmw>design patterns</a><a class="pill sm" href="/tag/mysql/" data-astro-cid-qrtwocmw>mysql</a><a class="pill sm" href="/tag/php/" data-astro-cid-qrtwocmw>php</a><a class="pill sm" href="/tag/programming/" data-astro-cid-qrtwocmw>programming</a><a class="pill sm" href="/tag/series/" data-astro-cid-qrtwocmw>series</a><a class="pill sm" href="/tag/zend-framework/" data-astro-cid-qrtwocmw>zend framework</a><a class="pill sm" href="/tag/how-to/" data-astro-cid-qrtwocmw>how-to</a><a class="pill sm" href="/tag/factory/" data-astro-cid-qrtwocmw>factory</a></div></header><div class="prose" data-astro-cid-g5songws><p>A note about these series. It appears that <a href="https://giorgiosironi.blogspot.com/">Giorgio Sironi</a> and I had the same idea regarding Design Patterns and blogging about them. He covers the <a href="https://giorgiosironi.blogspot.com/2010/01/practical-php-patterns-factory-method.html">Factory</a> design pattern thoroughly in his blog post, which is recommended reading.</p>
+<h2 id="the-problem">The Problem</h2>
+<p>I started off my IT career as a network administrator. This was back in the good old Novell 3.11 days. After that it was Novell 4.0, Microsoft Servers etc. Following that I got more and more involved with Visual Basic and when Microsoft decided to move everyone to .NET I chose not to follow and ended up coding in PHP.</p>
+<p>Since my programming knowledge came from within (studying, reading articles, trial and error), the problems that I was facing on a daily basis are the same as almost every developer faces. One particularly challenging problem that I had in the VB days as well as the PHP days was repetition of code and how to eliminate it.</p>
+<p>When I started programming for the Ferrari Fans Fun Forecast site I was running the site using my apartment’s ADSL line. In the beginning there were only 20 users or so, therefore that setup was fine. The scripts were VBScript against a local instance of Microsoft SQL Server. Later on though, I switched to PHP while keeping Microsoft SQL Server.</p>
+<h2 id="initial-implementation">Initial implementation</h2>
+<p>I knew that I would have to change my scripts later on to work against MySQL since I was to change the hosting of the site. Through laziness or poor design (you can pick either or both :)) I chose to create a class for Microsoft SQL and later on I would just change it to the MySQL. It seemed the easiest thing to do at the time.</p>
+<p>So my class was something like:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2"> class</span><span style="color:#96E498"> DbMSSQL</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    private</span><span style="color:#CDD1D6"> $_conn </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> null</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> connect</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">        // Connect</span></span>
+<span class="line"><span style="color:#77818C">        // This is where we have the connection parameters</span></span>
+<span class="line"><span style="color:#E3A2F2">        include_once</span><span style="color:#EEC469"> &#39;connection.inc.php&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mssql_connect</span><span style="color:#CDD1D6">($host,</span><span style="color:#CDD1D6"> $user,</span><span style="color:#CDD1D6"> $password);</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Cannot connect to the database.&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> disconnect</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">         // Disconnect</span></span>
+<span class="line"><span style="color:#73D3F1">        mssql_close</span><span style="color:#CDD1D6">($</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> selectdb</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">         // Select the db</span></span>
+<span class="line"><span style="color:#CDD1D6">        $db </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mssql_select_db</span><span style="color:#CDD1D6">($database,</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn);</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$db) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Cannot select the database&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> query</span><span style="color:#CDD1D6">($sql)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">     // Query the db</span></span>
+<span class="line"><span style="color:#CDD1D6">        $_result </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mssql_query</span><span style="color:#CDD1D6">($sql);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$_result) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Error in query : &#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#CDD1D6"> $sql);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $data </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        while</span><span style="color:#CDD1D6"> ($row </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mssql_fetch_assoc</span><span style="color:#CDD1D6">($_result)) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $data[$row[</span><span style="color:#EEC469">&#39;id&#39;</span><span style="color:#CDD1D6">]] </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $row;</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#73D3F1">        mssql_free_result</span><span style="color:#CDD1D6">($_result);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> $data;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>Everything worked fine so I did not worry about a thing. A few months later though I was forced to move the database (as I expected) to MySQL. I could not move everything in one go so I had to move some of the tables initially and a week later everything else.</p>
+<p>To tackle this requirement I created a second class to handle operations against MySQL. The class that I ended up with was:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> DbMySQL</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    private</span><span style="color:#CDD1D6"> $_conn </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> null</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> connect</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">        // Connect</span></span>
+<span class="line"><span style="color:#77818C">        // This is where we have the connection parameters</span></span>
+<span class="line"><span style="color:#E3A2F2">        include_once</span><span style="color:#EEC469"> &#39;connection.inc.php&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mysql_connect</span><span style="color:#CDD1D6">($host,</span><span style="color:#CDD1D6"> $user,</span><span style="color:#CDD1D6"> $password);</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Cannot connect to the database :&#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#73D3F1"> mysql_error</span><span style="color:#CDD1D6">());</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> disconnect</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">         // Disconnect</span></span>
+<span class="line"><span style="color:#73D3F1">        mysql_close</span><span style="color:#CDD1D6">($</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> selectdb</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">         // Select the db</span></span>
+<span class="line"><span style="color:#CDD1D6">        $db </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mysql_select_db</span><span style="color:#CDD1D6">($database,</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn);</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$db) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Cannot select the database : &#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#73D3F1"> mysql_error</span><span style="color:#CDD1D6">());</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> query</span><span style="color:#CDD1D6">($sql)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">     // Query the db</span></span>
+<span class="line"><span style="color:#CDD1D6">        $_result </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mysql_query</span><span style="color:#CDD1D6">($sql);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$_result) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Error in query : &#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#73D3F1"> mysql_error</span><span style="color:#CDD1D6">()</span><span style="color:#E3A2F2"> .</span><span style="color:#EEC469"> &quot;\n&quot;</span><span style="color:#E3A2F2"> .</span><span style="color:#CDD1D6"> $sql);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $data </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        while</span><span style="color:#CDD1D6"> ($row </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mysql_fetch_assoc</span><span style="color:#CDD1D6">($_result)) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $data[$row[</span><span style="color:#EEC469">&#39;id&#39;</span><span style="color:#CDD1D6">]] </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $row;</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#73D3F1">        mysql_free_result</span><span style="color:#CDD1D6">($_result);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> $data;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>You can easily see the problem here. There is a lot of repetition in the code, not so much as the actual method properties but the methods themselves. Both classes have <code>connect()</code>, <code>disconnect()</code>, <code>selectdb()</code> and <code>query()</code> as methods. In reality the code changes only slightly since the call for an operation against Microsoft SQL Server is <code>mssql_*</code> while for MySQL is <code>mysql_*</code>. During the transition week I was in programming hell. At some point I mixed the class names, I was trying to read and update the wrong server etc. (see <a href="https://codeutopia.net/">Jani Hartikainen’s</a> post about <a href="https://codeutopia.net/blog/2010/01/28/6-programming-project-mistakes-you-should-avoid/">6 programming project mistakes you should avoid</a> - I did all that!).</p>
+<p>That week though taught me that I need to pay more attention in designing rather than going full speed ahead with programming and later on paying the consequences.</p>
+<p>After thorough research, I discovered a library that would support both platforms. The library that I found was <a href="https://adodb.org">ADOdb</a> which is a perfect example of the Factory Pattern. I used that library later on for a different project, but just looking at the code and understanding the flow of operations as well as the implementation of the pattern itself was invaluable to me.</p>
+<h2 id="interfaces">Interfaces</h2>
+<p>First of all I need to explain what an interface is and why we need them. According to <a href="https://php.net/manual/en/language.oop5.interfaces.php">PHP.net</a>:</p>
+<blockquote>
+<p>Object interfaces allow you to create code which specifies which methods a class must implement, without having to define how these methods are handled.</p>
+</blockquote>
+<p>So imagine an interface something like a graft, a blueprint on what I need to construct. The Interface will have the common methods and properties that I need to implement.</p>
+<p>When dealing with database connections to two different database servers (Microsoft SQL Server and MySQL), I can clearly define a few methods that will follow CRUD (Create, Read, Update, Delete). Those are:</p>
+<ul>
+<li>Connect to the database server</li>
+<li>Select database</li>
+<li>Insert record</li>
+<li>Delete record</li>
+<li>Update record</li>
+<li>Select record(s)</li>
+<li>Close connection to the database server</li>
+</ul>
+<p>My interface would therefore be:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">interface</span><span style="color:#96E498"> iDatabase</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> connect</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> disconnect</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> selectdb</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> query</span><span style="color:#CDD1D6">($sql);</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<h2 id="design-patterns---factory">Design Patterns - Factory</h2>
+<p>A class implementing the Factory Pattern is like a car manufacturing plant producing three different cars on the same assembly line. All cars have common characteristics like 4 wheels, 4 doors (well most of them), a steering wheel, a dashboard etc. and all of them perform certain operations i.e. drive, reverse etc.</p>
+<p>In my problem earlier I could have used the Factory Pattern to create one class that would have implemented my blueprint, the interface which defines the CRUD operations that I need. So based on the above, the implementation will result in three classes.</p>
+<h3 id="mssql-class---stored-in-the-file-db_mssqlphp">MSSQL class - stored in the file <code>Db_mssql.php</code></h3>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> Db_mssql</span><span style="color:#E3A2F2"> implements</span><span style="color:#96E498"> iDatabase</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    private</span><span style="color:#CDD1D6"> $_conn </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> null</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> connect</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">        // Connect</span></span>
+<span class="line"><span style="color:#77818C">        // This is where we have the connection parameters</span></span>
+<span class="line"><span style="color:#E3A2F2">        include_once</span><span style="color:#EEC469"> &#39;connection.inc.php&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mssql_connect</span><span style="color:#CDD1D6">($host,</span><span style="color:#CDD1D6"> $user,</span><span style="color:#CDD1D6"> $password);</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Cannot connect to the database.&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> disconnect</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">         // Disconnect</span></span>
+<span class="line"><span style="color:#73D3F1">        mssql_close</span><span style="color:#CDD1D6">($</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> selectdb</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">         // Select the db</span></span>
+<span class="line"><span style="color:#CDD1D6">        $db </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mssql_select_db</span><span style="color:#CDD1D6">($database,</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn);</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$db) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Cannot select the database&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> query</span><span style="color:#CDD1D6">($sql)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">     // Query the db</span></span>
+<span class="line"><span style="color:#CDD1D6">        $_result </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mssql_query</span><span style="color:#CDD1D6">($sql);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$_result) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Error in query : &#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#CDD1D6"> $sql);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $data </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        while</span><span style="color:#CDD1D6"> ($row </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mssql_fetch_assoc</span><span style="color:#CDD1D6">($_result)) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $data[$row[</span><span style="color:#EEC469">&#39;id&#39;</span><span style="color:#CDD1D6">]] </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $row;</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#73D3F1">        mssql_free_result</span><span style="color:#CDD1D6">($_result);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> $data;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<h3 id="mysql-class---stored-in-the-file-db_mysqlphp">MySQL class - stored in the file <code>Db_mysql.php</code></h3>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> Db_mysql</span><span style="color:#E3A2F2"> implements</span><span style="color:#96E498"> iDatabase</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    private</span><span style="color:#CDD1D6"> $_conn </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> null</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> connect</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">        // Connect</span></span>
+<span class="line"><span style="color:#77818C">        // This is where we have the connection parameters</span></span>
+<span class="line"><span style="color:#E3A2F2">        include_once</span><span style="color:#EEC469"> &#39;connection.inc.php&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mysql_connect</span><span style="color:#CDD1D6">($host,</span><span style="color:#CDD1D6"> $user,</span><span style="color:#CDD1D6"> $password);</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Cannot connect to the database :&#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#73D3F1"> mysql_error</span><span style="color:#CDD1D6">());</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> disconnect</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">         // Disconnect</span></span>
+<span class="line"><span style="color:#73D3F1">        mysql_close</span><span style="color:#CDD1D6">($</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> selectdb</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">         // Select the db</span></span>
+<span class="line"><span style="color:#CDD1D6">        $db </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mysql_select_db</span><span style="color:#CDD1D6">($database,</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">_conn);</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$db) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Cannot select the database : &#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#73D3F1"> mysql_error</span><span style="color:#CDD1D6">());</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> query</span><span style="color:#CDD1D6">($sql)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">     // Query the db</span></span>
+<span class="line"><span style="color:#CDD1D6">        $_result </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mysql_query</span><span style="color:#CDD1D6">($sql);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$_result) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Error in query : &#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#73D3F1"> mysql_error</span><span style="color:#CDD1D6">()</span><span style="color:#E3A2F2"> .</span><span style="color:#EEC469"> &quot;\n&quot;</span><span style="color:#E3A2F2"> .</span><span style="color:#CDD1D6"> $sql);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $data </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> array</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        while</span><span style="color:#CDD1D6"> ($row </span><span style="color:#E3A2F2">=</span><span style="color:#73D3F1"> mysql_fetch_assoc</span><span style="color:#CDD1D6">($_result)) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $data[$row[</span><span style="color:#EEC469">&#39;id&#39;</span><span style="color:#CDD1D6">]] </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $row;</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#73D3F1">        mysql_free_result</span><span style="color:#CDD1D6">($_result);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> $data;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>Notice that both these classes are almost identical to the initial implementation shown earlier in this post. The only difference is that they are both implementing the iDatabase interface.</p>
+<p>So what is different now? The class that implements the Factory Pattern.</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> Db</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> static</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> factory</span><span style="color:#CDD1D6">($type)</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $fileName </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> &#39;Db_&#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#73D3F1"> strtolower</span><span style="color:#CDD1D6">($type) </span><span style="color:#E3A2F2">.</span><span style="color:#EEC469"> &#39;.php&#39;</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#73D3F1">file_exists</span><span style="color:#CDD1D6">($fileName)) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            throw</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Exception</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;File not found : &#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#CDD1D6"> $fileName);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $className </span><span style="color:#E3A2F2">=</span><span style="color:#EEC469"> &#39;Db_&#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#73D3F1"> strtolower</span><span style="color:#CDD1D6">($type);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#E3A2F2"> new</span><span style="color:#CDD1D6"> $className;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>What this class does now is it allows me to load the relevant database connection class on the fly. If I want a Microsoft SQL connection I would call:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#CDD1D6">    $mssql </span><span style="color:#E3A2F2">=</span><span style="color:#96E498"> Db</span><span style="color:#E3A2F2">::</span><span style="color:#73D3F1">factory</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;mssql&#39;</span><span style="color:#CDD1D6">);</span></span></code></pre></figure>
+<p>while for MySQL the command becomes:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#CDD1D6">    $mysql </span><span style="color:#E3A2F2">=</span><span style="color:#96E498"> Db</span><span style="color:#E3A2F2">::</span><span style="color:#73D3F1">factory</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;mysql&#39;</span><span style="color:#CDD1D6">);</span></span></code></pre></figure>
+<p>Again since both underlying classes implement the <code>iDatabase</code> interface, I know exactly what to expect as far as methods and functionality is concerned from each class.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>The Factory Design Pattern is one of the most powerful design patterns. It provides ‘decoupling’ i.e. breaks the inherited dependency of a class and its subclasses. It also allows for great flexibility while keeping the same interface for your clients.</p>
+<p><a href="https://framework.zend.com/">Zend Framework</a> uses the Factory Pattern in <a href="https://framework.zend.com/manual/1.12/en/zend.db.adapter.html">Zend_Db</a>. Specifically the example on the site shows:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#77818C">// We don&#39;t need the following statement because the</span></span>
+<span class="line"><span style="color:#77818C">// Zend_Db_Adapter_Pdo_Mysql file will be loaded for us by</span></span>
+<span class="line"><span style="color:#77818C">// the Zend_Db factory method.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">// require_once &#39;Zend/Db/Adapter/Pdo/Mysql.php&#39;;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">// Automatically load class Zend_Db_Adapter_Pdo_Mysql</span></span>
+<span class="line"><span style="color:#77818C">// and create an instance of it.</span></span>
+<span class="line"><span style="color:#CDD1D6">$db </span><span style="color:#E3A2F2">=</span><span style="color:#96E498"> Zend_Db</span><span style="color:#E3A2F2">::</span><span style="color:#73D3F1">factory</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">    &#39;Pdo_Mysql&#39;</span><span style="color:#CDD1D6">, </span></span>
+<span class="line"><span style="color:#73D3F1">    array</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">        &#39;host&#39;</span><span style="color:#E3A2F2">     =&gt;</span><span style="color:#EEC469"> &#39;127.0.0.1&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">        &#39;username&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#EEC469"> &#39;webuser&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">        &#39;password&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#EEC469"> &#39;xxxxxxxx&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">        &#39;dbname&#39;</span><span style="color:#E3A2F2">   =&gt;</span><span style="color:#EEC469"> &#39;test&#39;</span></span>
+<span class="line"><span style="color:#CDD1D6">    )</span></span>
+<span class="line"><span style="color:#CDD1D6">);</span></span></code></pre></figure>
+<p>The <a href="https://framework.zend.com/manual/1.12/en/zend.db.adapter.html">Zend_Db</a> factory accepts the name of the adapter used for the database connection as the first parameter while the second parameter is an array with connection specific information. With the use of the Factory Pattern, <a href="https://framework.zend.com/manual/1.12/en/zend.db.adapter.html">Zend_Db</a> exposes a common interface which allows programmers to connect to a number of databases using the same methods. Should in the future the application needs to access a different database, the impact to the developer is minimal - in most cases a change to the adapter name (first parameter of the factory class) is all it takes.</p></div><section class="related" data-astro-cid-g5songws><div class="mono-label" data-astro-cid-g5songws>Related — design patterns</div><a class="related-row" href="/post/php-design-patterns-singleton/" data-astro-cid-g5songws><time class="related-date" datetime="2010-01-10T23:45:00.000Z" data-astro-cid-g5songws>2010-01-10</time><span class="related-title" data-astro-cid-g5songws>Design Patterns - Singleton</span></a><a class="related-row" href="/post/gateway-pattern-in-php/" data-astro-cid-g5songws><time class="related-date" datetime="2025-11-05T08:39:18.200Z" data-astro-cid-g5songws>2025-11-05</time><span class="related-title" data-astro-cid-g5songws>Design Patterns - Gateway</span></a><a class="related-row" href="/post/design-patterns-in-php-series/" data-astro-cid-g5songws><time class="related-date" datetime="2010-01-06T23:45:00.000Z" data-astro-cid-g5songws>2010-01-06</time><span class="related-title" data-astro-cid-g5songws>Design Patterns in PHP [Series]</span></a></section><nav class="pager" aria-label="More posts" data-astro-cid-g5songws><a class="card" href="/post/create-a-ssl-certificate-in-linux/" data-astro-cid-g5songws><span class="mono-label" data-astro-cid-g5songws>Previous</span><span class="card-title" data-astro-cid-g5songws>Create a SSL Certificate in Linux</span></a><a class="card next" href="/post/from-iphone-to-nexus-one/" data-astro-cid-g5songws><span class="mono-label" data-astro-cid-g5songws>Next</span><span class="card-title" data-astro-cid-g5songws>From iPhone to Nexus One</span></a></nav></article><div class="rail" data-astro-cid-g5songws><nav class="toc" aria-label="On this page" data-astro-cid-7k3pnqyz><div class="mono-label" data-astro-cid-7k3pnqyz>On this page</div><ul class="list" data-astro-cid-7k3pnqyz><li data-astro-cid-7k3pnqyz><a class="entry" href="#the-problem" data-toc-link="the-problem" data-astro-cid-7k3pnqyz>The Problem</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#initial-implementation" data-toc-link="initial-implementation" data-astro-cid-7k3pnqyz>Initial implementation</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#interfaces" data-toc-link="interfaces" data-astro-cid-7k3pnqyz>Interfaces</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#design-patterns---factory" data-toc-link="design-patterns---factory" data-astro-cid-7k3pnqyz>Design Patterns - Factory</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#mssql-class---stored-in-the-file-db_mssqlphp" data-toc-link="mssql-class---stored-in-the-file-db_mssqlphp" data-astro-cid-7k3pnqyz>MSSQL class - stored in the file Db_mssql.php</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#mysql-class---stored-in-the-file-db_mysqlphp" data-toc-link="mysql-class---stored-in-the-file-db_mysqlphp" data-astro-cid-7k3pnqyz>MySQL class - stored in the file Db_mysql.php</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#conclusion" data-toc-link="conclusion" data-astro-cid-7k3pnqyz>Conclusion</a></li></ul></nav><script type="module">var e=[...document.querySelectorAll(`[data-toc-link]`)];if(e.length>0){let t=e.map(e=>document.getElementById(e.dataset.tocLink??``)).filter(e=>e!==null),n=t=>{e.forEach(e=>{e.classList.toggle(`active`,e.dataset.tocLink===t)})},r=new IntersectionObserver(e=>{let t=e.filter(e=>e.isIntersecting).sort((e,t)=>e.boundingClientRect.top-t.boundingClientRect.top);t[0]?.target.id&&n(t[0].target.id)},{rootMargin:`-24px 0px -70% 0px`,threshold:0});t.forEach(e=>r.observe(e))}</script></div></div><script type="module">document.querySelectorAll(`[data-copy]`).forEach(e=>{e.addEventListener(`click`,async()=>{let t=e.closest(`figure`)?.querySelector(`pre`)?.innerText??``;try{await navigator.clipboard.writeText(t)}catch{return}e.textContent=`Copied`,window.setTimeout(()=>{e.textContent=`Copy`},1500)})});</script></main><footer class="footer" data-astro-cid-jo6i4kqk><div data-astro-cid-jo6i4kqk>&copy; 2022&ndash;present niden.net</div><div data-astro-cid-jo6i4kqk>Astro</div></footer></div><div class="backdrop" data-search-backdrop hidden data-astro-cid-ac66eqjo><div class="modal" role="dialog" aria-modal="true" aria-label="Search" data-search-modal data-astro-cid-ac66eqjo><div class="input-row" data-astro-cid-ac66eqjo><span class="slash" aria-hidden="true" data-astro-cid-ac66eqjo>/</span><input class="input" type="search" placeholder="Search posts and tags" autocomplete="off" spellcheck="false" aria-label="Search posts and tags" data-search-input data-astro-cid-ac66eqjo><kbd class="kbd" data-astro-cid-ac66eqjo>esc</kbd></div><div class="results" data-search-results role="listbox" data-astro-cid-ac66eqjo></div><div class="hints" data-astro-cid-ac66eqjo><span data-astro-cid-ac66eqjo>&uarr;&darr; navigate</span><span data-astro-cid-ac66eqjo>&crarr; open</span></div></div></div><script type="module">var e=document.querySelector(`[data-search-backdrop]`),t=document.querySelector(`[data-search-modal]`),n=document.querySelector(`[data-search-input]`),r=document.querySelector(`[data-search-results]`);if(e&&t&&n&&r){let t=null,i=[],a=0,o=null,s=e=>e.replace(/[&<>"']/g,e=>({"&":`&amp;`,"<":`&lt;`,">":`&gt;`,'"':`&quot;`,"'":`&#39;`})[e]),c=(e,t)=>{let n=e.toLowerCase().indexOf(t.toLowerCase());return t===``||n===-1?s(e):[s(e.slice(0,n)),`<mark>`,s(e.slice(n,n+t.length)),`</mark>`,s(e.slice(n+t.length))].join(``)},l=async()=>(t===null&&(t=await(await fetch(`/search.json`)).json()),t),u=()=>{i.forEach((e,t)=>{e.classList.toggle(`selected`,t===a),e.setAttribute(`aria-selected`,String(t===a))}),i[a]?.scrollIntoView({block:`nearest`})},d=e=>{if(t===null)return;let n=e.trim().toLowerCase(),o=n===``?t.posts.slice(0,6):t.posts.filter(e=>e.title.toLowerCase().includes(n)||e.excerpt.toLowerCase().includes(n)).slice(0,8),l=n===``?[]:t.tags.filter(e=>e.tag.toLowerCase().includes(n)).slice(0,5),d=[];o.length>0&&d.push(`<div class="group-label">Posts</div>`,...o.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-title">${c(e.title,n)}</span><span class="result-date">${s(e.date)}</span></a>`)),l.length>0&&d.push(`<div class="group-label">Tags</div>`,...l.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-pill">${c(e.tag,n)}</span><span class="result-date">${e.count} posts</span></a>`)),r.innerHTML=d.length>0?d.join(``):`<div class="empty">No matches.</div>`,i=[...r.querySelectorAll(`.result`)],a=0,u()},f=async t=>{o=t,e.hidden=!1,document.body.style.overflow=`hidden`,n.value=``,n.focus(),await l(),d(``)},p=()=>{e.hidden=!0,document.body.style.overflow=``,o?.focus(),o=null};document.querySelectorAll(`[data-search-open]`).forEach(e=>{e.addEventListener(`click`,t=>{t.preventDefault(),f(e)})}),n.addEventListener(`input`,()=>d(n.value)),e.addEventListener(`mousedown`,t=>{t.target===e&&p()}),document.addEventListener(`keydown`,t=>{let r=t.target instanceof HTMLElement&&[`INPUT`,`TEXTAREA`,`SELECT`].includes(t.target.tagName);if((t.metaKey||t.ctrlKey)&&t.key.toLowerCase()===`k`){t.preventDefault(),e.hidden?f(null):p();return}if(t.key===`/`&&e.hidden&&!r){t.preventDefault(),f(null);return}e.hidden||(t.key===`Escape`&&(t.preventDefault(),p()),t.key===`ArrowDown`&&i.length>0&&(t.preventDefault(),a=(a+1)%i.length,u()),t.key===`ArrowUp`&&i.length>0&&(t.preventDefault(),a=(a-1+i.length)%i.length,u()),t.key===`Enter`&&i[a]&&(t.preventDefault(),window.location.href=i[a].href),t.key===`Tab`&&(t.preventDefault(),n.focus()))})}</script><script type="module" src="/_astro/Mermaid.astro_astro_type_script_index_0_lang.T979gi6P.js"></script></body></html>
