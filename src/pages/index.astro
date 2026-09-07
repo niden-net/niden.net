@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import FeaturedPost from '../components/FeaturedPost.astro';
+import PostRow from '../components/PostRow.astro';
+import Sidebar from '../components/Sidebar.astro';
+import { allPosts, tagCounts } from '../lib/posts';
+import { site } from '../site';
+
+const posts = await allPosts();
+const [featured, ...earlier] = posts;
+const tags = tagCounts(posts).slice(0, 10);
+---
+
+<Base title={site.name} activeHref="/" headerBorder={featured === undefined}>
+    {featured && <FeaturedPost post={featured} />}
+
+    <div class="split">
+        <div class="list">
+            <div class="mono-label">Earlier</div>
+            {earlier.slice(0, 8).map((post) => <PostRow post={post} />)}
+            {
+                posts.length > 0 && (
+                    <a class="accent-link all" href="/archive">
+                        All {posts.length} posts &rarr;
+                    </a>
+                )
+            }
+        </div>
+
+        <Sidebar tags={tags} />
+    </div>
+</Base>
+
+<style>
+    .split {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 232px;
+    }
+
+    .list {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 34px var(--gutter);
+        border-right: 1px solid var(--line);
+    }
+
+    .list :global(.mono-label) {
+        margin-bottom: 12px;
+    }
+
+    .all {
+        margin-top: 18px;
+        align-self: flex-start;
+    }
+
+    @media (max-width: 900px) {
+        .split {
+            grid-template-columns: 1fr;
+        }
+
+        .list {
+            padding: 28px 24px;
+            border-right: 0;
+        }
+    }
+</style>

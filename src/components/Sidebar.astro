@@ -1,0 +1,73 @@
+---
+import TagPill from './TagPill.astro';
+import { site } from '../site';
+import type { TagCount } from '../lib/posts';
+
+interface Props {
+    tags: TagCount[];
+}
+
+const { tags } = Astro.props;
+---
+
+<aside class="sidebar">
+    <div class="block">
+        <div class="name">{site.author}</div>
+        <p class="bio">{site.bio}</p>
+    </div>
+
+    <div class="block">
+        <div class="label">Browse by tag</div>
+        <div class="tags">
+            {tags.map((item) => <TagPill tag={item.tag} size="md" />)}
+        </div>
+    </div>
+</aside>
+
+<style>
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        padding: 34px 28px;
+    }
+
+    .block {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .name {
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .bio {
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: var(--ink-muted);
+    }
+
+    .label {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        line-height: 1;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-dim);
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    @media (max-width: 900px) {
+        .sidebar {
+            padding: 28px 24px;
+            border-top: 1px solid var(--line);
+        }
+    }
+</style>

@@ -1,0 +1,166 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { nav, navCompact, site } from '../site';
+
+interface Props {
+    activeHref?: string;
+    border?: boolean;
+    compact?: boolean;
+}
+
+const { activeHref, border = true, compact = false } = Astro.props;
+const items = compact ? navCompact : nav;
+---
+
+<div class="sentinel" data-header-sentinel aria-hidden="true"></div>
+
+<header class:list={['header', { compact, bordered: border }]}>
+    <a class="wordmark" href="/">{site.wordmark}</a>
+
+    <nav class="nav" aria-label="Primary">
+        {
+            items.map((item) => (
+                <a
+                    href={item.href}
+                    class:list={['nav-link', { active: item.href === activeHref }]}
+                    aria-current={item.href === activeHref ? 'page' : undefined}
+                >
+                    {item.label}
+                </a>
+            ))
+        }
+    </nav>
+
+    <div class="utility">
+        <button type="button" class="utility-item" data-search-open>Search</button>
+        <a class="utility-item" href={site.social.github}>GitHub</a>
+        <a class="utility-item" href={site.social.rss}>RSS</a>
+        <ThemeToggle />
+    </div>
+</header>
+
+<script>
+    const sentinel = document.querySelector<HTMLElement>('[data-header-sentinel]');
+    const header = document.querySelector<HTMLElement>('header.header');
+
+    if (sentinel !== null && header !== null) {
+        new IntersectionObserver(
+            ([entry]) => {
+                header.classList.toggle('stuck', !entry.isIntersecting);
+            },
+            { threshold: 0 }
+        ).observe(sentinel);
+    }
+</script>
+
+<style>
+    .sentinel {
+        height: 1px;
+        margin-bottom: -1px;
+    }
+
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 22px var(--gutter);
+        background: var(--bg);
+    }
+
+    /*
+     * The home page header has no border of its own. Once it sticks, it needs
+     * one so the content passing underneath stays separated.
+     */
+    .header.stuck {
+        border-bottom: 1px solid var(--line);
+    }
+
+    .header.compact {
+        padding: 20px 32px;
+    }
+
+    .header.bordered {
+        border-bottom: 1px solid var(--line);
+    }
+
+    .wordmark {
+        font-family: var(--font-display);
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        color: var(--ink);
+    }
+
+    .nav {
+        display: flex;
+        gap: 20px;
+        font-size: 14px;
+    }
+
+    .nav-link {
+        color: var(--ink-muted);
+        line-height: 1;
+    }
+
+    .nav-link.active,
+    .nav-link:hover {
+        color: var(--ink);
+    }
+
+    .nav-link.active {
+        font-weight: 500;
+    }
+
+    .utility {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--ink-dim);
+    }
+
+    .utility-item {
+        padding: 0;
+        border: 0;
+        background: none;
+        font: inherit;
+        color: inherit;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .utility-item:hover {
+        color: var(--ink);
+    }
+
+    /* The nav collapses into a disclosure below 720px. */
+    @media (max-width: 900px) {
+        .header,
+        .header.compact {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .header,
+        .header.compact {
+            position: static;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .nav {
+            order: 3;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+    }
+</style>

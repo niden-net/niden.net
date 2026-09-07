@@ -1,0 +1,61 @@
+---
+/** Flips `data-theme` on <html> and remembers the choice. */
+---
+
+<button
+    type="button"
+    class="toggle"
+    data-theme-toggle
+    aria-label="Switch color theme"
+>
+    <span data-theme-label>Theme</span>
+</button>
+
+<script>
+    const STORAGE_KEY = 'niden-theme';
+    const root = document.documentElement;
+
+    const label = (theme: string): string => (theme === 'light' ? 'Dark' : 'Light');
+
+    const paint = (): void => {
+        const current = root.getAttribute('data-theme') ?? 'dark';
+
+        document.querySelectorAll<HTMLElement>('[data-theme-label]').forEach((node) => {
+            node.textContent = label(current);
+        });
+    };
+
+    document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+
+            root.setAttribute('data-theme', next);
+
+            try {
+                localStorage.setItem(STORAGE_KEY, next);
+            } catch (error) {
+                /* Storage is unavailable; the choice lasts for this page only. */
+            }
+
+            paint();
+        });
+    });
+
+    paint();
+</script>
+
+<style>
+    .toggle {
+        padding: 0;
+        border: 0;
+        background: none;
+        font: inherit;
+        color: inherit;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .toggle:hover {
+        color: var(--ink);
+    }
+</style>

@@ -1,0 +1,117 @@
+---
+/**
+ * Renders ```mermaid fences. The library is imported only when the page has a
+ * diagram, so pages without one download nothing. With JS off the fence stays
+ * on screen as readable diagram source.
+ */
+---
+
+<script>
+    const blocks = [
+        ...document.querySelectorAll<HTMLElement>('pre.mermaid'),
+    ];
+
+    if (blocks.length > 0) {
+        /* Hide the source while the diagram is on its way. */
+        blocks.forEach((block) => {
+            block.dataset.source = block.textContent ?? '';
+            block.style.visibility = 'hidden';
+        });
+
+        /* Whatever happens, the block must end up visible. */
+        const reveal = (): void => {
+            blocks.forEach((block) => {
+                block.style.visibility = 'visible';
+            });
+        };
+
+        try {
+            const mermaid = (await import('mermaid')).default;
+
+            /*
+             * Mermaid cannot read oklch(). Painting one pixel and reading it
+             * back is the only reliable way to get #rrggbb: assigning to
+             * `fillStyle` keeps the color in its own space when serialized.
+             */
+            const canvas = document.createElement('canvas');
+            canvas.width = 1;
+            canvas.height = 1;
+            const context = canvas.getContext('2d', { willReadFrequently: true });
+
+            const token = (name: string): string => {
+                const value = getComputedStyle(document.documentElement)
+                    .getPropertyValue(name)
+                    .trim();
+
+                if (context === null) {
+                    return value;
+                }
+
+                context.fillStyle = '#000000';
+                context.fillStyle = value;
+                context.fillRect(0, 0, 1, 1);
+
+                const [red, green, blue] = context.getImageData(0, 0, 1, 1).data;
+
+                return `#${[red, green, blue]
+                    .map((channel) => channel.toString(16).padStart(2, '0'))
+                    .join('')}`;
+            };
+
+            const render = async (): Promise<void> => {
+                mermaid.initialize({
+                    startOnLoad: false,
+                    theme: 'base',
+                    fontFamily: 'Space Grotesk Variable, sans-serif',
+                    themeVariables: {
+                        background: token('--bg'),
+                        primaryColor: token('--chip'),
+                        primaryTextColor: token('--ink'),
+                        primaryBorderColor: token('--line-strong'),
+                        secondaryColor: token('--bg-subtle'),
+                        tertiaryColor: token('--bg-raised'),
+                        lineColor: token('--ink-dim'),
+                        textColor: token('--ink-body'),
+                        mainBkg: token('--chip'),
+                        nodeBorder: token('--line-strong'),
+                        clusterBkg: token('--bg-subtle'),
+                        clusterBorder: token('--line'),
+                        titleColor: token('--ink'),
+                        edgeLabelBackground: token('--bg'),
+                    },
+                });
+
+                for (const [position, block] of blocks.entries()) {
+                    try {
+                        const { svg } = await mermaid.render(
+                            `mermaid-${position}`,
+                            block.dataset.source ?? ''
+                        );
+
+                        block.innerHTML = svg;
+                        block.classList.add('rendered');
+                    } catch (error) {
+                        /* Leave the source readable when it does not parse. */
+                        block.textContent = block.dataset.source ?? '';
+                        block.classList.remove('rendered');
+                    }
+                }
+
+                reveal();
+            };
+
+            await render();
+
+            /* The toggle changes the tokens, so the diagrams are drawn again. */
+            new MutationObserver(() => {
+                void render();
+            }).observe(document.documentElement, {
+                attributeFilter: ['data-theme'],
+                attributes: true,
+            });
+        } catch (error) {
+            /* Mermaid could not load at all; show the source instead. */
+            reveal();
+        }
+    }
+</script>

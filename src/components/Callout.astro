@@ -1,0 +1,64 @@
+---
+/**
+ * The alert boxes the posts used to mark with a kramdown attribute list. Used
+ * from MDX as <Callout type="warning">, and supplied through the `components`
+ * prop of <Content />, so no post has to import it.
+ */
+
+interface Props {
+    type?: 'danger' | 'info' | 'success' | 'warning';
+}
+
+const { type = 'info' } = Astro.props;
+---
+
+<aside class:list={['callout', type]}>
+    <slot />
+</aside>
+
+<style>
+    .callout {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px 18px;
+        border-left: 2px solid var(--tone);
+        border-radius: 0 var(--r-card) var(--r-card) 0;
+        background: color-mix(in oklch, var(--tone) 8%, transparent);
+        color: var(--ink-body);
+    }
+
+    .callout.info {
+        --tone: var(--info);
+    }
+
+    .callout.warning {
+        --tone: var(--warning);
+    }
+
+    .callout.danger {
+        --tone: var(--danger);
+    }
+
+    .callout.success {
+        --tone: var(--success);
+    }
+
+    /* The slot holds rendered markdown, so its children need :global. */
+    .callout :global(> :first-child) {
+        margin-top: 0;
+    }
+
+    .callout :global(> :last-child) {
+        margin-bottom: 0;
+    }
+
+    .callout :global(ul),
+    .callout :global(ol) {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 0;
+        padding-left: 22px;
+    }
+</style>

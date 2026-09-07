@@ -1,0 +1,138 @@
+---
+import { Image } from 'astro:assets';
+
+import Base from './Base.astro';
+import avatar from '../assets/avatar.jpg';
+import { site } from '../site';
+
+interface Props {
+    activeHref?: string;
+    credentials?: Array<{ href: string; label: string }>;
+    lead?: string;
+    title: string;
+}
+
+const { activeHref, credentials = [], lead, title } = Astro.props;
+---
+
+<Base activeHref={activeHref} description={lead} title={title} width={780}>
+    <div class="body">
+        <header class="head">
+            <Image class="avatar" src={avatar} alt={site.author} width={76} height={76} />
+
+            <div class="head-text">
+                <h1 class="title">{title}</h1>
+                {lead && <p class="lead">{lead}</p>}
+            </div>
+        </header>
+
+        <div class="prose">
+            <slot />
+        </div>
+
+        {
+            credentials.length > 0 && (
+                <div class="credentials">
+                    {credentials.map((item) => (
+                        <a class="badge" href={item.href}>
+                            {item.label}
+                        </a>
+                    ))}
+                </div>
+            )
+        }
+    </div>
+</Base>
+
+<style>
+    .body {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+        padding: 44px 36px 40px;
+    }
+
+    .head {
+        display: flex;
+        gap: 22px;
+        align-items: flex-start;
+    }
+
+    .avatar {
+        flex-shrink: 0;
+        width: 76px;
+        height: 76px;
+        border-radius: var(--r-card);
+        object-fit: cover;
+    }
+
+    .head-text {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .title {
+        font-size: 40px;
+        line-height: 1.05;
+        font-weight: 700;
+        letter-spacing: -0.035em;
+    }
+
+    .lead {
+        max-width: 68ch;
+        font-size: 16.5px;
+        line-height: 1.6;
+        color: var(--ink-muted);
+    }
+
+    .body :global(.prose) {
+        max-width: 68ch;
+    }
+
+    /* No lead treatment on the first paragraph of a static page. */
+    .body :global(.prose > p:first-child) {
+        padding-left: 0;
+        border-left: 0;
+        font-size: 16px;
+        line-height: 1.72;
+        color: var(--ink-body);
+    }
+
+    .credentials {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .badge {
+        padding: 6px 11px;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--r-badge);
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        color: var(--ink-muted);
+    }
+
+    .badge:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    @media (max-width: 900px) {
+        .body {
+            padding: 32px 24px 36px;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .head {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .title {
+            font-size: 32px;
+        }
+    }
+</style>

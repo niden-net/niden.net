@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import PostRow from '../components/PostRow.astro';
+import { allPosts, groupByYear } from '../lib/posts';
+
+const posts = await allPosts();
+const groups = groupByYear(posts);
+const first = groups.at(-1)?.year;
+const last = groups.at(0)?.year;
+---
+
+<Base title="Archive" activeHref="/archive" compact={true} width={740}>
+    <div class="body">
+        <div class="title-row">
+            <h1 class="title">Archive</h1>
+            <span class="count">{posts.length} posts &middot; {first}&ndash;{last}</span>
+        </div>
+
+        {
+            groups.map((group) => (
+                <section class="group" id={`y${group.year}`}>
+                    <div class="group-head">
+                        <span class="year">{group.year}</span>
+                        <span class="rule" aria-hidden="true" />
+                        <span class="group-count">{group.posts.length}</span>
+                    </div>
+
+                    <div class="rows">
+                        {group.posts.map((post) => (
+                            <PostRow post={post} variant="archive" />
+                        ))}
+                    </div>
+                </section>
+            ))
+        }
+    </div>
+</Base>
+
+<style>
+    .body {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+        padding: 34px 32px 36px;
+    }
+
+    .title-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .title {
+        font-size: 32px;
+        line-height: 1;
+        font-weight: 700;
+    }
+
+    .count {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--ink-dim);
+    }
+
+    .group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        scroll-margin-top: calc(var(--header-h) + 24px);
+    }
+
+    .group-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .year {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        line-height: 1;
+        color: var(--accent);
+    }
+
+    .rule {
+        flex: 1;
+        height: 1px;
+        background: var(--line);
+    }
+
+    .group-count {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        line-height: 1;
+        color: var(--ink-dim);
+    }
+
+    .rows {
+        display: flex;
+        flex-direction: column;
+    }
+
+    @media (max-width: 900px) {
+        .body {
+            padding: 28px 24px 32px;
+        }
+    }
+</style>

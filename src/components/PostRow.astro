@@ -1,0 +1,116 @@
+---
+import {
+    formatIsoDate,
+    formatShortDate,
+    postUrl,
+    readingMinutes,
+    type Post,
+} from '../lib/posts';
+
+interface Props {
+    post: Post;
+    variant?: 'archive' | 'home' | 'tag';
+}
+
+const { post, variant = 'home' } = Astro.props;
+
+const dateText =
+    variant === 'archive'
+        ? formatShortDate(post.data.date)
+        : formatIsoDate(post.data.date);
+---
+
+<a class:list={['row', variant]} href={postUrl(post)}>
+    <time class="date" datetime={post.data.date.toISOString()}>{dateText}</time>
+    <span class="title">{post.data.title}</span>
+    {
+        variant === 'home' && (
+            <span class="minutes">{readingMinutes(post)} min</span>
+        )
+    }
+</a>
+
+<style>
+    .row {
+        display: flex;
+        gap: 20px;
+        align-items: baseline;
+        color: var(--ink);
+    }
+
+    .row:hover {
+        background: var(--row-hover);
+    }
+
+    .date {
+        flex-shrink: 0;
+        font-family: var(--font-mono);
+        color: var(--ink-dim);
+    }
+
+    .title {
+        flex: 1;
+        font-weight: 500;
+        letter-spacing: -0.015em;
+    }
+
+    .minutes {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        color: var(--ink-dim);
+    }
+
+    /* 1b - the home "Earlier" list */
+    .row.home {
+        padding: 13px 0;
+        border-bottom: 1px solid var(--line-soft);
+    }
+
+    .row.home .date {
+        width: 84px;
+        font-size: 12px;
+    }
+
+    .row.home .title {
+        font-size: 17px;
+    }
+
+    /* 2b - the tag page list */
+    .row.tag {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line-soft);
+    }
+
+    .row.tag .date {
+        width: 84px;
+        font-size: 12px;
+    }
+
+    .row.tag .title {
+        font-size: 16px;
+    }
+
+    /* 2c - the archive year groups, no separators */
+    .row.archive {
+        padding: 8px 0;
+    }
+
+    .row.archive .date {
+        width: 56px;
+        font-size: 11.5px;
+    }
+
+    .row.archive .title {
+        font-size: 15.5px;
+    }
+
+    @media (max-width: 720px) {
+        .row {
+            gap: 12px;
+        }
+
+        .minutes {
+            display: none;
+        }
+    }
+</style>

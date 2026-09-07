@@ -1,0 +1,92 @@
+---
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/space-grotesk';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '../styles/global.css';
+
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import Mermaid from '../components/Mermaid.astro';
+import Search from '../components/Search.astro';
+import { site } from '../site';
+
+interface Props {
+    activeHref?: string;
+    compact?: boolean;
+    description?: string;
+    headerBorder?: boolean;
+    title: string;
+    width?: number;
+}
+
+const {
+    activeHref,
+    compact = false,
+    description = site.description,
+    headerBorder = true,
+    title,
+    width = 1000,
+} = Astro.props;
+
+const pageTitle = title === site.name ? title : `${title} | ${site.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url);
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="generator" content={Astro.generator} />
+        <meta name="description" content={description} />
+        <meta name="keywords" content={site.keywords} />
+        <meta name="author" content={site.author} />
+
+        <title>{pageTitle}</title>
+        <link rel="canonical" href={canonical} />
+        <link rel="icon" href="/favicon.ico" />
+        <link
+            rel="alternate"
+            type="application/rss+xml"
+            title={site.name}
+            href="/feed.xml"
+        />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={site.name} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonical} />
+        <meta name="twitter:card" content="summary" />
+
+        <!-- Blocking: sets the theme before the first paint so there is no flash. -->
+        <script is:inline>
+            (function () {
+                var theme = 'dark';
+
+                try {
+                    /* The site is dark by default; only an explicit choice
+                       switches it. The operating system is not consulted. */
+                    theme = localStorage.getItem('niden-theme') || 'dark';
+                } catch (error) {
+                    theme = 'dark';
+                }
+
+                document.documentElement.setAttribute('data-theme', theme);
+            })();
+        </script>
+    </head>
+
+    <body>
+        <div class="shell" style={`max-width:${width}px`}>
+            <Header activeHref={activeHref} border={headerBorder} compact={compact} />
+            <main>
+                <slot />
+            </main>
+            <Footer compact={compact} />
+        </div>
+
+        <Search />
+        <Mermaid />
+    </body>
+</html>

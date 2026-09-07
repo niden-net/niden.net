@@ -1,0 +1,279 @@
+/*
+ * Rendered markdown. These rules cannot be scoped to a component, because the
+ * content arrives through a slot.
+ */
+
+.prose {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 72ch;
+    font-size: 16px;
+    line-height: 1.72;
+    color: var(--ink-body);
+    text-wrap: pretty;
+}
+
+/* Flex items do not shrink below their content unless told to. */
+.prose > * {
+    min-width: 0;
+}
+
+.prose h2 {
+    margin-top: 6px;
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+.prose h3 {
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+.prose h4 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+/*
+ * The archive uses every heading level, and many posts open at h1 or h4. These
+ * continue the display scale downward so nothing lands unstyled.
+ */
+.prose h1 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+}
+
+.prose h5 {
+    font-family: var(--font-display);
+    font-size: 16.5px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+}
+
+.prose h6 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+}
+
+/* The lead is the post's own first paragraph. */
+.prose > p:first-child {
+    padding-left: 18px;
+    border-left: 2px solid var(--accent);
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink);
+}
+
+.prose a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: color-mix(in oklch, var(--accent) 40%, transparent);
+}
+
+.prose a:hover {
+    text-decoration-color: var(--accent);
+}
+
+.prose strong {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.prose ul,
+.prose ol {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 22px;
+}
+
+.prose li::marker {
+    color: var(--ink-dim);
+}
+
+.prose blockquote {
+    margin: 0;
+    padding: 2px 0 2px 18px;
+    border-left: 2px solid var(--line-strong);
+    color: var(--ink-muted);
+}
+
+.prose hr {
+    width: 100%;
+    height: 1px;
+    margin: 0;
+    border: 0;
+    background: var(--line);
+}
+
+/* Inline code */
+
+.prose :not(pre) > code {
+    padding: 1px 5px;
+    border-radius: var(--r-code);
+    background: var(--chip);
+    color: var(--code-ink);
+    font-size: 14px;
+}
+
+/* Code blocks - the figure comes from `rehypeCodeBlock`. */
+
+.prose .code-block {
+    margin: 0;
+    border: 1px solid var(--code-line);
+    border-radius: var(--r-card);
+    background: var(--code-bg);
+    overflow: hidden;
+}
+
+.prose .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--code-line);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1;
+    color: var(--ink-dim);
+}
+
+.prose .code-copy {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+.prose .code-copy:hover {
+    color: var(--accent);
+}
+
+.prose pre:not(.mermaid) {
+    margin: 0;
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.75;
+    overflow-x: auto;
+    background: var(--code-bg) !important;
+}
+
+.prose pre code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+}
+
+/* A `<pre>` written by hand in an old post, with no highlighting. */
+.prose > pre {
+    border: 1px solid var(--code-line);
+    border-radius: var(--r-card);
+    color: var(--code-fg);
+}
+
+/* Mermaid diagrams - the source shows until the script draws the diagram. */
+
+.prose pre.mermaid {
+    display: flex;
+    justify-content: center;
+    padding: 20px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    background: var(--bg-subtle);
+    color: var(--ink-dim);
+    font-size: 13px;
+    line-height: 1.75;
+    overflow-x: auto;
+}
+
+.prose pre.mermaid svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Once the diagram is drawn the monospace source styling is not wanted. */
+.prose pre.mermaid.rendered {
+    font-family: var(--font-ui);
+}
+
+/* Figures and images */
+
+.prose img {
+    display: block;
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+}
+
+.prose figure:not(.code-block) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+}
+
+.prose figcaption {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ink-dim);
+}
+
+/* Tables - several of the older posts write them by hand. */
+
+/*
+ * A table is as wide as its content, capped at the column width, and scrolls
+ * inside itself when it does not fit. Without this a wide table pushes the
+ * whole page sideways on a phone.
+ */
+.prose table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 14.5px;
+}
+
+.prose th,
+.prose td {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+}
+
+.prose th {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.prose .table-scroll {
+    overflow-x: auto;
+}
