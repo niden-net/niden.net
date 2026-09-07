@@ -1,9 +1,13 @@
 # For local development only.
 
 services:
-    niden-net-blog:
-        container_name: niden-net-blog
-        hostname: niden-net-blog
-        image: bretfisher/jekyll-serve
+    niden-net-astro:
+        container_name: niden-net-astro
+        hostname: niden-net-astro
+        image: node:22-alpine
+        working_dir: /app
         volumes:
-            - .:/site
+            - .:/app
+        ports:
+            - "4321:4321"
+        command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --force"

@@ -1,6 +1,26 @@
-vendor/
-_site/
-.sass-cache/
-.jekyll-cache
-.jekyll-metadata
-Gemfile.lock
+# JetBrains IDE
+.idea/
+*.iml
+
+# Astro
+node_modules/
+dist/
+.astro/
+.wrangler/
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.production
+.dev.vars
+.dev.vars.*
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# macOS
+.DS_Store
