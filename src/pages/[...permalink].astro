@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+
+import Callout from '../components/Callout.astro';
+import PageLayout from '../layouts/Page.astro';
+import '../styles/prose.css';
+
+export const getStaticPaths = (async () => {
+    const pages = await getCollection('pages');
+
+    return pages.map((page) => ({
+        params: { permalink: page.data.permalink.replace(/^\//, '') },
+        props: { page },
+    }));
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+
+<PageLayout
+    activeHref={page.data.permalink}
+    credentials={page.data.credentials}
+    lead={page.data.lead}
+    title={page.data.title}
+>
+    <Content components={{ Callout }} />
+</PageLayout>

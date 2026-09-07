@@ -1,0 +1,108 @@
+/*
+ * Design tokens - niden.net.
+ *
+ * The surface and accent colors come from the Color Admin theme, the same
+ * palette the previous Jekyll site used, quoted as the exact hex values the
+ * theme ships. The remaining tokens keep the oklch() values of the design
+ * handoff.
+ */
+
+:root {
+    /* Dark theme (default) - Color Admin */
+    --bg:           #161a1d;
+    --bg-raised:    #2d353c;
+    --bg-sunken:    #10141a;
+    --bg-subtle:    #262d33;
+
+    --chip:         #2d353c;
+    --chip-strong:  #3a444d;
+
+    --line:         #3a444d;
+    --line-soft:    #262d33;
+    --line-strong:  #495057;
+
+    --ink:          #ffffff;
+    --ink-body:     #dee2e6;
+    --ink-muted:    #b6c2c9;
+    --ink-dim:      #8a949c;
+
+    --accent:       #00acac;
+    --accent-ink:   #06201f;
+
+    --row-hover:    #20262b;
+    --error:        #ff5b57;
+    --code-ink:     #4fd1c5;
+
+    /* Callout accents. The hues already exist in the code palette. */
+    --info:         oklch(0.780 0.100 220);
+    --warning:      oklch(0.840 0.120 85);
+    --success:      oklch(0.800 0.140 145);
+    --danger:       oklch(0.720 0.140 25);
+
+    /*
+     * Code blocks keep the dark surface in both themes: the handoff specifies
+     * one set of syntax colors and they are tuned for a dark ground. These two
+     * tokens are deliberately absent from the light blocks below.
+     */
+    --code-bg:      #10141a;
+    --code-line:    #3a444d;
+    --code-fg:      #dee2e6;
+
+    /* Type */
+    --font-display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+    --font-ui:      'Space Grotesk Variable', 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-mono:    'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+    /* Radius */
+    --r-code:   3px;
+    --r-badge:  4px;
+    --r-field:  5px;
+    --r-card:   6px;
+    --r-modal:  10px;
+    --r-pill:   999px;
+
+    /* The one shadow in the system */
+    --shadow-modal: 0 24px 60px oklch(0.06 0.01 250 / 0.7);
+
+    /* Measure */
+    --content-width: 1000px;
+    --gutter: 44px;
+
+    /* Height of the sticky header. Anchor targets clear it. */
+    --header-h: 64px;
+}
+
+/* Dark is the default. Only an explicit choice switches to light. */
+:root[data-theme='light'] {
+    --bg:           #ffffff;
+    --bg-raised:    #ffffff;
+    --bg-sunken:    #f2f3f4;
+    --bg-subtle:    #f2f3f4;
+
+    --chip:         #eef0f2;
+    --chip-strong:  #dfe3e6;
+
+    --line:         #ced4da;
+    --line-soft:    #e4e8eb;
+    --line-strong:  #b6c2c9;
+
+    --ink:          #2d353c;
+    --ink-body:     #495057;
+    --ink-muted:    #6c757d;
+    /* Color Admin's grey-500 (#adb5bd) fails contrast on white; this is the
+       lightest tone that still clears 4.5:1 for the small meta text. */
+    --ink-dim:      #6f777e;
+
+    /* The dark teal is too light on white, so it darkens for contrast. */
+    --accent:       #007d7d;
+    --accent-ink:   #ffffff;
+
+    --row-hover:    #f2f3f4;
+    --error:        #d6403c;
+    --code-ink:     #007d7d;
+
+    --info:         oklch(0.470 0.110 220);
+    --warning:      oklch(0.520 0.110 85);
+    --success:      oklch(0.480 0.130 145);
+    --danger:       oklch(0.520 0.170 25);
+}

@@ -1,0 +1,72 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Nothing here" compact={true} width={460}>
+    <div class="body">
+        <div class="code">404</div>
+        <h1 class="title">Nothing here</h1>
+        <p class="line">
+            That address does not match a post or a page. It may have moved, or it may
+            never have existed.
+        </p>
+
+        <div class="actions">
+            <a class="button" href="/archive">Archive</a>
+            <button class="button" type="button" data-search-open>Search</button>
+        </div>
+    </div>
+</Base>
+
+<style>
+    .body {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 40px 30px;
+    }
+
+    .code {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        line-height: 1;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+    }
+
+    .title {
+        font-size: 34px;
+        line-height: 1.05;
+        font-weight: 700;
+    }
+
+    .line {
+        font-size: 15.5px;
+        line-height: 1.6;
+        color: var(--ink-muted);
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 6px;
+    }
+
+    .button {
+        padding: 8px 14px;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--r-field);
+        background: none;
+        font-family: var(--font-ui);
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--ink);
+        cursor: pointer;
+    }
+
+    .button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+</style>

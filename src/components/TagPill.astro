@@ -1,0 +1,48 @@
+---
+import { tagUrl } from '../lib/posts';
+
+interface Props {
+    count?: number;
+    size?: 'sm' | 'md';
+    tag: string;
+}
+
+const { count, size = 'sm', tag } = Astro.props;
+---
+
+<a class:list={['pill', size]} href={tagUrl(tag)}>
+    {tag}{count === undefined ? null : <span class="count">{count}</span>}
+</a>
+
+<style>
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 8px;
+        border-radius: var(--r-pill);
+        background: var(--chip);
+        color: var(--ink-body);
+        line-height: 1.45;
+    }
+
+    .pill.sm {
+        font-family: var(--font-mono);
+        font-size: 11px;
+    }
+
+    .pill.md {
+        font-size: 12.5px;
+    }
+
+    .pill:hover {
+        background: var(--chip-strong);
+        color: var(--ink);
+    }
+
+    .count {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--ink-dim);
+    }
+</style>

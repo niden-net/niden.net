@@ -1,0 +1,25 @@
+---
+/**
+ * Behavior for the Copy buttons that `rehypeCodeBlock` puts in each code-block
+ * header. With JS off the button is inert and the code is still selectable.
+ */
+---
+
+<script>
+    document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const code = button.closest('figure')?.querySelector('pre')?.innerText ?? '';
+
+            try {
+                await navigator.clipboard.writeText(code);
+            } catch (error) {
+                return;
+            }
+
+            button.textContent = 'Copied';
+            window.setTimeout(() => {
+                button.textContent = 'Copy';
+            }, 1500);
+        });
+    });
+</script>

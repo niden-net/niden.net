@@ -1,0 +1,405 @@
+---
+/**
+ * 3b - search overlay. Opens on Cmd/Ctrl+K, "/" and the header Search link.
+ * The index is a static JSON file; matching is a plain substring pass over
+ * ~90 entries, which is fast enough to need no library.
+ */
+---
+
+<div class="backdrop" data-search-backdrop hidden>
+    <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search"
+        data-search-modal
+    >
+        <div class="input-row">
+            <span class="slash" aria-hidden="true">/</span>
+            <input
+                class="input"
+                type="search"
+                placeholder="Search posts and tags"
+                autocomplete="off"
+                spellcheck="false"
+                aria-label="Search posts and tags"
+                data-search-input
+            />
+            <kbd class="kbd">esc</kbd>
+        </div>
+
+        <div class="results" data-search-results role="listbox"></div>
+
+        <div class="hints">
+            <span>&uarr;&darr; navigate</span>
+            <span>&crarr; open</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    interface IndexPost {
+        date: string;
+        excerpt: string;
+        tags: string[];
+        title: string;
+        url: string;
+    }
+
+    interface IndexTag {
+        count: number;
+        tag: string;
+        url: string;
+    }
+
+    interface SearchIndex {
+        posts: IndexPost[];
+        tags: IndexTag[];
+    }
+
+    const backdrop = document.querySelector<HTMLElement>('[data-search-backdrop]');
+    const modal = document.querySelector<HTMLElement>('[data-search-modal]');
+    const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+    const results = document.querySelector<HTMLElement>('[data-search-results]');
+
+    if (backdrop && modal && input && results) {
+        let index: SearchIndex | null = null;
+        let rows: HTMLAnchorElement[] = [];
+        let selected = 0;
+        let opener: HTMLElement | null = null;
+
+        const escapeHtml = (value: string): string =>
+            value.replace(
+                /[&<>"']/g,
+                (character) =>
+                    ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;',
+                    })[character] as string
+            );
+
+        /** Wraps the matched substring so it can be painted with the accent. */
+        const highlight = (value: string, query: string): string => {
+            const at = value.toLowerCase().indexOf(query.toLowerCase());
+
+            if (query === '' || at === -1) {
+                return escapeHtml(value);
+            }
+
+            return [
+                escapeHtml(value.slice(0, at)),
+                '<mark>',
+                escapeHtml(value.slice(at, at + query.length)),
+                '</mark>',
+                escapeHtml(value.slice(at + query.length)),
+            ].join('');
+        };
+
+        const loadIndex = async (): Promise<SearchIndex> => {
+            if (index === null) {
+                const response = await fetch('/search.json');
+
+                index = (await response.json()) as SearchIndex;
+            }
+
+            return index;
+        };
+
+        const paintSelection = (): void => {
+            rows.forEach((row, position) => {
+                row.classList.toggle('selected', position === selected);
+                row.setAttribute('aria-selected', String(position === selected));
+            });
+
+            rows[selected]?.scrollIntoView({ block: 'nearest' });
+        };
+
+        const render = (query: string): void => {
+            if (index === null) {
+                return;
+            }
+
+            const needle = query.trim().toLowerCase();
+            const posts =
+                needle === ''
+                    ? index.posts.slice(0, 6)
+                    : index.posts
+                          .filter(
+                              (post) =>
+                                  post.title.toLowerCase().includes(needle) ||
+                                  post.excerpt.toLowerCase().includes(needle)
+                          )
+                          .slice(0, 8);
+            const tags =
+                needle === ''
+                    ? []
+                    : index.tags
+                          .filter((item) => item.tag.toLowerCase().includes(needle))
+                          .slice(0, 5);
+
+            const groups: string[] = [];
+
+            if (posts.length > 0) {
+                groups.push(
+                    '<div class="group-label">Posts</div>',
+                    ...posts.map(
+                        (post) =>
+                            `<a class="result" href="${post.url}" role="option">` +
+                            `<span class="result-title">${highlight(post.title, needle)}</span>` +
+                            `<span class="result-date">${escapeHtml(post.date)}</span>` +
+                            '</a>'
+                    )
+                );
+            }
+
+            if (tags.length > 0) {
+                groups.push(
+                    '<div class="group-label">Tags</div>',
+                    ...tags.map(
+                        (item) =>
+                            `<a class="result" href="${item.url}" role="option">` +
+                            `<span class="result-pill">${highlight(item.tag, needle)}</span>` +
+                            `<span class="result-date">${item.count} posts</span>` +
+                            '</a>'
+                    )
+                );
+            }
+
+            results.innerHTML =
+                groups.length > 0
+                    ? groups.join('')
+                    : '<div class="empty">No matches.</div>';
+
+            rows = [...results.querySelectorAll<HTMLAnchorElement>('.result')];
+            selected = 0;
+            paintSelection();
+        };
+
+        const open = async (trigger: HTMLElement | null): Promise<void> => {
+            opener = trigger;
+            backdrop.hidden = false;
+            document.body.style.overflow = 'hidden';
+            input.value = '';
+            input.focus();
+
+            await loadIndex();
+            render('');
+        };
+
+        const close = (): void => {
+            backdrop.hidden = true;
+            document.body.style.overflow = '';
+            opener?.focus();
+            opener = null;
+        };
+
+        document.querySelectorAll<HTMLElement>('[data-search-open]').forEach((trigger) => {
+            trigger.addEventListener('click', (event) => {
+                event.preventDefault();
+                void open(trigger);
+            });
+        });
+
+        input.addEventListener('input', () => render(input.value));
+
+        backdrop.addEventListener('mousedown', (event) => {
+            if (event.target === backdrop) {
+                close();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            const isTyping =
+                event.target instanceof HTMLElement &&
+                ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName);
+
+            if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+                event.preventDefault();
+                backdrop.hidden ? void open(null) : close();
+
+                return;
+            }
+
+            if (event.key === '/' && backdrop.hidden && !isTyping) {
+                event.preventDefault();
+                void open(null);
+
+                return;
+            }
+
+            if (backdrop.hidden) {
+                return;
+            }
+
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                close();
+            }
+
+            if (event.key === 'ArrowDown' && rows.length > 0) {
+                event.preventDefault();
+                selected = (selected + 1) % rows.length;
+                paintSelection();
+            }
+
+            if (event.key === 'ArrowUp' && rows.length > 0) {
+                event.preventDefault();
+                selected = (selected - 1 + rows.length) % rows.length;
+                paintSelection();
+            }
+
+            if (event.key === 'Enter' && rows[selected]) {
+                event.preventDefault();
+                window.location.href = rows[selected].href;
+            }
+
+            /* Focus stays inside the modal. */
+            if (event.key === 'Tab') {
+                event.preventDefault();
+                input.focus();
+            }
+        });
+    }
+</script>
+
+<style>
+    .backdrop {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 56px 16px 16px;
+        background: oklch(0.1 0.008 250 / 0.68);
+        z-index: 50;
+    }
+
+    /* `display: flex` above beats the `hidden` attribute, so state it again. */
+    .backdrop[hidden] {
+        display: none;
+    }
+
+    .modal {
+        width: 448px;
+        max-width: 100%;
+        max-height: calc(100vh - 96px);
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-raised);
+        border: 1px solid var(--line-strong);
+        border-radius: var(--r-modal);
+        box-shadow: var(--shadow-modal);
+        overflow: hidden;
+    }
+
+    .input-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 18px;
+        border-bottom: 1px solid var(--line-strong);
+    }
+
+    .slash {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--accent);
+    }
+
+    .input {
+        flex: 1;
+        border: 0;
+        background: none;
+        font-family: var(--font-ui);
+        font-size: 16px;
+        color: var(--ink);
+    }
+
+    .input:focus {
+        outline: none;
+    }
+
+    .input::placeholder {
+        color: var(--ink-dim);
+    }
+
+    .kbd {
+        padding: 2px 6px;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--r-code);
+        font-size: 10.5px;
+        color: var(--ink-dim);
+    }
+
+    .results {
+        padding: 8px;
+        overflow-y: auto;
+    }
+
+    .hints {
+        display: flex;
+        gap: 16px;
+        padding: 10px 18px;
+        border-top: 1px solid var(--line-strong);
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--ink-dim);
+    }
+
+    /* Rendered by the script above, so these need :global. */
+    .results :global(.group-label) {
+        padding: 8px 12px 4px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-dim);
+    }
+
+    .results :global(.result) {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: var(--r-card);
+        color: var(--ink);
+    }
+
+    .results :global(.result.selected) {
+        background: var(--chip-strong);
+    }
+
+    .results :global(.result-title) {
+        font-size: 15px;
+    }
+
+    .results :global(.result-pill) {
+        padding: 3px 8px;
+        border-radius: var(--r-pill);
+        background: var(--chip);
+        font-family: var(--font-mono);
+        font-size: 11px;
+    }
+
+    .results :global(.result-date) {
+        flex-shrink: 0;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--ink-dim);
+    }
+
+    .results :global(mark) {
+        background: none;
+        color: var(--accent);
+    }
+
+    .results :global(.empty) {
+        padding: 16px 12px;
+        font-size: 14px;
+        color: var(--ink-dim);
+    }
+</style>

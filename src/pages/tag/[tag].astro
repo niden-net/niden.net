@@ -1,0 +1,101 @@
+---
+import type { GetStaticPaths } from 'astro';
+
+import Base from '../../layouts/Base.astro';
+import PostRow from '../../components/PostRow.astro';
+import TagPill from '../../components/TagPill.astro';
+import { allPosts, tagCounts, tagSlug } from '../../lib/posts';
+
+export const getStaticPaths = (async () => {
+    const posts = await allPosts();
+
+    return tagCounts(posts).map((item) => ({
+        params: { tag: item.slug },
+        props: {
+            allTags: tagCounts(posts),
+            matched: posts.filter((post) =>
+                post.data.tags.some((tag) => tagSlug(tag) === item.slug)
+            ),
+            tag: item.tag,
+        },
+    }));
+}) satisfies GetStaticPaths;
+
+const { allTags, matched, tag } = Astro.props;
+---
+
+<Base title={tag} activeHref="/tag" compact={true} width={740}>
+    <div class="body">
+        <section class="block">
+            <div class="mono-label">Tag</div>
+
+            <div class="title-row">
+                <h1 class="title">{tag}</h1>
+                <span class="count">
+                    {matched.length} {matched.length === 1 ? 'post' : 'posts'}
+                </span>
+            </div>
+        </section>
+
+        <section class="list">
+            {matched.map((post) => <PostRow post={post} variant="tag" />)}
+        </section>
+
+        <section class="block">
+            <div class="mono-label">All tags</div>
+            <div class="tags">
+                {allTags.map((item) => <TagPill tag={item.tag} size="md" />)}
+            </div>
+        </section>
+    </div>
+</Base>
+
+<style>
+    .body {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+        padding: 34px 32px 36px;
+    }
+
+    .block {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .title-row {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+    }
+
+    .title {
+        font-size: 38px;
+        line-height: 1;
+        font-weight: 700;
+    }
+
+    .count {
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        color: var(--ink-dim);
+    }
+
+    .list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    @media (max-width: 900px) {
+        .body {
+            padding: 28px 24px 32px;
+        }
+    }
+</style>

@@ -1,0 +1,36 @@
+version: 2
+
+updates:
+  # The workflow pins every action to a commit SHA. Dependabot moves the pin
+  # and updates the version comment beside it.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - dependencies
+
+  # The Astro toolchain and the site's own dependencies.
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    labels:
+      - dependencies
+    groups:
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+      fonts:
+        patterns:
+          - "@fontsource*/*"

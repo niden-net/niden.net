@@ -1,0 +1,100 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+    headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const entries = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+<nav class="toc" aria-label="On this page">
+    <div class="mono-label">On this page</div>
+
+    <ul class="list">
+        {
+            entries.map((heading) => (
+                <li>
+                    <a
+                        class:list={['entry', { nested: heading.depth === 3 }]}
+                        href={`#${heading.slug}`}
+                        data-toc-link={heading.slug}
+                    >
+                        {heading.text}
+                    </a>
+                </li>
+            ))
+        }
+    </ul>
+</nav>
+
+<script>
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
+
+    if (links.length > 0) {
+        const headings = links
+            .map((link) => document.getElementById(link.dataset.tocLink ?? ''))
+            .filter((heading): heading is HTMLElement => heading !== null);
+
+        const setActive = (slug: string): void => {
+            links.forEach((link) => {
+                link.classList.toggle('active', link.dataset.tocLink === slug);
+            });
+        };
+
+        const observer = new IntersectionObserver(
+            (records) => {
+                const visible = records
+                    .filter((record) => record.isIntersecting)
+                    .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+                if (visible[0]?.target.id) {
+                    setActive(visible[0].target.id);
+                }
+            },
+            { rootMargin: '-24px 0px -70% 0px', threshold: 0 }
+        );
+
+        headings.forEach((heading) => observer.observe(heading));
+    }
+</script>
+
+<style>
+    .toc {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .list {
+        display: flex;
+        flex-direction: column;
+        list-style: none;
+        padding: 0;
+    }
+
+    .entry {
+        display: block;
+        padding: 5px 0 5px 12px;
+        border-left: 2px solid var(--line);
+        font-size: 13.5px;
+        line-height: 1.3;
+        color: var(--ink-muted);
+    }
+
+    .entry.nested {
+        padding-left: 26px;
+        font-size: 13px;
+    }
+
+    .entry:hover {
+        color: var(--ink);
+    }
+
+    .entry.active {
+        border-left-color: var(--accent);
+        color: var(--ink);
+        font-weight: 500;
+    }
+</style>

@@ -1,0 +1,143 @@
+---
+import TagPill from './TagPill.astro';
+import {
+    excerpt,
+    formatDate,
+    postUrl,
+    readingMinutes,
+    type Post,
+} from '../lib/posts';
+
+interface Props {
+    post: Post;
+}
+
+const { post } = Astro.props;
+const summary = excerpt(post);
+---
+
+<section class="featured">
+    <div class="head">
+        <div class="eyebrow">
+            <span class="latest">Latest</span>
+            <span class="rule" aria-hidden="true"></span>
+            <span class="meta">
+                {formatDate(post.data.date)} &middot; {readingMinutes(post)} min
+            </span>
+        </div>
+
+        <h1 class="title">
+            <a href={postUrl(post)}>{post.data.title}</a>
+        </h1>
+    </div>
+
+    <div class="body">
+        <p class="excerpt">{summary}</p>
+
+        <div class="aside">
+            <div class="tags">
+                {post.data.tags.slice(0, 3).map((tag) => <TagPill tag={tag} />)}
+            </div>
+            <a class="accent-link" href={postUrl(post)}>Read the post &rarr;</a>
+        </div>
+    </div>
+</section>
+
+<style>
+    .featured {
+        padding: 46px var(--gutter) 40px;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .head {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        max-width: 38ch;
+    }
+
+    .eyebrow {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        line-height: 1;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .latest {
+        color: var(--accent);
+    }
+
+    .rule {
+        width: 28px;
+        height: 1px;
+        background: color-mix(in oklch, var(--accent) 50%, transparent);
+    }
+
+    .meta {
+        color: var(--ink-dim);
+    }
+
+    .title {
+        font-size: 52px;
+        line-height: 1.02;
+        font-weight: 700;
+        letter-spacing: -0.035em;
+        text-wrap: pretty;
+    }
+
+    .title a:hover {
+        color: var(--accent);
+    }
+
+    .body {
+        display: flex;
+        gap: 44px;
+        margin-top: 24px;
+        align-items: flex-end;
+    }
+
+    .excerpt {
+        max-width: 64ch;
+        font-size: 17px;
+        line-height: 1.62;
+        color: var(--ink-muted);
+        text-wrap: pretty;
+    }
+
+    .aside {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex-shrink: 0;
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        max-width: 200px;
+    }
+
+    @media (max-width: 900px) {
+        .featured {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .title {
+            font-size: 34px;
+        }
+
+        .body {
+            flex-direction: column;
+            gap: 20px;
+            align-items: flex-start;
+        }
+    }
+</style>
