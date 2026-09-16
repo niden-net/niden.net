@@ -252,6 +252,16 @@ The controller, the action, and the tests keep the same one line. We can comment
 - **Lifetimes still apply.** A `SINGLETON` service is wrapped once and cached. A `TRANSIENT` service is rebuilt per request, and the extenders run again for each new instance.
 - **Keep the interface.** A decorator that adds public methods is no longer a decorator - the callers now need to know which layer they hold.
 
+## What it costs
+
+The example has three layers, so `findById()` exists in three classes and the query runs two hops away from the caller. **That is not free**:
+
+- **Delegation boilerplate.** One method is cheap. A repository with twelve methods makes each decorator forward twelve methods, and a thirteenth method means an edit in every layer.
+- **Traceability.** `$container->get(InvoiceRepositoryInterface::class)` no longer tells you what you hold. A stack trace reads log layer, then cache layer, then PDO, and the provider is the only place that explains that order.
+- **Silent ordering bugs.** Swap the two `extend()` calls and the audit entry is written only on a cache miss. Nothing fails. The behavior just changes.
+
+Rule of thumb: decorate narrow interfaces, one to three methods. For a wide interface, `Phalcon\Events\Manager` gives you the same hook without the forwarding code.
+
 ## When not to reach for it
 
 - The behavior belongs to the object itself. A rule that is part of the domain belongs in the domain class, not in a wrapper.
