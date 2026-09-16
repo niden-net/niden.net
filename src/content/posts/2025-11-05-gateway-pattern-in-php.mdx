@@ -1,5 +1,5 @@
 ---
-title: Design Patterns - Decorator
+title: Design Patterns - Gateway
 date: 2025-11-05T08:39:18.200Z
 tags:
   - design patterns
@@ -7,268 +7,322 @@ tags:
   - programming
   - series
   - how-to
-  - decorator
+  - gateway
 ---
-Continuing the design patterns in PHP posts, we are going to focus today on the Decorator pattern and how we are using it in Phalcon.
+Fifteen years after my original posts on design patterns in PHP, this series revisits those ideas with modern tools. Using Phalcon v6 and a small REST API example, it demonstrates the [Gateway pattern][gateway] to decouple application logic from external payment providers, showing a minimal, testable interface and concrete adapters so you can swap processors without changing business code.
 
-## The pattern in one paragraph
 
-A decorator is an object that implements an interface and holds another object of that same interface. Callers see the interface. The decorator adds behavior before or after the call, then gives the work to the object it wraps. Because the outside shape does not change, you can stack decorators, and the code that uses the service does not know how many layers are there.
+## REST API - Phalcon v6
 
-## Why we use it
+Recently I have been working on a series of [videos][rest_videos] for [Phalcon][phalcon], demonstrating how one can create a REST API with Phalcon v6.
 
-- **The class stays closed.** You add logging, caching, retries, or metrics without an edit to the class that does the real work.
-- **No subclass explosion.** Three cross-cutting concerns give you three small decorators, not eight subclasses for each combination.
-- **Composition at the edges.** Each layer is small, has one job, and is easy to test on its own with a fake inner object.
-- **The wiring is the only place that knows.** Callers keep asking for the interface. Only the container knows which layers are active, so a layer can be added in production and left out in the test suite.
+[Phalcon v6][phalcon_v6] is the version of Phalcon written solely in PHP, which will facilitate easier installation via Composer, especially in environments where installing a PHP extension is not possible. At the time of posting, only the PHQL parser has been converted from C to PHP; an Alpha release is expected soon.
 
-## Where do we see this in Phacon
+The PHQL parser is the engine behind the Models for Phalcon (the M in MVC). However, we started an effort to introduce the Data Mapper pattern in the framework, and although not fully complete, we can use the basic objects to interact with the database as well as the relevant Connection object. With those, we can create our API application with Phalcon v6.
 
-There are a few spots in Phalcon where decorators are used, although not named. The glaring one is of course the `DataMapper\Pdo\Connection\Decorated`, and there are plenty of components in our new `Phalcon\ADR` namespace. The one that we will be focusing on today is the `Phalcon\Container\Container` which has a post-build extender hook:
+## Problem to solve
 
-```php
-public function extend(string $name, callable $callableObject): void
-```
+One of the future tasks for the video series is to connect our API to some fictional payment processor, so that we can process payments from the front end. The task is simple, an API call from our application to the vendor's API, get the response back, parse it as needed and return the results back to the front end.
 
-An extender is a callable that receives the built service and the container, and returns the object that the container will hand out. Return the same object and you get a mutation. Return a wrapper and you get a decorator.
+The obvious question is which payment processor are we using, and what happens if a different payment processor appears in the future that we need to interact with? How will our code change, and will that small change break everything?
 
-The `Phalcon\ADR\Application` class exposes the same for ADR applications:
+To deal with this problem, we can introduce the [Gateway pattern][gateway].
 
-```php
-public function extend(string $name, Closure $extender): static
-```
+The idea of the pattern is simple. We define a thin interface (the "gateway") that abstracts an external system, so that our application knows one and only one way to interact with it.
 
-### What happens inside
+Accompanying the gateway pattern are more concrete implementations that translate the interface's method calls into whatever each payment provider (external system) requires. Those can be anything, from REST, SOAP, SDK etc.
 
-The extenders are stored on the service definition (`Phalcon\Container\Definition\ServiceDefinition`), and the build loop is short:
+The chosen adapter implementing the gateway is then injected so the application stays decoupled from the implementation details of the external system.
 
-```php
-foreach ($this->extenders as $extender) {
-    $instance = $extender($instance, $container);
-}
 
-return $instance;
-```
+## Example
 
-Three points follow from those three lines:
+The example is an order processing system
 
-1. The extenders run **after** the constructor, so the object is complete before the first layer sees it.
-2. They run **in registration order**. The first extender is the innermost wrapper, the last extender is the outermost.
-3. The **return value replaces the instance**. An extender that forgets its `return` statement destroys the service.
+### OrderItem
 
-## A worked example
-
-Our domain is Invoices. The application asks for one from a repository, and the repository talks to the database. We want a cache layer and an audit log, but we do not want either concern inside the PDO class. Putting them all in one spot is certainly convenient and easy but we will pay for it (dearly) later during maintenance. As such, we want to keep these concerns separate.
-
-### The contract
+Each ordered item - a line item in accounting.
 
 ```php
-namespace App\Domain\Invoice;
+<?php
 
-interface InvoiceRepository
-{
-    public function findById(int $invoiceId): ?Invoice;
-}
-```
+declare(strict_types=1);
 
-### The real work
-
-```php
-namespace App\Domain\Invoice;
-
-use Phalcon\DataMapper\Pdo\Connection;
-
-class PdoInvoiceRepository implements InvoiceRepository
+final class OrderItem
 {
     public function __construct(
-        protected Connection $connection
+        public readonly string $sku,
+        public readonly int $quantity,
+        public readonly float $unitPrice
+    ) {}
+
+    public function total(): float
+    {
+        return $this->quantity * $this->unitPrice;
+    }
+}
+```
+
+### Order
+
+The collection of OrderItems
+
+```php
+<?php
+
+declare(strict_types=1);
+
+final class Order
+{
+    /** @var OrderItem[] */
+    private array $items = [];
+
+    public function __construct(
+        public readonly string $orderId
     ) {
     }
 
-    public function findById(int $invoiceId): ?Invoice
+    public function addItem(OrderItem $item): void
     {
-        $row = $this->connection->fetchOne(
-            'SELECT * FROM co_invoices WHERE inv_id = :id',
-            ['id' => $invoiceId]
+        $this->items[] = $item;
+    }
+
+
+    /** @return OrderItem[] */
+    public function items(): array
+    {
+        return $this->items;
+    }
+
+    public function totalAmount(): float
+    {
+        return array_reduce(
+            $this->items,
+            fn (float $c, OrderItem $i) => $c + $i->total(),
+            0.0
         );
-
-        return empty($row) ? null : Invoice::fromArray($row);
     }
 }
 ```
 
-### The cache layer
+### OrderRepository
+
+Abstraction for the database
 
 ```php
-namespace App\Domain\Invoice;
+<?php
 
-use Phalcon\Cache\Cache;
+declare(strict_types=1);
 
-class CachedInvoiceRepository implements InvoiceRepository
+interface OrderRepository
+{
+    public function save(Order $order): void;
+}
+
+// For MySql
+final class MySqlOrderRepository implements OrderRepository
 {
     public function __construct(
-        protected InvoiceRepository $repository,
-        protected Cache $cache
+        private PDO $pdo
     ) {
     }
 
-    public function findById(int $invoiceId): ?Invoice
+    public function save(Order $order): void
     {
-        $key = 'invoice-' . $invoiceId;
+        // Save records here in MySQL
+    }
+}
+```
 
-        if (true === $this->cache->has($key)) {
-            return $this->cache->get($key);
+## Gateway Pattern
+
+To implement our pattern we will need to create a contract with the rest of the application. Of course this is an interface and we need to keep it as thin as possible, just enough to express our business needs.
+
+### Interface
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Phalcon\Domain\Payload;
+
+interface PaymentGatewayInterface
+{
+    /**
+     * Charge a monetary amount for a given order.
+     *
+     * @param string $orderId   Identifier of the order being paid.
+     * @param float  $amount    Amount in the currency's smallest unit (e.g. dollars)
+     * @param string $currency  ISO‑4217 code, e.g. "USD".
+     *
+     * @return Payload   Information about success / failure.
+     */
+    public function charge(
+        string $orderId,
+        float $amount,
+        string $currency
+    ): Payload;
+}
+```
+
+### Transport object
+
+To standardize the communication between the gateway and our application, we will use the  [Payload][payload] object that Phalcon offers, which in turn implements the [PayloadInterop][payload_interop] interface.
+
+A sample message back could be represented by the following:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use PayloadInterop\DomainStatus;
+use Phalcon\Domain\Payload;
+
+// Success
+return new Payload(
+    DomainStatus::SUCCESS,
+    [
+        'data' => [
+            'transactionId' => '123456789'
+        ]
+    ]
+);
+
+
+// Error
+return new Payload(
+    DomainStatus::ERROR,
+    [
+        'errors' => [
+            ['error message 1'],
+            ['error message 2'],
+        ]
+    ]
+);
+```
+
+### Adapter - Implementation
+
+This is the concrete implementation that talks to an external/third-party provider. Such providers can be Stripe, Paypal etc. Depending on the provider, different dependencies will be injected (e.g. HTTP client, SDK etc.)
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use PayloadInterop\DomainStatus;
+use Phalcon\Domain\Payload;
+
+final class StripeGateway implements PaymentGatewayInterface
+{
+    /** @var array<string, string> */
+    private array $store = [];
+
+    public function charge(
+        string $orderId,
+        float $amount,
+        string $currency
+    ): Payload {
+        // Simulate network latency / random failure
+        usleep(random_int(50_000, 150_000));
+
+        // Reject anything above 500 USD (for demo purposes)
+        if ($amount > 500.0) {
+            return new Payload(
+                DomainStatus::ERROR,
+                [
+                    'errors' => [
+                        'Amount exceeds limit for the Stripe gateway.'
+                    ]
+                ]
+            );
         }
 
-        $invoice = $this->repository->findById($invoiceId);
+        // Generate a fake transaction id
+        $txId = 'tx_' . bin2hex(random_bytes(8));
+        $this->store[$txId] = $orderId;
 
-        if (null !== $invoice) {
-            $this->cache->set($key, $invoice, 300);
-        }
-
-        return $invoice;
+        return new Payload(
+            DomainStatus::SUCCESS,
+            [
+                'data' => [
+                    'transactionId' => $txId
+                ]
+            ]
+        );
     }
 }
 ```
 
-### The audit layer
+As you can see, the `StripeGateway` implements our interface, and any processing in there is specific to `Stripe` alone. Other gateways will have different implementations, but the key is that they all implement the same interface, and they all return the same type of message (`Payload`).
+
+## Application
+
+Finally our application can now use this gateway and process orders, irrespective of the external provider we have chosen
 
 ```php
-namespace App\Domain\Invoice;
+<?php
 
-use Phalcon\Logger\LoggerInterface;
+declare(strict_types=1);
 
-class LoggedInvoiceRepository implements InvoiceRepository
+final class OrderProcessor
 {
     public function __construct(
-        protected InvoiceRepository $repository,
-        protected LoggerInterface $logger
-    ) {
-    }
+        private OrderRepository $repository,
+        private PaymentGatewayInterface $paymentGateway
+    ) {}
 
-    public function findById(int $invoiceId): ?Invoice
+    /**
+     * Build an order, persist it, then attempt payment.
+     *
+     * @return array{order:Order, payment:Payload}
+     */
+    public function placeOrder(array $items, string $currency = 'USD'): array
     {
-        $this->logger->info('Invoice read: ' . $invoiceId);
+        // Build the domain object
+        $order = new Order(uniqid('ord_')); // some random ID
+        foreach ($items as $row) {
+            $order->addItem(
+                new OrderItem(
+                    $row['sku'],
+                    $row['quantity'],
+                    $row['price']
+                )
+            );
+        }
 
-        return $this->repository->findById($invoiceId);
+        // Use the repository to save it
+        $this->repository->save($order);
+
+        // Perform the payment
+        $result = $this->paymentGateway->charge(
+            $order->orderId,
+            $order->totalAmount(),
+            $currency
+        );
+
+        return [
+            'order'   => $order,
+            'payment' => $result,
+        ];
     }
 }
 ```
 
-With this approach, we separate concerns cleanly and each class is a handful of lines, has one reason to change if needed but most importantly knows nothing about the other two.
+## Conclusion
 
-### The wiring
+Because of the gateway living behind an interface, we can have increased testability. We can inject a stub or a mock that returns predetermined results, and thus test our application code accordingly.
 
-```php
-namespace App\Providers;
+We also gain flexibility, because now we only have to replace the payment processor with another that implements the gateway interface, and our application code remains intact.
 
-use App\Domain\Invoice\CachedInvoiceRepository;
-use App\Domain\Invoice\InvoiceRepository;
-use App\Domain\Invoice\LoggedInvoiceRepository;
-use App\Domain\Invoice\PdoInvoiceRepository;
-use Phalcon\Cache\Cache;
-use Phalcon\Contracts\Container\Service\Collection;
-use Phalcon\Contracts\Container\Service\Provider;
-use Phalcon\Logger\LoggerInterface;
-
-class InvoiceProvider implements Provider
-{
-    public function provide(Collection $services): void
-    {
-        /**
-         * This is where we tell our container, whenever I ask you for
-         * `InvoiceRepository::class` (interface), give me back the
-         * `PdoInvoiceRepository` (concrete)
-         *
-         * Order will be LIFO (Last one In, First one Out)
-         */
-        $services->bind(
-            InvoiceRepository::class,
-            PdoInvoiceRepository::class
-        );
-
-        /**
-         * CachedInvoiceRepository is "extended" on top (so to speak) of the
-         * PdoInvoiceRepository
-         */
-        $services->extend(
-            InvoiceRepository::class,
-            static function (object $inner, object $container): object {
-                return new CachedInvoiceRepository(
-                    $inner,
-                    $container->get(Cache::class)
-                );
-            }
-        );
-
-        /**
-         * LoggedInvoiceRepository is "extended" on top (so to speak) of the
-         * CachedInvoiceRepository
-         */
-        $services->extend(
-            InvoiceRepository::class,
-            static function (object $inner, object $container): object {
-                return new LoggedInvoiceRepository(
-                    $inner,
-                    $container->get(LoggerInterface::class)
-                );
-            }
-        );
-    }
-}
-```
-
-The same two layers can be attached on the definition itself, which reads well when the service is registered and decorated in one place:
-
-```php
-$services
-    ->bind(InvoiceRepository::class, PdoInvoiceRepository::class)
-    ->addExtender($cacheLayer)
-    ->addExtender($auditLayer)
-;
-```
-
-### How do we use this in our code?
-
-```php
-$repository = $container->get(InvoiceRepository::class);
-$invoice    = $repository->findById(42);
-```
-
-The call goes through:
-1. the log layer, where data is logged (according to our class)
-2. then the cache layer where we search if there is a cached resultset and return it
-3. finally through the database only on a cache miss.
-
-The controller, the action, and the tests keep the same one line. We can comment out or remove any of the two `extend()` calls in the provider above, and there is no change in our code as far as data retrieval is concerned.
-
-## Rules and gotchas
-
-- **Decorate before the first resolution.** `extend()` throws `CannotExtendResolved` when the container already holds an instance of that service, and `addExtender()` throws `FrozenDefinition` when the definition was already frozen by a build. Providers run before the first `get()`, so this is a non-issue in normal wiring and a clear error when something resolves a service too early.
-- **The service must exist.** `extend()` throws `ServiceNotFound` when there is no definition for the name. Register first, decorate second.
-- **Order is the stack order.** The last extender you add is the outermost layer, so it is the first to see the call.
-- **Always return an object.** The return value becomes the service.
-- **Aliases are resolved first.** `extend()` runs the name through the alias table, so the interface name, the concrete name, and the short alias all reach the same definition.
-- **Lifetimes still apply.** A `SINGLETON` service is wrapped once and cached. A `TRANSIENT` service is rebuilt per request, and the extenders run again for each new instance.
-- **Keep the interface.** A decorator that adds public methods is no longer a decorator - the callers now need to know which layer they hold.
-
-## When not to reach for it
-
-- The behavior belongs to the object itself. A rule that is part of the domain belongs in the domain class, not in a wrapper.
-- One layer needs the internals of another. That is a sign the split is in the wrong place.
-- Events are enough. For a hook around a well known point in the framework, `Phalcon\Events\Manager` is the lighter tool.
-
-## Elsewhere in the framework
-
-The pattern is not only an application-level trick:
-
-- `Phalcon\DataMapper\Pdo\Connection\Decorated` takes an existing `PDO` instance and decorates it with the extended connection methods.
-- The ADR middleware chain is a decorator chain over a handler: `Phalcon\ADR\Pipeline` and `Phalcon\ADR\EventfulHandler` both implement the `Handler` contract and wrap the next step.
-
-## Takeaway
-
-The container extender is a two-line hook with a large effect. Write small classes that do one thing, keep them behind the interface, and let the container decide which layers your application runs with. The business code never changes and never knows.
+Finally, an extension of this would be to use a factory that generates payment processors (all implementing the interface). This way, one can implement conditionals based on environment variables that will generate the appropriate payment gateway class to be injected in the `OrderProcessor`.
 
 
+[gateway]: https://martinfowler.com/eaaCatalog/gateway.html
+[payload]: https://github.com/phalcon/phalcon/blob/v6.0.x/src/Domain/Payload.php
+[payload_interop]: https://github.com/payload-interop/payload-interop
 [phalcon]: https://phalcon.io
 [phalcon_v6]: https://github.com/phalcon/phalcon
+[rest_videos]: https://www.youtube.com/watch?v=GaJhNnw_1cE&list=PLgJ0OtNTm8n9dBSTxJutB7D9APBaNtHyt
