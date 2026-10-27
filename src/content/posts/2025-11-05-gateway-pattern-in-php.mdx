@@ -145,7 +145,7 @@ To implement our pattern we will need to create a contract with the rest of the 
 
 declare(strict_types=1);
 
-use Phalcon\Domain\Payload;
+use Phalcon\Domain\Payload\Payload;
 
 interface PaymentGatewayInterface
 {
@@ -168,7 +168,7 @@ interface PaymentGatewayInterface
 
 ### Transport object
 
-To standardize the communication between the gateway and our application, we will use the  [Payload][payload] object that Phalcon offers, which in turn implements the [PayloadInterop][payload_interop] interface.
+To standardize the communication between the gateway and our application, we will use the [Payload][payload] object that Phalcon offers. It holds the status of the operation, the output, and any messages.
 
 A sample message back could be represented by the following:
 
@@ -177,30 +177,34 @@ A sample message back could be represented by the following:
 
 declare(strict_types=1);
 
-use PayloadInterop\DomainStatus;
-use Phalcon\Domain\Payload;
+use Phalcon\Domain\Payload\Payload;
+use Phalcon\Domain\Payload\Status;
 
 // Success
-return new Payload(
-    DomainStatus::SUCCESS,
-    [
-        'data' => [
+$payload = new Payload();
+$payload
+    ->setStatus(Status::SUCCESS)
+    ->setOutput(
+        [
             'transactionId' => '123456789'
         ]
-    ]
-);
+    );
+
+return $payload;
 
 
 // Error
-return new Payload(
-    DomainStatus::ERROR,
-    [
-        'errors' => [
-            ['error message 1'],
-            ['error message 2'],
+$payload = new Payload();
+$payload
+    ->setStatus(Status::ERROR)
+    ->setMessages(
+        [
+            'error message 1',
+            'error message 2',
         ]
-    ]
-);
+    );
+
+return $payload;
 ```
 
 ### Adapter - Implementation
@@ -212,8 +216,8 @@ This is the concrete implementation that talks to an external/third-party provid
 
 declare(strict_types=1);
 
-use PayloadInterop\DomainStatus;
-use Phalcon\Domain\Payload;
+use Phalcon\Domain\Payload\Payload;
+use Phalcon\Domain\Payload\Status;
 
 final class StripeGateway implements PaymentGatewayInterface
 {
@@ -230,28 +234,32 @@ final class StripeGateway implements PaymentGatewayInterface
 
         // Reject anything above 500 USD (for demo purposes)
         if ($amount > 500.0) {
-            return new Payload(
-                DomainStatus::ERROR,
-                [
-                    'errors' => [
+            $payload = new Payload();
+            $payload
+                ->setStatus(Status::ERROR)
+                ->setMessages(
+                    [
                         'Amount exceeds limit for the Stripe gateway.'
                     ]
-                ]
-            );
+                );
+
+            return $payload;
         }
 
         // Generate a fake transaction id
         $txId = 'tx_' . bin2hex(random_bytes(8));
         $this->store[$txId] = $orderId;
 
-        return new Payload(
-            DomainStatus::SUCCESS,
-            [
-                'data' => [
+        $payload = new Payload();
+        $payload
+            ->setStatus(Status::SUCCESS)
+            ->setOutput(
+                [
                     'transactionId' => $txId
                 ]
-            ]
-        );
+            );
+
+        return $payload;
     }
 }
 ```
@@ -321,8 +329,7 @@ Finally, an extension of this would be to use a factory that generates payment p
 
 
 [gateway]: https://martinfowler.com/eaaCatalog/gateway.html
-[payload]: https://github.com/phalcon/phalcon/blob/v6.0.x/src/Domain/Payload.php
-[payload_interop]: https://github.com/payload-interop/payload-interop
+[payload]: https://github.com/phalcon/phalcon/blob/v6.0.x/src/Domain/Payload/Payload.php
 [phalcon]: https://phalcon.io
 [phalcon_v6]: https://github.com/phalcon/phalcon
 [rest_videos]: https://www.youtube.com/watch?v=GaJhNnw_1cE&list=PLgJ0OtNTm8n9dBSTxJutB7D9APBaNtHyt

@@ -1,0 +1,355 @@
+---
+title: Design Patterns - Registry
+date: 2026-10-26T12:00:00.000Z
+tags:
+  - design patterns
+  - php
+  - programming
+  - series
+  - how-to
+  - registry
+---
+Continuing the [design patterns in PHP][series] posts, we are going to focus today on the [Registry pattern][registry] and how we are using it in [Phalcon][phalcon]. In the [Gateway][gateway] post we put each payment provider behind one interface. Today we will use a registry to pick the right provider by name, while the application runs.
+
+## The pattern in one paragraph
+
+A registry is a well-known object that other objects use to find common objects and services. You store an object, or a factory that builds it, under a name once. Any code that knows the name gets the same object back. Most registries keep two maps: one with the definitions and one with the instances already built. The first request for a name builds the object, and every request after that gets the cached one.
+
+## Why we use it
+
+- **One place to look.** Shared objects such as the configuration, the database connection or the logger live behind one known name, not in globals scattered around the code.
+- **Lazy construction.** Store a factory, not an object. Nothing is built until the first request asks for it, so a request that never sends an email never builds the mailer.
+- **Choice by name, at runtime.** When the object you need depends on data (the payment provider the customer picked, the database replica to read from, the sanitizer a form field asks for), a registry turns a string into the right object without a `switch` statement.
+- **Easy to replace.** A test sets a fake under the same name, and the code that asks for it does not change.
+
+## Where do we see this in Phalcon
+
+Phalcon has one class with the name, and a few more that do the job without it.
+
+### `Phalcon\Support\Registry`
+
+This is the literal one. It is a `final` class that extends `Phalcon\Support\Collection`, and it adds property access on top of method and array access:
+
+```php
+use Phalcon\Support\Registry;
+
+$registry = new Registry();
+
+$registry->set('locale', 'en_US');  // method
+$registry['tenant'] = 'acme';       // array access
+$registry->theme    = 'dark';       // property access
+
+echo $registry->get('locale');      // en_US
+echo $registry['theme'];            // dark
+echo count($registry);              // 3
+
+$port = $registry->get('port', 8080, 'int');
+```
+
+It is a good fit for plain values: settings for the current request, flags, small lookup tables. It is not typed, so `get()` returns `mixed`. The third parameter of `get()` casts the value for you.
+
+### `Phalcon\Di\Di`
+
+The dependency injection container is the registry that the framework runs on. Each service is a definition stored under a name, and `getShared()` keeps the instance it builds:
+
+```php
+use Phalcon\Di\Di;
+use Phalcon\Support\Registry;
+
+$container = new Di();
+
+$container->setShared('registry', Registry::class);
+
+$registry = $container->getShared('registry');
+```
+
+`Di` also has the part that makes it a registry in the classic sense: a static, well-known access point.
+
+### What happens inside
+
+The first container you create becomes the default:
+
+```php
+public function __construct()
+{
+    if (null === self::$defaultContainer) {
+        self::$defaultContainer = $this;
+    }
+}
+```
+
+and framework code that did not receive a container asks for that one:
+
+```php
+/**
+ * We use a default DI if the user does not define one
+ */
+if ($container === null) {
+    $container = Di::getDefault();
+}
+
+if ($container === null) {
+    throw new ModelOrmServicesUnavailable(get_class($this));
+}
+```
+
+That snippet is from the constructor of `Phalcon\Mvc\Model`. An application creates models with `new` all over the place (`new Invoices()`), and nobody wants to pass a container to each one. `Di::getDefault()` is what makes that work. `Phalcon\Http\Response`, `Phalcon\Tag` and the form elements use the same fallback.
+
+The smaller registries all follow one shape. This is `Phalcon\Filter\Filter::get()`, which finds a sanitizer by name:
+
+```php
+public function get(string $name): mixed
+{
+    if (!isset($this->mapper[$name])) {
+        throw new FilterNotRegistered($name);
+    }
+
+    if (!isset($this->services[$name])) {
+        $definition            = $this->mapper[$name];
+        $this->services[$name] = $this->createInstance($definition);
+    }
+
+    return $this->services[$name];
+}
+```
+
+Three points follow from those lines:
+
+1. **An unknown name is an error.** The registry throws instead of returning `null`, so a typo fails at the line that has it.
+2. **The object is built on the first request.** `$mapper` holds definitions (class names or callables), not objects.
+3. **The built object is cached.** `$services` holds the instances, so the second `get('trim')` costs one `isset()`.
+
+`Phalcon\Forms\FormsLocator` and `Phalcon\DataMapper\Pdo\ConnectionLocator` do the same with forms and database connections. We will use the same shape in our example.
+
+## A worked example
+
+Back to the payments from the [Gateway][gateway] post. We have one `PaymentGatewayInterface` and one adapter for each provider. Last time we injected one gateway in the `OrderProcessor`. Now the customer picks the provider at checkout, so the choice happens for each order, not when the application starts.
+
+### The contract
+
+The same interface as before:
+
+```php
+namespace App\Payment;
+
+use Phalcon\Domain\Payload\Payload;
+
+interface PaymentGatewayInterface
+{
+    public function charge(
+        string $orderId,
+        float $amount,
+        string $currency
+    ): Payload;
+}
+```
+
+### The registry
+
+We could keep the gateways in `Phalcon\Support\Registry`, but we would lose three things: the return type, the error for an unknown name, and lazy construction. A small typed registry is only a few lines:
+
+```php
+namespace App\Payment;
+
+use InvalidArgumentException;
+
+final class GatewayRegistry
+{
+    /**
+     * @var array<string, callable(): PaymentGatewayInterface>
+     */
+    private array $factories = [];
+
+    /**
+     * @var array<string, PaymentGatewayInterface>
+     */
+    private array $instances = [];
+
+    public function get(string $name): PaymentGatewayInterface
+    {
+        if (!$this->has($name)) {
+            throw new InvalidArgumentException(
+                'Payment gateway not registered: ' . $name
+            );
+        }
+
+        return $this->instances[$name] ??= ($this->factories[$name])();
+    }
+
+    public function has(string $name): bool
+    {
+        return isset($this->factories[$name]);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function names(): array
+    {
+        return array_keys($this->factories);
+    }
+
+    public function set(string $name, callable $factory): void
+    {
+        unset($this->instances[$name]);
+
+        $this->factories[$name] = $factory;
+    }
+}
+```
+
+`names()` gives the checkout page the list of providers to show. `set()` clears a cached instance, so a replacement always takes effect. `FormsLocator::set()` does the same.
+
+### The wiring
+
+```php
+namespace App\Providers;
+
+use App\Payment\GatewayRegistry;
+use App\Payment\OrderProcessor;
+use App\Payment\OrderRepository;
+use App\Payment\PaypalGateway;
+use App\Payment\StripeGateway;
+use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
+
+class PaymentProvider implements ServiceProviderInterface
+{
+    public function register(DiInterface $container): void
+    {
+        $container->setShared(
+            GatewayRegistry::class,
+            function () {
+                $registry = new GatewayRegistry();
+
+                /**
+                 * Factories, not objects. A gateway is built only when an
+                 * order asks for it.
+                 */
+                $registry->set('paypal', fn () => new PaypalGateway());
+                $registry->set('stripe', fn () => new StripeGateway());
+
+                return $registry;
+            }
+        );
+
+        $container->setShared(
+            OrderProcessor::class,
+            function () use ($container) {
+                return new OrderProcessor(
+                    $container->getShared(OrderRepository::class),
+                    $container->getShared(GatewayRegistry::class)
+                );
+            }
+        );
+    }
+}
+```
+
+and in the bootstrap:
+
+```php
+$container->register(new PaymentProvider());
+```
+
+An application that only takes Stripe payments today never builds the PayPal client.
+
+### How do we use this in our code?
+
+```php
+namespace App\Payment;
+
+use Phalcon\Domain\Payload\Payload;
+
+final class OrderProcessor
+{
+    public function __construct(
+        private OrderRepository $repository,
+        private GatewayRegistry $gateways
+    ) {
+    }
+
+    /**
+     * @return array{order: Order, payment: Payload}
+     */
+    public function placeOrder(
+        array $items,
+        string $provider,
+        string $currency = 'USD'
+    ): array {
+        $order = new Order(uniqid('ord_'));
+        foreach ($items as $row) {
+            $order->addItem(
+                new OrderItem($row['sku'], $row['quantity'], $row['price'])
+            );
+        }
+
+        $this->repository->save($order);
+
+        $payment = $this->gateways
+            ->get($provider)
+            ->charge($order->orderId, $order->totalAmount(), $currency);
+
+        return [
+            'order'   => $order,
+            'payment' => $payment,
+        ];
+    }
+}
+```
+
+The processor still knows nothing about Stripe or PayPal. It knows one interface and one registry.
+
+Notice also what it does not do: it does not call `Di::getDefault()`. The registry comes in through the constructor, so the dependency is visible, and a test can pass its own:
+
+```php
+$gateways = new GatewayRegistry();
+$gateways->set('stripe', fn () => new FakeGateway());
+
+$processor = new OrderProcessor(new InMemoryOrderRepository(), $gateways);
+$result    = $processor->placeOrder($items, 'stripe');
+```
+
+A third provider is one new adapter class and one `set()` line in the provider. The `OrderProcessor` does not change.
+
+## Rules and gotchas
+
+- **`Phalcon\Support\Registry` keys are case-insensitive.** `$registry->Locale` and `$registry->locale` are the same entry. The `Collection` it extends can be case-sensitive, but the `Registry` constructor does not expose that flag.
+- **A stored `null` reads as the default.** After `$registry->set('discount', null)`, `has('discount')` is `true`, but `get('discount', 10)` returns `10`. Use `has()` when `null` means something.
+- **An unknown key is not an error.** `Phalcon\Support\Registry` returns `null` (or your default) for a name nobody set, so a typo goes unnoticed. `Filter`, `FormsLocator` and `ConnectionLocator` throw `FilterNotRegistered`, `FormNotInLocator` and `ConnectionNotFound`. For services, use a registry that throws.
+- **`Registry` is final.** You cannot extend it to add types. Wrap it, or write a typed registry like the one above.
+- **The first `Di` wins.** The constructor sets the default container only when there is none. A second `new Di()` does not replace it. Call `Di::setDefault()` when you want to switch, and `Di::reset()` between tests.
+- **A new definition does not replace a built shared instance.** After `getShared('mailer')`, a second `setShared('mailer', ...)` still gives you the old object. Call `removeShared('mailer')` to drop the instance and keep the definition, or `remove('mailer')` to drop both. `Filter::set()` and `FormsLocator::set()` clear the cached instance for you.
+
+## What it costs
+
+A registry is easy to add and hard to remove later. The convenience is **not free**:
+
+- **Hidden dependencies.** A class that calls `Di::getDefault()` in a method does not list what it needs. You find out at runtime, for example with `ModelOrmServicesUnavailable` when there is no container. This is why the `OrderProcessor` receives the registry instead of looking for it.
+- **Global state in tests.** The default container is static, so it lives longer than a test. A service that one test registers is still there in the next one, unless `tearDown()` calls `Di::reset()`.
+- **Names are strings.** A typo in a name is a runtime error, not a parse error. Class-name keys (`GatewayRegistry::class`) or class constants let your IDE and the static analyzers find them.
+- **The grab bag.** A registry that holds the configuration, the logger, the current user and the cart makes every class that touches it depend on all of them.
+
+Rule of thumb: keep each registry to one type of thing, pass it in through the constructor, and leave the static access point to framework code that cannot get a constructor parameter, such as models.
+
+## When not to reach for it
+
+- **The choice is fixed when the application starts.** If each deployment uses one payment provider, inject that one gateway. A factory picks it from the configuration once (the option we mentioned at the end of the [Gateway][gateway] post), and nothing looks it up by name after that.
+- **You want fewer constructor parameters.** Passing a registry so that a class can pick what it needs is a service locator. The dependencies are still there, you just cannot see them.
+- **The value belongs to one request, but the registry lives longer.** In a long-running worker (Swoole, RoadRunner, FrankenPHP in worker mode), a shared registry survives between requests. The tenant or the user from the last request is still in it.
+
+## Elsewhere in the framework
+
+- `Phalcon\Filter\Filter` maps sanitizer names to classes (`Filter::getDefaultMapper()`). `set()` adds or replaces one, and the instance is built on first use.
+- `Phalcon\Forms\FormsLocator` holds two registries: named forms, cached when no entity is passed, and the element types that `Form::load()` uses. `setElement()` adds your own element type.
+- `Phalcon\DataMapper\Pdo\ConnectionLocator` keeps registries of read and write connections. `getRead()` without a name picks a random read connection, and with no read connections it returns the master connection.
+
+## Takeaway
+
+A registry is a map with a name on the door. Phalcon uses the same small shape in many places: a map of definitions, a map of instances, and a build on the first request. Use one when the code picks an object by name while it runs. Keep it typed, keep it to one kind of thing, and pass it in instead of reaching for it.
+
+
+[gateway]: /post/gateway-pattern-in-php/
+[phalcon]: https://phalcon.io
+[registry]: https://martinfowler.com/eaaCatalog/registry.html
+[series]: /post/design-patterns-in-php-series/
