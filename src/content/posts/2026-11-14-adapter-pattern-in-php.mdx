@@ -1,0 +1,389 @@
+---
+title: Design Patterns - Adapter
+date: 2026-11-14T12:00:00.000Z
+tags:
+  - design patterns
+  - php
+  - programming
+  - series
+  - how-to
+  - adapter
+---
+Continuing the [design patterns in PHP][series] posts, we are going to focus today on the [Adapter pattern][adapter] and how we are using it in [Phalcon][phalcon]. In the [Gateway][gateway] post, `StripeGateway` was an adapter: it made the Stripe API fit our `PaymentGatewayInterface`. Today we will look at the pattern itself.
+
+## The pattern in one paragraph
+
+An adapter is an object that makes a class with one interface usable by code that expects a different interface. The code that calls it (the client) knows only the interface that it expects (the target). The adapter implements the target, holds the object that does the real work (the adaptee), and translates each call: method names, arguments, return values and errors. The behavior does not change. Only the shape changes.
+
+## Why we use it
+
+- **You cannot change either side.** The vendor SDK is not yours, and the interface PHP or a PSR expects is not yours either. The adapter is the only code you write.
+- **The vendor stays at the edge.** One class knows the vendor API. The rest of the application knows the interface you own, so a vendor upgrade breaks one class, not twenty.
+- **Swap the vendor, keep the code.** A second vendor is a second adapter. The code that uses the interface does not change.
+- **Easy to test.** A fake that implements the same interface replaces the adapter in the test suite, and no test calls the vendor.
+
+## Where do we see this in Phalcon
+
+Phalcon has more than a dozen components with an `Adapter` folder. As we will see in the gotchas, not all of them are adapters in this sense. The textbook one is the session.
+
+### `Phalcon\Session\Adapter`
+
+PHP stores the session through a save handler, and a save handler is any object that implements `SessionHandlerInterface`: `open()`, `close()`, `read()`, `write()`, `destroy()` and `gc()`. Phalcon already has a storage layer that knows how to talk to Redis and Memcached (`Phalcon\Storage\Adapter\*`), but its interface is `get()`, `set()`, `has()` and `delete()`. The session adapters connect the two.
+
+```php
+use Phalcon\Session\Adapter\Redis;
+use Phalcon\Session\Manager;
+use Phalcon\Storage\AdapterFactory;
+use Phalcon\Storage\SerializerFactory;
+
+$factory = new AdapterFactory(new SerializerFactory());
+
+$session = new Manager();
+$session->setAdapter(
+    new Redis(
+        $factory,
+        [
+            'host' => '127.0.0.1',
+            'port' => 6379,
+        ]
+    )
+);
+
+$session->start();
+```
+
+`Manager::start()` gives the adapter to PHP with `session_set_save_handler()`. From then on, PHP calls `read()` and `write()`, and the adapter calls Redis.
+
+### What happens inside
+
+The constructor of the Redis session adapter builds a storage adapter and keeps it:
+
+```php
+$this->adapter = $factory->newInstance('redis', $options);
+```
+
+and `Phalcon\Session\Adapter\AbstractAdapter` translates each call of `SessionHandlerInterface` to the storage interface:
+
+```php
+public function destroy(string $id): bool
+{
+    if (!empty($id) && $this->adapter->has($id)) {
+        return $this->adapter->delete($id);
+    }
+
+    return true;
+}
+
+public function read(string $id): string
+{
+    /** @var string|null $data */
+    $data = $this->adapter->get($id);
+
+    return null === $data ? '' : $data;
+}
+
+public function write(string $id, string $data): bool
+{
+    return $this->adapter->set($id, $data);
+}
+```
+
+The code is the same in the extension (`phalcon/Session/Adapter/AbstractAdapter.zep` in cphalcon) and in the PHP version (`src/Session/Adapter/AbstractAdapter.php` in phalcon). Three points follow from those lines:
+
+1. **The names change.** `read()` becomes `get()`, `write()` becomes `set()` and `destroy()` becomes `has()` and `delete()`.
+2. **The return values change.** The storage returns `null` for a key that is not there. PHP wants a `string` from `read()`, so the adapter returns `''`.
+3. **Some calls have nothing to translate.** `open()` and `close()` return `true`, and `gc()` returns `1`. Redis and Memcached expire the keys themselves.
+
+### The PSR bridges
+
+The bridge packages are adapters in both directions:
+
+- `phalcon/bridge-psr16`: `Phalcon\Bridge\Psr16\Cache` makes a Phalcon cache usable as a `Psr\SimpleCache\CacheInterface`, and `Phalcon\Bridge\Psr16\Adapter` makes any PSR-16 cache usable as a Phalcon cache adapter.
+- `phalcon/bridge-psr3`: `Phalcon\Bridge\Psr3\Logger` is a Phalcon logger with the `Psr\Log\LoggerInterface`, and `Phalcon\Bridge\Psr3\Adapter` sends the messages of a Phalcon logger to any PSR-3 logger.
+
+The PSR-16 `Cache` shows the part of an adapter that is easy to forget: the errors. Each method sends the call through `guard()`:
+
+```php
+public function get(string $key, mixed $default = null): mixed
+{
+    return $this->guard(fn (): mixed => $this->cache->get($key, $default));
+}
+
+private function guard(callable $callback): mixed
+{
+    try {
+        return $callback();
+    } catch (PhalconInvalidArgumentException $exception) {
+        throw new InvalidArgumentException(
+            $exception->getMessage(),
+            (int) $exception->getCode(),
+            $exception
+        );
+    }
+}
+```
+
+A PSR-16 client catches `Psr\SimpleCache\InvalidArgumentException`. It does not know about the Phalcon exception, so the adapter changes one into the other and keeps the original as the previous exception. We will do the same in our example.
+
+## A worked example
+
+Back to our invoices from the [Decorator][decorator] post. When an invoice is overdue, we want to send the customer a text message. We will use an SMS provider. It gives us an SDK, and we cannot change the SDK.
+
+### The vendor SDK
+
+This is the part we do not own. Only the signature is important:
+
+```php
+namespace Acme\Sms;
+
+class Client
+{
+    public function __construct(string $apiKey, string $senderId)
+    {
+        // ...
+    }
+
+    /**
+     * @param array{to: string[], body: string} $message
+     *
+     * @return array{status: string, id?: string, error?: string}
+     *
+     * @throws TransportException when the API cannot be reached
+     */
+    public function dispatch(array $message): array
+    {
+        // ...
+    }
+}
+```
+
+The SDK sends one message to many numbers. It reports a failure in two different ways: an exception when the network fails, and `'status' => 'rejected'` in the result when the number is not valid. It returns an array.
+
+### The contract
+
+This is the part we own. We write it from what our application needs, not from what the SDK offers:
+
+```php
+namespace App\Notification;
+
+interface SmsSender
+{
+    /**
+     * Sends one text message and returns the message id of the provider.
+     *
+     * @throws SmsNotSent
+     */
+    public function send(string $phone, string $text): string;
+}
+```
+
+and one exception for every failure:
+
+```php
+namespace App\Notification;
+
+use RuntimeException;
+
+final class SmsNotSent extends RuntimeException
+{
+}
+```
+
+### The adapter
+
+```php
+namespace App\Notification;
+
+use Acme\Sms\Client;
+use Acme\Sms\TransportException;
+
+final class AcmeSmsSender implements SmsSender
+{
+    public function __construct(
+        private Client $client
+    ) {
+    }
+
+    public function send(string $phone, string $text): string
+    {
+        try {
+            $response = $this->client->dispatch(
+                [
+                    'to'   => [$phone],
+                    'body' => $text,
+                ]
+            );
+        } catch (TransportException $ex) {
+            throw new SmsNotSent(
+                'SMS provider not reachable: ' . $ex->getMessage(),
+                0,
+                $ex
+            );
+        }
+
+        if ('queued' !== $response['status'] || !isset($response['id'])) {
+            throw new SmsNotSent(
+                'SMS rejected: ' . ($response['error'] ?? 'no reason given')
+            );
+        }
+
+        return $response['id'];
+    }
+}
+```
+
+The adapter does the same three jobs as the session adapter:
+
+1. **It translates the call.** One phone number and one text become the array that `dispatch()` wants.
+2. **It translates the failures.** The network exception and the `rejected` status both become `SmsNotSent`. The original exception is the previous one, as in the PSR-16 bridge.
+3. **It translates the result.** The array becomes one message id.
+
+That is all it does. There is no retry, no logging and no check of the phone number. Those are not translation, and they do not belong here.
+
+### The wiring
+
+```php
+namespace App\Providers;
+
+use Acme\Sms\Client;
+use App\Notification\AcmeSmsSender;
+use App\Notification\SmsSender;
+use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
+
+class NotificationProvider implements ServiceProviderInterface
+{
+    public function register(DiInterface $container): void
+    {
+        $container->setShared(
+            SmsSender::class,
+            function () use ($container) {
+                $config = $container->getShared('config');
+
+                /**
+                 * The only place in the application that knows about
+                 * the Acme SDK
+                 */
+                return new AcmeSmsSender(
+                    new Client(
+                        $config->path('sms.apiKey'),
+                        $config->path('sms.senderId')
+                    )
+                );
+            }
+        );
+    }
+}
+```
+
+and in the bootstrap:
+
+```php
+$container->register(new NotificationProvider());
+```
+
+### How do we use this in our code?
+
+```php
+namespace App\Domain\Invoice;
+
+use App\Notification\SmsSender;
+
+final class OverdueReminder
+{
+    public function __construct(
+        private SmsSender $sms
+    ) {
+    }
+
+    public function remind(Invoice $invoice): string
+    {
+        return $this->sms->send(
+            $invoice->customerPhone,
+            sprintf(
+                'Invoice %s is overdue. Amount due: %.2f',
+                $invoice->number,
+                $invoice->total
+            )
+        );
+    }
+}
+```
+
+The reminder knows one interface and one exception. It does not know about Acme, about arrays with a `status` key, or about `TransportException`.
+
+The test does not send a text message:
+
+```php
+final class FakeSmsSender implements SmsSender
+{
+    /**
+     * @var array<int, array{phone: string, text: string}>
+     */
+    public array $sent = [];
+
+    public function send(string $phone, string $text): string
+    {
+        $this->sent[] = [
+            'phone' => $phone,
+            'text'  => $text,
+        ];
+
+        return 'fake-' . count($this->sent);
+    }
+}
+
+$sms      = new FakeSmsSender();
+$reminder = new OverdueReminder($sms);
+$reminder->remind($invoice);
+
+// $sms->sent now has one message for the customer
+```
+
+When we move to a different SMS provider, we write one new class that implements `SmsSender` and change one line in the provider. `OverdueReminder` does not change.
+
+## Rules and gotchas
+
+- **The target interface belongs to the client.** For the session, the client is PHP, so the target is `SessionHandlerInterface`. For our reminder, the client is `OverdueReminder`, so the target is `SmsSender`. If you copy the SDK methods into your interface, you have renamed the SDK. You have not adapted it.
+- **Translate the failures too.** An adapter that lets `Acme\Sms\TransportException` out puts the vendor in the `catch` block of every caller. Throw your own exception and keep the original as the previous exception.
+- **Keep it thin.** Retries, logging and caching apply to every vendor, so they go in a [decorator][decorator] around `SmsSender`, not in each adapter.
+- **Not everything called "Adapter" is an adapter.** In Phalcon, an `Adapter` folder holds the backends of a component. `Image\Adapter\Gd`, `Image\Adapter\Imagick`, `Translate\Adapter\Gettext` and `Logger\Adapter\Syslog` wrap a PHP extension or a group of PHP functions, so they are adapters. `Memory`, `NativeArray` and `Noop` have nothing to wrap. They are implementations of the component interface (a Strategy), and `Noop` is a Null Object.
+- **Not every session adapter uses the storage layer.** `Session\Adapter\Stream` does not wrap `Storage\Adapter\Stream`. It extends `Session\Adapter\Noop` and writes the files itself, and its `gc()` deletes the old files.
+- **Storage-backed sessions do not collect garbage.** For `Redis` and `Libmemcached`, `gc()` does nothing. The key expires after the storage `lifetime` option (3600 seconds by default), not after `session.gc_maxlifetime`. Set both to the same value.
+- **Set the adapter before `start()`.** `Manager::start()` throws `InvalidSessionAdapter` when no adapter is set.
+- **Composition or inheritance.** An adapter can hold the adaptee (an object adapter) or extend it (a class adapter). The PSR-3 `Logger` extends `Phalcon\Logger\AbstractLogger`, so it is a class adapter. It keeps the Phalcon methods (`addAdapter()`, `setLogLevel()` and the others) next to the PSR-3 ones. The PSR-16 `Cache` holds a `Phalcon\Cache\Cache`, and its docblock says why: _"It uses composition rather than inheritance so the PSR-16 v3 signatures are declared here directly and stay valid across both Phalcon runtimes"_. In cphalcon, `Cache::get()` has a signature that is older than PSR-16 v3. When you do not control the adaptee, hold it. Do not extend it.
+
+## What it costs
+
+An adapter is one more class, and it is only as good as the two interfaces it connects. **That is not free**:
+
+- **One class for each vendor.** Each SDK upgrade can break the mapping. That is the purpose of the adapter, because only one class breaks. But it still breaks, so it needs its own tests.
+- **The lowest common denominator.** The interface can only promise what every vendor can do. The PSR-16 `Adapter` shows the limit: PSR-16 cannot list keys, so `getKeys()` returns an empty array, and PSR-16 has no atomic counters, so `increment()` and `decrement()` read the value and then write it.
+- **Lost detail.** One exception type hides the error codes of the vendor. Keep the original exception as the previous one, so that the log still has them.
+
+Rule of thumb: an adapter changes the shape and keeps the behavior. If you find yourself adding behavior, you are writing something else.
+
+## When not to reach for it
+
+- **The shapes already match.** If the library already implements the interface you need, such as a PSR-3 logger where your code expects PSR-3, use it directly.
+- **You own both sides.** If the class is yours, make it implement the interface. An adapter around your own code is one more layer to maintain, and you get nothing for it.
+- **You want different behavior, not a different shape.** That is a [decorator][decorator]. If you want one simple entry point to a group of classes, that is a facade. An adapter changes the interface and keeps the behavior. A decorator keeps the interface and changes the behavior.
+
+## Elsewhere in the framework
+
+- `Phalcon\Image\Adapter\Gd` and `Phalcon\Image\Adapter\Imagick` put the GD functions and the Imagick extension behind one interface. `resize()`, `crop()` and `save()` read the same for both.
+- `Phalcon\Translate\Adapter\Gettext` wraps `gettext()`, `ngettext()` and `dngettext()` behind the same interface as the array and CSV translations.
+- `Phalcon\Logger\Adapter\Syslog` wraps `openlog()`, `syslog()` and `closelog()`.
+- `Phalcon\Db\Adapter\Pdo\Mysql`, `Postgresql` and `Sqlite` wrap `PDO` behind `Phalcon\Db\Adapter\AdapterInterface`.
+- `phalcon/bridge-psr11` has `Phalcon\Bridge\Psr11\Container`, which gives a Phalcon container the PSR-11 `get()` and `has()`, and changes its failures to `NotFound` and `ContainerException`.
+
+## Takeaway
+
+An adapter is a translator between two interfaces. Phalcon uses it to give PHP a session handler, and to give PSR clients a Phalcon cache, logger and container. Own the interface, translate the calls, the results and the failures, and put nothing else in the adapter.
+
+
+[adapter]: https://en.wikipedia.org/wiki/Adapter_pattern
+[decorator]: /post/decorator-pattern-in-php/
+[gateway]: /post/gateway-pattern-in-php/
+[phalcon]: https://phalcon.io
+[series]: /post/design-patterns-in-php-series/
