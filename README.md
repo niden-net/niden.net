@@ -28,7 +28,7 @@ Cloudflare runs no build of its own.
 
 | Path | Holds |
 | --- | --- |
-| `src/content/posts` | The posts, one `.mdx` file per post |
+| `src/content/posts` | The posts, one `.mdx` file per post, in a folder per year |
 | `src/content/pages` | About, Contact, Hosting, Disclaimer, Email setup |
 | `src/components` | Header, Footer, Search, Callout, Mermaid, … |
 | `src/layouts` | `Base`, `Post` and `Page` |

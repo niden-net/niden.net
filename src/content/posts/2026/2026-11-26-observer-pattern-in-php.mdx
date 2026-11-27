@@ -1,0 +1,666 @@
+---
+title: Design Patterns - Observer
+date: 2026-11-26T12:00:00.000Z
+tags:
+  - design patterns
+  - php
+  - programming
+  - series
+  - how-to
+  - observer
+---
+Continuing the [design patterns in PHP][series] posts, we are going to focus today on the [Observer pattern][observer] and how we are using it in [Phalcon][phalcon]. In the [Decorator][decorator] post, we said that `Phalcon\Events\Manager` gives you a hook without the forwarding code. Today we will look at that hook.
+
+## The pattern in one paragraph
+
+An observer is an object that wants to know when something happens to another object. The object that changes (the subject) does not know what each observer does. It only announces that something happened, and every observer that registered for that announcement runs its own code. You can add or remove observers and the subject does not change.
+
+## Why we use it
+
+- **The subject stays small.** A payment service takes the money. It does not send the receipt, write the audit log and update the ledger. Each of those is an observer.
+- **Add behavior without an edit.** A new reaction to an event is a new class and one line in the wiring. The subject is not touched.
+- **Framework hooks.** You cannot change the code of the dispatcher or the database adapter, but you can listen to their events and change what they do.
+- **Easy to test.** Test the subject with no observers, and test each observer on its own.
+
+## Where do we see this in Phalcon
+
+Almost everywhere. Components fire `cache:`, `db:`, `dispatch:`, `view:`, `router:`, `application:`, `micro:`, `console:`, `acl:`, `auth:` and `model:` events.
+
+Phalcon does not use the textbook version, where the subject keeps its own list of observers. In Phalcon the list is in the events manager. A component that implements `EventsAwareInterface` holds a manager and fires events through it. The listeners (the observers) attach to the manager. The subject and the listeners do not know each other. They only know the name of the event. This version is also known as publish/subscribe.
+
+### `Phalcon\Mvc\Dispatcher`
+
+The best known example is the security plugin of [INVO][invo], our sample application. The dispatcher fires `dispatch:beforeExecuteRoute` before it calls the action, and the plugin decides if the user can see the page:
+
+```php
+use Invo\Plugins\NotFoundPlugin;
+use Invo\Plugins\SecurityPlugin;
+use Phalcon\Events\Manager;
+use Phalcon\Mvc\Dispatcher;
+
+$eventsManager = new Manager();
+$eventsManager->attach('dispatch:beforeExecuteRoute', new SecurityPlugin());
+$eventsManager->attach('dispatch:beforeException', new NotFoundPlugin());
+
+$dispatcher = new Dispatcher();
+$dispatcher->setEventsManager($eventsManager);
+```
+
+The plugin, trimmed:
+
+```php
+public function beforeExecuteRoute(Event $event, Dispatcher $dispatcher)
+{
+    // ...
+
+    if (!$acl->isAllowed($role, $controller, $action)) {
+        $dispatcher->forward(
+            [
+                'controller' => 'errors',
+                'action'     => 'show401',
+            ]
+        );
+
+        return false;
+    }
+
+    return true;
+}
+```
+
+The plugin does not implement an interface. The manager calls the method that has the same name as the event.
+
+### What happens inside
+
+The dispatcher fires the event like this (in `Phalcon\Dispatcher\AbstractDispatcher`):
+
+```php
+if (
+    $this->fireManagerEvent("dispatch:beforeExecuteRoute", null, true, true) === false ||
+    $this->finished === false
+) {
+    $container->remove($handlerClass);
+    continue;
+}
+```
+
+`fireManagerEvent()` calls `Manager::fire()` with the dispatcher as the source. `fire()` then does three things:
+
+1. **It splits the name at the colon.** The type is `dispatch` and the event is `beforeExecuteRoute`. A name without a colon throws `InvalidEventType`.
+2. **It runs two queues.** First the listeners that attached to `dispatch`, then the listeners that attached to `dispatch:beforeExecuteRoute`. A listener on `dispatch` receives every event of the dispatcher.
+3. **It calls each listener with three arguments.** The `Event` object, the source and the data. For a plain object, it calls the method with the name of the event. If that method does not exist, it skips the object.
+
+Each queue then decides the result of the call:
+
+```php
+if ($stopOnFalse && $cancelable && false === $ret) {
+    return false;
+}
+
+if ($cancelable && $event->isStopped()) {
+    return $ret;
+}
+
+if (null !== $ret) {
+    $status = $ret;
+}
+```
+
+The code is the same in the extension (`phalcon/Events/Manager.zep` in cphalcon) and in the PHP version (`src/Events/Manager.php` in phalcon). Three points follow from those lines:
+
+1. **The last value that is not `null` wins.** A listener that returns nothing does not change the result.
+2. **`false` is final only in stop-on-false mode.** The last `true` in the call of the dispatcher asks for that mode, so a later listener cannot overwrite the `false` of the security plugin. Most other events do not ask for it.
+3. **`$event->stop()` stops the queue.** The value of the listener that stopped the event becomes the result, also when it is `null`.
+
+### `Phalcon\Mvc\Model`
+
+A model has four observers for each event. When you call `save()`, the model calls `fireEventCancel('beforeSave')`, and the event goes to:
+
+1. the method of the model with the same name (`beforeSave()`),
+2. the behaviors of the model (`addBehavior()` with `Timestampable`, `SoftDelete` or your own),
+3. the events manager of the models manager, as `model:beforeSave`,
+4. the events manager for that model class only, which you set with `setCustomEventsManager()`.
+
+When one of the four gives `false`, `save()` returns `false`. For the two events managers, that is the result of `fire()`, with the rules above. For model events, the source of the event is the model, not the models manager.
+
+## A worked example
+
+Back to our invoices. In the [Adapter][adapter] post, we sent a text message for an overdue invoice. Now the customer pays. When the payment goes through, we want to send a receipt and write an audit log. Before we take the money, we want a fraud check that can stop the payment. We will use the `PaymentGatewayInterface` from the [Gateway][gateway] post to take the money.
+
+### The subject
+
+```php
+namespace App\Domain\Invoice;
+
+use App\Payment\PaymentGatewayInterface;
+use Phalcon\Domain\Payload\Status;
+use Phalcon\Events\AbstractEventsAware;
+use Phalcon\Events\EventsAwareInterface;
+
+final class InvoicePayment extends AbstractEventsAware implements EventsAwareInterface
+{
+    public function __construct(
+        private PaymentGatewayInterface $gateway
+    ) {
+    }
+
+    public function pay(Invoice $invoice): bool
+    {
+        /**
+         * A listener can cancel the payment. The last two arguments make
+         * the event cancelable, and make a `false` from any listener final.
+         */
+        if (false === $this->fireManagerEvent('invoice:beforePay', $invoice, true, true)) {
+            return false;
+        }
+
+        $payload = $this->gateway->charge(
+            $invoice->number,
+            $invoice->total,
+            'USD'
+        );
+
+        if (Status::SUCCESS !== $payload->getStatus()) {
+            return false;
+        }
+
+        /**
+         * The money is taken. No listener can cancel this event.
+         */
+        $this->fireManagerEvent('invoice:afterPay', $invoice, false);
+
+        return true;
+    }
+}
+```
+
+`AbstractEventsAware` gives us `setEventsManager()`, `getEventsManager()` and `fireManagerEvent()`. When there is no events manager, `fireManagerEvent()` returns `true`, so the payment works with no listeners.
+
+`InvoicePayment` does not know about receipts, audit logs or fraud. It knows two event names.
+
+### The observers
+
+The fraud check is a plain object. The manager calls the method with the name of the event:
+
+```php
+namespace App\Payment;
+
+use App\Domain\Invoice\Invoice;
+use App\Domain\Invoice\InvoicePayment;
+use Phalcon\Events\Event;
+
+final class FraudCheck
+{
+    public function __construct(
+        private float $limit
+    ) {
+    }
+
+    public function beforePay(
+        Event $event,
+        InvoicePayment $payment,
+        Invoice $invoice
+    ): bool {
+        return $invoice->total <= $this->limit;
+    }
+}
+```
+
+The receipt is a plain object too. It uses the `SmsSender` from the [Adapter][adapter] post:
+
+```php
+namespace App\Notification;
+
+use App\Domain\Invoice\Invoice;
+use App\Domain\Invoice\InvoicePayment;
+use Phalcon\Events\Event;
+use Phalcon\Logger\LoggerInterface;
+
+final class ReceiptSender
+{
+    public function __construct(
+        private SmsSender $sms,
+        private LoggerInterface $logger
+    ) {
+    }
+
+    public function afterPay(
+        Event $event,
+        InvoicePayment $payment,
+        Invoice $invoice
+    ): void {
+        try {
+            $this->sms->send(
+                $invoice->customerPhone,
+                sprintf(
+                    'Payment received for invoice %s. Amount: %.2f',
+                    $invoice->number,
+                    $invoice->total
+                )
+            );
+        } catch (SmsNotSent $ex) {
+            /**
+             * The money is taken. A receipt that is not sent must not
+             * stop the payment.
+             */
+            $this->logger->warning('Receipt not sent: ' . $ex->getMessage());
+        }
+    }
+}
+```
+
+The audit log listens to both events. It is a subscriber: it implements `Phalcon\Contracts\Events\Subscriber` and gives the manager a map of event names to method names:
+
+```php
+namespace App\Payment;
+
+use App\Domain\Invoice\Invoice;
+use App\Domain\Invoice\InvoicePayment;
+use Phalcon\Contracts\Events\Subscriber;
+use Phalcon\Events\Event;
+use Phalcon\Logger\LoggerInterface;
+
+final class PaymentAudit implements Subscriber
+{
+    public function __construct(
+        private LoggerInterface $logger
+    ) {
+    }
+
+    public function attempt(
+        Event $event,
+        InvoicePayment $payment,
+        Invoice $invoice
+    ): void {
+        $this->logger->info('Payment attempt: ' . $invoice->number);
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'invoice:beforePay' => ['attempt', 200],
+            'invoice:afterPay'  => 'paid',
+        ];
+    }
+
+    public function paid(
+        Event $event,
+        InvoicePayment $payment,
+        Invoice $invoice
+    ): void {
+        $this->logger->info('Invoice paid: ' . $invoice->number);
+    }
+}
+```
+
+`attempt()` has the priority 200. The default priority is 100, so the attempt is in the log before the fraud check runs, also when the fraud check stops the payment.
+
+### The wiring
+
+```php
+namespace App\Providers;
+
+use App\Domain\Invoice\InvoicePayment;
+use App\Notification\ReceiptSender;
+use App\Notification\SmsSender;
+use App\Payment\FraudCheck;
+use App\Payment\PaymentAudit;
+use App\Payment\PaymentGatewayInterface;
+use Phalcon\Di\DiInterface;
+use Phalcon\Di\ServiceProviderInterface;
+use Phalcon\Events\Manager;
+
+class PaymentProvider implements ServiceProviderInterface
+{
+    public function register(DiInterface $container): void
+    {
+        $container->setShared(
+            InvoicePayment::class,
+            function () use ($container) {
+                $logger        = $container->getShared('logger');
+                $eventsManager = new Manager();
+
+                /**
+                 * Enable the priorities before you attach a listener
+                 */
+                $eventsManager->enablePriorities(true);
+
+                $eventsManager->attach(
+                    'invoice:beforePay',
+                    new FraudCheck(10000.00)
+                );
+                $eventsManager->attach(
+                    'invoice:afterPay',
+                    new ReceiptSender(
+                        $container->getShared(SmsSender::class),
+                        $logger
+                    )
+                );
+                $eventsManager->addSubscriber(new PaymentAudit($logger));
+
+                $payment = new InvoicePayment(
+                    $container->getShared(PaymentGatewayInterface::class)
+                );
+                $payment->setEventsManager($eventsManager);
+
+                return $payment;
+            }
+        );
+    }
+}
+```
+
+and in the bootstrap:
+
+```php
+$container->register(new PaymentProvider());
+```
+
+### The wiring with the Container
+
+If you use the new `Phalcon\Container\Container`, as in the [Decorator][decorator] post, autowiring and tags remove most of that code. The listeners become subscribers, so each one says which events it wants:
+
+```php
+use Phalcon\Contracts\Events\Subscriber;
+
+final class FraudCheck implements Subscriber
+{
+    // ...
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'invoice:beforePay' => 'beforePay',
+        ];
+    }
+}
+
+final class ReceiptSender implements Subscriber
+{
+    // ...
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'invoice:afterPay' => 'afterPay',
+        ];
+    }
+}
+```
+
+The `Di` wiring above still works with these classes, because `attach()` still calls the method with the name of the event.
+
+The provider gives each listener a tag, and one extender attaches every tagged listener to the events manager:
+
+```php
+namespace App\Providers;
+
+use App\Domain\Invoice\InvoicePayment;
+use App\Notification\ReceiptSender;
+use App\Payment\FraudCheck;
+use App\Payment\PaymentAudit;
+use Phalcon\Contracts\Container\Service\Collection;
+use Phalcon\Contracts\Container\Service\Provider;
+use Phalcon\Events\Manager;
+use Phalcon\Events\ManagerInterface;
+
+class PaymentProvider implements Provider
+{
+    public function provide(Collection $services): void
+    {
+        /**
+         * One definition for each listener. Autowiring gives the
+         * constructor arguments. A scalar needs setArgument().
+         */
+        $services
+            ->set(FraudCheck::class, FraudCheck::class)
+            ->setArgument('limit', 10000.00)
+            ->addTag('events.subscriber')
+        ;
+        $services
+            ->set(ReceiptSender::class, ReceiptSender::class)
+            ->addTag('events.subscriber')
+        ;
+        $services
+            ->set(PaymentAudit::class, PaymentAudit::class)
+            ->addTag('events.subscriber')
+        ;
+
+        /**
+         * Attach every tagged listener to the events manager
+         */
+        $services->extend(
+            ManagerInterface::class,
+            static function (Manager $manager, Collection $container): Manager {
+                $manager->enablePriorities(true);
+
+                foreach ($container->getByTag('events.subscriber') as $subscriber) {
+                    $manager->addSubscriber($subscriber);
+                }
+
+                return $manager;
+            }
+        );
+
+        /**
+         * Autowiring fills the constructor only. The events manager is
+         * set with a setter, so an extender sets it.
+         */
+        $services
+            ->set(InvoicePayment::class, InvoicePayment::class)
+            ->addExtender(
+                static function (InvoicePayment $payment, Collection $container): InvoicePayment {
+                    $payment->setEventsManager(
+                        $container->get(ManagerInterface::class)
+                    );
+
+                    return $payment;
+                }
+            )
+        ;
+    }
+}
+```
+
+and in the bootstrap:
+
+```php
+use App\Providers\PaymentProvider;
+use Phalcon\Container\ContainerFactory;
+use Phalcon\Container\Provider\Web;
+
+$container = (new ContainerFactory())
+    ->addProvider(new Web())
+    ->addProvider(new PaymentProvider())
+    ->newContainer()
+;
+
+$payment = $container->get(InvoicePayment::class);
+```
+
+The `Web` provider registers the events manager. The bindings for `PaymentGatewayInterface`, `SmsSender` and `LoggerInterface` are in their own providers, with `bind()`. Four points about this wiring:
+
+1. **A new listener is one tagged definition.** There is no list of `attach()` calls to edit, and `InvoicePayment` does not change.
+2. **Autowiring does not call setters.** Without the extender on `InvoicePayment`, the service has no events manager. `fireManagerEvent()` then returns `true`, no listener runs, and there is no error. A scalar argument does not autowire either: without `setArgument()`, `FraudCheck` throws `CannotResolveParameter`.
+3. **Extend before the first `get()`.** When something resolves the events manager first, `extend()` throws `CannotExtendResolved`.
+4. **The manager is shared, and the listeners are built early.** The listeners and `enablePriorities(true)` apply to every component that uses the events manager of the `Web` provider. `getByTag()` builds every listener when it builds the manager, so the SMS client is built also in a request that does not take a payment.
+
+### How do we use this in our code?
+
+```php
+$payment = $container->getShared(InvoicePayment::class);
+
+if (false === $payment->pay($invoice)) {
+    // The fraud check or the gateway said no
+}
+```
+
+For an invoice of 100.00, the calls go in this order:
+
+1. `PaymentAudit::attempt()` (priority 200)
+2. `FraudCheck::beforePay()` (priority 100)
+3. the gateway takes the money
+4. `ReceiptSender::afterPay()` (priority 100, attached first)
+5. `PaymentAudit::paid()` (priority 100, attached second)
+
+For an invoice of 20,000.00, the fraud check returns `false`. The audit log has the attempt, the gateway is not called, and `pay()` returns `false`.
+
+When we also want to update the ledger, we write one new class and attach it in the provider. `InvoicePayment` does not change.
+
+The test needs no receipt and no log. A closure on the `invoice` type receives every invoice event:
+
+```php
+$events = new Manager();
+$seen   = [];
+
+$events->attach(
+    'invoice',
+    function (Event $event) use (&$seen): void {
+        $seen[] = $event->getType();
+    }
+);
+
+$payment = new InvoicePayment(new FakeGateway());
+$payment->setEventsManager($events);
+$payment->pay($invoice);
+
+// $seen is ['beforePay', 'afterPay']
+```
+
+`FakeGateway` is a gateway that always returns `Status::SUCCESS`. Note that `getType()` returns the part after the colon.
+
+## Rules and gotchas
+
+- **The name needs a colon.** The part before the colon is the type and the part after it is the event. A name without a colon throws `InvalidEventType`, but only when the manager has listeners. With no listeners, `fire()` returns `null` and you do not see the error.
+- **A wrong method name is silent.** When a plain object does not have the method, the manager skips it. `setStrict(true)` throws `NoListenersForEvent` when no listener is attached for the event name, but it does not check method names. A subscriber names its methods in `getSubscribedEvents()`, so a wrong name there fails with `Call to undefined method`.
+- **`false` is not final by default.** The last value that is not `null` wins. Without stop-on-false, a listener after the fraud check that returns `true` lets a payment of 20,000.00 go through. That is why `pay()` sends `true` as the last argument. You can also call `setStopOnFalse(true)` on the manager, or call `$event->stop()` in the listener. `db:beforeQuery` is fired without stop-on-false, so a later listener can overwrite the `false` of an earlier one.
+- **Enable the priorities first.** The priorities are off by default, and when they are off, `attach()` and `addSubscriber()` ignore the priority you give. `enablePriorities(true)` does not sort the listeners that are already attached. A higher number runs first, and listeners with the same priority run in the order you attached them.
+- **Only a cancelable event can stop.** `invoice:afterPay` is not cancelable, and `$event->stop()` throws `EventNotCancelable`.
+- **Listeners run in the same call.** There is no queue. An exception from a listener goes up through `fire()` into the subject. If `ReceiptSender` did not catch `SmsNotSent`, `pay()` would throw after the gateway took the money. A slow listener makes the request slow. To send events to a queue, extend `Manager` and use the `beforeFire()` hook.
+- **`halt()` stays until `resume()`.** `$event->stop()` stops one event. `halt()` stops every event of that manager. In a long-running worker, the manager lives for more than one request, so call `resume()`.
+- **The source is not always the component.** `fireManagerEvent()` sends the component as the source and your argument as the data. Model events send the model as the source.
+- **The new features need a recent version of cphalcon.** Subscribers, `fireAll()`, `halt()`, `setStopOnFalse()` and `setStrict()` came in 5.13.0. `dispatch()` came in 5.14.1, and the stop-on-false argument of `fire()` and `fireManagerEvent()` came in 5.20.3. The PHP version has all of them.
+
+## What it costs
+
+An observer removes the dependency between the subject and the code that reacts to it. That also removes what you can read. **That is not free**:
+
+- **Hidden flow.** `pay()` does not tell you what runs when you call it. Only the wiring does. `getListenerMap()` gives you each event name and its listeners at run time.
+- **A loose contract.** Nothing checks the arguments of a listener, and the data is `mixed`. When you rename an event, the listeners of the old name stop and nothing fails.
+- **Order becomes a dependency.** If one listener needs another to run first, the priorities hold that rule, and nobody sees it in the code of the listener.
+- **Return values are easy to get wrong.** "The last value that is not `null` wins" is not what most people expect. Test the cancel path, not only the success path.
+
+Rule of thumb: use events for side effects, and for a yes or no from a listener. If the subject needs data back from a listener, inject an interface.
+
+## When not to reach for it
+
+- **There is only one reaction, and it is always necessary.** Call it. A dependency in the constructor is easier to read and to test than an event with one listener.
+- **The subject needs a result.** `fireAll()` and `collectResponses()` give you all the return values, but a typed interface tells the reader what comes back.
+- **You want to change one call of a narrow interface.** That is a [decorator][decorator]. A decorator wraps one object and keeps its interface. An observer reacts to an event and does not change the subject.
+
+## Elsewhere in the framework
+
+- The database adapters fire `db:beforeQuery`, `db:afterQuery` and the transaction events. Attach one listener to `db` to log or profile every query.
+- `Phalcon\Cache\Cache` fires a `before` and an `after` event for `get()`, `set()`, `has()` and `delete()`, and for `getMultiple()`, `setMultiple()` and `deleteMultiple()`.
+- `Phalcon\Acl\Adapter\Memory` fires `acl:beforeCheckAccess` in stop-on-false mode, the same as the dispatcher.
+- `Phalcon\ADR\EventfulHandler` fires `adr:beforeExecuteAction` and `adr:afterExecuteAction` around each action.
+- `Manager::dispatch()` sends your own event object to the listeners of its class name, and stops when the event implements `Phalcon\Contracts\Events\Stoppable` and says that it is stopped. That is the same shape as PSR-14.
+
+## The textbook version and ours
+
+Earlier we said that Phalcon does not use the textbook version of the pattern. Here is the difference.
+
+### The textbook version
+
+PHP has it built in, as `SplSubject` and `SplObserver`. The subject keeps the list of observers and calls `update()` on each one:
+
+```php
+final class InvoicePayment implements SplSubject
+{
+    public ?Invoice $invoice = null;
+
+    private SplObjectStorage $observers;
+
+    public function __construct()
+    {
+        $this->observers = new SplObjectStorage();
+    }
+
+    public function attach(SplObserver $observer): void
+    {
+        $this->observers->attach($observer);
+    }
+
+    public function detach(SplObserver $observer): void
+    {
+        $this->observers->detach($observer);
+    }
+
+    public function notify(): void
+    {
+        foreach ($this->observers as $observer) {
+            $observer->update($this);
+        }
+    }
+
+    public function pay(Invoice $invoice): void
+    {
+        // take the money
+        $this->invoice = $invoice;
+        $this->notify();
+    }
+}
+
+final class ReceiptSender implements SplObserver
+{
+    public function update(SplSubject $subject): void
+    {
+        // the observer reads the state from the subject: $subject->invoice
+    }
+}
+
+$payment = new InvoicePayment();
+$payment->attach(new ReceiptSender());
+```
+
+Compare this with the `InvoicePayment` of our worked example. Ours holds an events manager, not a list. It fires two named events, and the manager calls `ReceiptSender::afterPay()` with the event, the source and the invoice. `ReceiptSender` implements no interface.
+
+| | Textbook (`SplSubject`) | Phalcon (`Events\Manager`) |
+|---|---|---|
+| Who keeps the list | The subject | The events manager |
+| What the observer implements | `SplObserver::update()` | Nothing. A closure, a callable, a method named after the event, or a `Subscriber` |
+| Which events | One `notify()`. Every observer receives every change | Named events. A listener attaches to one event (`invoice:afterPay`) or to the type (`invoice`) |
+| Data | The observer reads it from the subject | The manager pushes it to the listener |
+| Return value | `void` | A value, and a `false` can cancel the action |
+| Subjects for each list | One | Many. One manager can serve the dispatcher, the database and your services |
+
+### What each one gives you
+
+**The textbook version** is easy to read: you see `attach()` and `notify()` in the code. The types are checked, so a wrong method name is an error in your IDE. Each subject has its own list, so nothing is shared. But every observer receives every change through one `update()`, the observer must know the class of the subject, every subject writes `attach()`, `detach()` and `notify()` again, and there is no cancel and no priority.
+
+**The events manager** keeps the subject small, lets a listener pick the events it wants, and lets one listener serve many subjects. It also gives you hooks into code you do not own, such as the dispatcher. But the names are strings, the subject does not show what runs, the settings of the manager apply to every component that shares it, and the rules for return values surprise people.
+
+Use the textbook version when you own the subject, it has a few observers, and they all react to the same change. Use the events manager when you have many subjects, when you need hooks into the framework, or when a listener must be able to say no.
+
+### Where we are going
+
+We do not plan to turn the events manager into the textbook version. The manager in the middle is what makes it useful. We want to make its disadvantages smaller, in the next major versions:
+
+- **Classes in place of strings.** Your own event class, routed by its class, as in PSR-14. Some of the work is already in the framework: `dispatch()`, `Stoppable` and `Subscriber`. A listener for all the events of a component stays possible, as a listener on a parent class or an interface.
+- **The result is on the event.** `dispatch()` returns the event, and a listener cancels with `stop()`. Return values then have no meaning. Before we get there, a cancel will be final: the first listener that says no wins.
+- **Less shared state.** The manager keeps the list of listeners and nothing more. Settings that apply to the whole manager today, such as stop-on-false, the priority switch and `halt()`, move to the event or go away.
+
+This is the direction, not the final design. The details will follow when that work starts.
+
+## Takeaway
+
+An observer lets a subject announce what happened and lets other code react to it. Phalcon puts the list of observers in the events manager, so the dispatcher, the models, the database and your own services can fire events with no knowledge of the listeners. Keep the subject small, keep each listener on one job, enable the priorities before you attach, and make a `false` final when a listener must be able to say no.
+
+
+[adapter]: /post/adapter-pattern-in-php/
+[decorator]: /post/decorator-pattern-in-php/
+[gateway]: /post/gateway-pattern-in-php/
+[invo]: https://github.com/phalcon/invo
+[observer]: https://en.wikipedia.org/wiki/Observer_pattern
+[phalcon]: https://phalcon.io
+[series]: /post/design-patterns-in-php-series/

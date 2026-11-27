@@ -3,11 +3,14 @@ import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 /**
- * Post filenames keep the Jekyll shape `YYYY-MM-DD-slug.md`. The URL uses the
- * slug part only, so `/post/:slug/` stays the same as the current site.
+ * Post filenames keep the Jekyll shape `YYYY-MM-DD-slug.md`. Posts sit in a
+ * folder per year, and `entry` carries that folder (`2026/2026-12-25-slug.mdx`).
+ * The URL uses the slug part only: the folder and the date are dropped here,
+ * so `/post/:slug/` stays the same as the current site.
  */
 const stripDatePrefix = ({ entry }: { entry: string }): string =>
     entry
+        .replace(/^.*\//, '')
         .replace(/\.[^.]+$/, '')
         .replace(/^\d{4}-\d{2}-\d{2}-/, '');
 
