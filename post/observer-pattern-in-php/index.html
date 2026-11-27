@@ -1,0 +1,555 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="Astro v7.4.13"><meta name="description" content="Continuing the design patterns in PHP posts, we are going to focus today on the Observer pattern and how we are using it in Phalcon. In the Decorator post, we s…"><meta name="keywords" content="php, phalcon, phalcon php, php framework, faster php framework"><meta name="author" content="Nikolaos Dimopoulos"><title>Design Patterns - Observer | niden.net</title><link rel="canonical" href="https://niden.net/post/observer-pattern-in-php/"><link rel="icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="niden.net" href="/feed.xml"><meta property="og:type" content="website"><meta property="og:site_name" content="niden.net"><meta property="og:title" content="Design Patterns - Observer"><meta property="og:description" content="Continuing the design patterns in PHP posts, we are going to focus today on the Observer pattern and how we are using it in Phalcon. In the Decorator post, we s…"><meta property="og:url" content="https://niden.net/post/observer-pattern-in-php/"><meta name="twitter:card" content="summary"><!-- Blocking: sets the theme before the first paint so there is no flash. --><script>
+            (function () {
+                var theme = 'dark';
+
+                try {
+                    /* The site is dark by default; only an explicit choice
+                       switches it. The operating system is not consulted. */
+                    theme = localStorage.getItem('niden-theme') || 'dark';
+                } catch (error) {
+                    theme = 'dark';
+                }
+
+                document.documentElement.setAttribute('data-theme', theme);
+            })();
+        </script><link rel="stylesheet" href="/_astro/prose.D-SfoOuS.css"><link rel="stylesheet" href="/_astro/Base.BCZ5pOB-.css"><style>.pill[data-astro-cid-qrtwocmw]{border-radius:var(--r-pill);background:var(--chip);color:var(--ink-body);align-items:center;gap:6px;padding:3px 8px;line-height:1.45;display:inline-flex}.pill[data-astro-cid-qrtwocmw].sm{font-family:var(--font-mono);font-size:11px}.pill[data-astro-cid-qrtwocmw].md{font-size:12.5px}.pill[data-astro-cid-qrtwocmw]:hover{background:var(--chip-strong);color:var(--ink)}.count[data-astro-cid-qrtwocmw]{font-family:var(--font-mono);color:var(--ink-dim);font-size:10px}
+.toc[data-astro-cid-7k3pnqyz]{flex-direction:column;gap:12px;display:flex}.list[data-astro-cid-7k3pnqyz]{flex-direction:column;padding:0;list-style:none;display:flex}.entry[data-astro-cid-7k3pnqyz]{border-left:2px solid var(--line);color:var(--ink-muted);padding:5px 0 5px 12px;font-size:13.5px;line-height:1.3;display:block}.entry[data-astro-cid-7k3pnqyz].nested{padding-left:26px;font-size:13px}.entry[data-astro-cid-7k3pnqyz]:hover{color:var(--ink)}.entry[data-astro-cid-7k3pnqyz].active{border-left-color:var(--accent);color:var(--ink);font-weight:500}.split[data-astro-cid-g5songws]{grid-template-columns:minmax(0,1fr) 220px;display:grid}.split[data-astro-cid-g5songws].no-toc{grid-template-columns:1fr}.article[data-astro-cid-g5songws]{min-width:0;padding:44px 40px 40px var(--gutter);border-right:1px solid var(--line)}.split[data-astro-cid-g5songws].no-toc .article[data-astro-cid-g5songws]{border-right:0}.rail[data-astro-cid-g5songws]{top:calc(var(--header-h) + 24px);align-self:flex-start;padding:44px 24px;position:sticky}.title-block[data-astro-cid-g5songws]{flex-direction:column;gap:14px;margin-bottom:30px;display:flex}.meta[data-astro-cid-g5songws]{font-family:var(--font-mono);color:var(--ink-dim);align-items:center;gap:10px;font-size:11.5px;line-height:1;display:flex}.dot[data-astro-cid-g5songws]{border-radius:var(--r-pill);background:var(--ink-dim);width:3px;height:3px}.title[data-astro-cid-g5songws]{letter-spacing:-.035em;text-wrap:pretty;max-width:26ch;font-size:44px;font-weight:700;line-height:1.05}.tags[data-astro-cid-g5songws]{flex-wrap:wrap;gap:6px;display:flex}.related[data-astro-cid-g5songws]{border-top:1px solid var(--line);flex-direction:column;gap:2px;margin-top:44px;padding-top:26px;display:flex}.related[data-astro-cid-g5songws] .mono-label{margin-bottom:8px}.related-row[data-astro-cid-g5songws]{color:var(--ink);align-items:baseline;gap:20px;padding:9px 0;display:flex}.related-row[data-astro-cid-g5songws]:hover{background:var(--row-hover)}.related-date[data-astro-cid-g5songws]{width:84px;font-family:var(--font-mono);color:var(--ink-dim);flex-shrink:0;font-size:11.5px}.related-title[data-astro-cid-g5songws]{font-size:15.5px;font-weight:500}.pager[data-astro-cid-g5songws]{grid-template-columns:1fr 1fr;gap:16px;margin-top:32px;display:grid}.card[data-astro-cid-g5songws]{border:1px solid var(--line);border-radius:var(--r-card);color:var(--ink);flex-direction:column;gap:8px;padding:16px 18px;display:flex}.card[data-astro-cid-g5songws].next{text-align:right;align-items:flex-end}.card[data-astro-cid-g5songws].empty{opacity:.45;pointer-events:none}.card[data-astro-cid-g5songws]:not(.empty):hover{background:var(--row-hover)}.card-title[data-astro-cid-g5songws]{font-size:15.5px;font-weight:500;line-height:1.3}@media (width<=900px){.split[data-astro-cid-g5songws],.split[data-astro-cid-g5songws].no-toc{grid-template-columns:1fr}.article[data-astro-cid-g5songws]{border-right:0;padding:32px 24px}.rail[data-astro-cid-g5songws]{padding:0 24px 32px;position:static}}@media (width<=720px){.title[data-astro-cid-g5songws]{font-size:30px}.pager[data-astro-cid-g5songws]{grid-template-columns:1fr}.card[data-astro-cid-g5songws].next{text-align:left;align-items:flex-start}}
+</style></head><body><div class="shell" style="max-width:1000px"><div class="sentinel" data-header-sentinel aria-hidden="true" data-astro-cid-nen7h5rs></div><header class="header bordered" data-astro-cid-nen7h5rs><a class="wordmark" href="/" data-astro-cid-nen7h5rs>niden</a><nav class="nav" aria-label="Primary" data-astro-cid-nen7h5rs><a href="/" class="nav-link" data-astro-cid-nen7h5rs>Home</a><a href="/hosting" class="nav-link" data-astro-cid-nen7h5rs>Hosting</a><a href="/tag" class="nav-link" data-astro-cid-nen7h5rs>Tags</a><a href="/archive" class="nav-link" data-astro-cid-nen7h5rs>Archive</a><a href="/about" class="nav-link" data-astro-cid-nen7h5rs>About</a><a href="/contact" class="nav-link" data-astro-cid-nen7h5rs>Contact</a><a href="/disclaimer" class="nav-link" data-astro-cid-nen7h5rs>Disclaimer</a></nav><div class="utility" data-astro-cid-nen7h5rs><button type="button" class="utility-item" data-search-open data-astro-cid-nen7h5rs>Search</button><a class="utility-item" href="https://github.com/niden" data-astro-cid-nen7h5rs>GitHub</a><a class="utility-item" href="/feed.xml" data-astro-cid-nen7h5rs>RSS</a><button type="button" class="toggle" data-theme-toggle aria-label="Switch color theme" data-astro-cid-l6lhmie6><span data-theme-label data-astro-cid-l6lhmie6>Theme</span></button><script type="module">var e=document.documentElement,t=e=>e===`light`?`Dark`:`Light`,n=()=>{let n=e.getAttribute(`data-theme`)??`dark`;document.querySelectorAll(`[data-theme-label]`).forEach(e=>{e.textContent=t(n)})};document.querySelectorAll(`[data-theme-toggle]`).forEach(t=>{t.addEventListener(`click`,()=>{let t=e.getAttribute(`data-theme`)===`light`?`dark`:`light`;e.setAttribute(`data-theme`,t);try{localStorage.setItem(`niden-theme`,t)}catch{}n()})}),n();</script></div></header><script type="module">var e=document.querySelector(`[data-header-sentinel]`),t=document.querySelector(`header.header`);e!==null&&t!==null&&new IntersectionObserver(([e])=>{t.classList.toggle(`stuck`,!e.isIntersecting)},{threshold:0}).observe(e);</script><main><div class="split" data-astro-cid-g5songws><article class="article" data-astro-cid-g5songws><header class="title-block" data-astro-cid-g5songws><div class="meta" data-astro-cid-g5songws><time datetime="2026-11-26T12:00:00.000Z" data-astro-cid-g5songws>26 Nov 2026</time><span class="dot" aria-hidden="true" data-astro-cid-g5songws></span><span data-astro-cid-g5songws>18 min read</span></div><h1 class="title" data-astro-cid-g5songws>Design Patterns - Observer</h1><div class="tags" data-astro-cid-g5songws><a class="pill sm" href="/tag/design-patterns/" data-astro-cid-qrtwocmw>design patterns</a><a class="pill sm" href="/tag/php/" data-astro-cid-qrtwocmw>php</a><a class="pill sm" href="/tag/programming/" data-astro-cid-qrtwocmw>programming</a><a class="pill sm" href="/tag/series/" data-astro-cid-qrtwocmw>series</a><a class="pill sm" href="/tag/how-to/" data-astro-cid-qrtwocmw>how-to</a><a class="pill sm" href="/tag/observer/" data-astro-cid-qrtwocmw>observer</a></div></header><div class="prose" data-astro-cid-g5songws><p>Continuing the <a href="/post/design-patterns-in-php-series/">design patterns in PHP</a> posts, we are going to focus today on the <a href="https://en.wikipedia.org/wiki/Observer_pattern">Observer pattern</a> and how we are using it in <a href="https://phalcon.io">Phalcon</a>. In the <a href="/post/decorator-pattern-in-php/">Decorator</a> post, we said that <code>Phalcon\Events\Manager</code> gives you a hook without the forwarding code. Today we will look at that hook.</p>
+<h2 id="the-pattern-in-one-paragraph">The pattern in one paragraph</h2>
+<p>An observer is an object that wants to know when something happens to another object. The object that changes (the subject) does not know what each observer does. It only announces that something happened, and every observer that registered for that announcement runs its own code. You can add or remove observers and the subject does not change.</p>
+<h2 id="why-we-use-it">Why we use it</h2>
+<ul>
+<li><strong>The subject stays small.</strong> A payment service takes the money. It does not send the receipt, write the audit log and update the ledger. Each of those is an observer.</li>
+<li><strong>Add behavior without an edit.</strong> A new reaction to an event is a new class and one line in the wiring. The subject is not touched.</li>
+<li><strong>Framework hooks.</strong> You cannot change the code of the dispatcher or the database adapter, but you can listen to their events and change what they do.</li>
+<li><strong>Easy to test.</strong> Test the subject with no observers, and test each observer on its own.</li>
+</ul>
+<h2 id="where-do-we-see-this-in-phalcon">Where do we see this in Phalcon</h2>
+<p>Almost everywhere. Components fire <code>cache:</code>, <code>db:</code>, <code>dispatch:</code>, <code>view:</code>, <code>router:</code>, <code>application:</code>, <code>micro:</code>, <code>console:</code>, <code>acl:</code>, <code>auth:</code> and <code>model:</code> events.</p>
+<p>Phalcon does not use the textbook version, where the subject keeps its own list of observers. In Phalcon the list is in the events manager. A component that implements <code>EventsAwareInterface</code> holds a manager and fires events through it. The listeners (the observers) attach to the manager. The subject and the listeners do not know each other. They only know the name of the event. This version is also known as publish/subscribe.</p>
+<h3 id="phalconmvcdispatcher"><code>Phalcon\Mvc\Dispatcher</code></h3>
+<p>The best known example is the security plugin of <a href="https://github.com/phalcon/invo">INVO</a>, our sample application. The dispatcher fires <code>dispatch:beforeExecuteRoute</code> before it calls the action, and the plugin decides if the user can see the page:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Invo\Plugins\</span><span style="color:#96E498">NotFoundPlugin</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Invo\Plugins\</span><span style="color:#96E498">SecurityPlugin</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Events\</span><span style="color:#96E498">Manager</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Mvc\</span><span style="color:#96E498">Dispatcher</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">$eventsManager </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Manager</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">$eventsManager</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">attach</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;dispatch:beforeExecuteRoute&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#E3A2F2">new</span><span style="color:#96E498"> SecurityPlugin</span><span style="color:#CDD1D6">());</span></span>
+<span class="line"><span style="color:#CDD1D6">$eventsManager</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">attach</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;dispatch:beforeException&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#E3A2F2">new</span><span style="color:#96E498"> NotFoundPlugin</span><span style="color:#CDD1D6">());</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">$dispatcher </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Dispatcher</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">$dispatcher</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">setEventsManager</span><span style="color:#CDD1D6">($eventsManager);</span></span></code></pre></figure>
+<p>The plugin, trimmed:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> beforeExecuteRoute</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">Event</span><span style="color:#CDD1D6"> $event, </span><span style="color:#96E498">Dispatcher</span><span style="color:#CDD1D6"> $dispatcher)</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#77818C">    // ...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    if</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">!</span><span style="color:#CDD1D6">$acl</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">isAllowed</span><span style="color:#CDD1D6">($role, $controller, $action)) {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $dispatcher</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">forward</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">            [</span></span>
+<span class="line"><span style="color:#EEC469">                &#39;controller&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#EEC469"> &#39;errors&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#EEC469">                &#39;action&#39;</span><span style="color:#E3A2F2">     =&gt;</span><span style="color:#EEC469"> &#39;show401&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#CDD1D6">            ]</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#92B1D3"> false</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    return</span><span style="color:#92B1D3"> true</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>The plugin does not implement an interface. The manager calls the method that has the same name as the event.</p>
+<h3 id="what-happens-inside">What happens inside</h3>
+<p>The dispatcher fires the event like this (in <code>Phalcon\Dispatcher\AbstractDispatcher</code>):</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">if</span><span style="color:#CDD1D6"> (</span></span>
+<span class="line"><span style="color:#CDD1D6">    $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">fireManagerEvent</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&quot;dispatch:beforeExecuteRoute&quot;</span><span style="color:#CDD1D6">, </span><span style="color:#92B1D3">null</span><span style="color:#CDD1D6">, </span><span style="color:#92B1D3">true</span><span style="color:#CDD1D6">, </span><span style="color:#92B1D3">true</span><span style="color:#CDD1D6">) </span><span style="color:#E3A2F2">===</span><span style="color:#92B1D3"> false</span><span style="color:#E3A2F2"> ||</span></span>
+<span class="line"><span style="color:#CDD1D6">    $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">finished </span><span style="color:#E3A2F2">===</span><span style="color:#92B1D3"> false</span></span>
+<span class="line"><span style="color:#CDD1D6">) {</span></span>
+<span class="line"><span style="color:#CDD1D6">    $container</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">remove</span><span style="color:#CDD1D6">($handlerClass);</span></span>
+<span class="line"><span style="color:#E3A2F2">    continue</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p><code>fireManagerEvent()</code> calls <code>Manager::fire()</code> with the dispatcher as the source. <code>fire()</code> then does three things:</p>
+<ol>
+<li><strong>It splits the name at the colon.</strong> The type is <code>dispatch</code> and the event is <code>beforeExecuteRoute</code>. A name without a colon throws <code>InvalidEventType</code>.</li>
+<li><strong>It runs two queues.</strong> First the listeners that attached to <code>dispatch</code>, then the listeners that attached to <code>dispatch:beforeExecuteRoute</code>. A listener on <code>dispatch</code> receives every event of the dispatcher.</li>
+<li><strong>It calls each listener with three arguments.</strong> The <code>Event</code> object, the source and the data. For a plain object, it calls the method with the name of the event. If that method does not exist, it skips the object.</li>
+</ol>
+<p>Each queue then decides the result of the call:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">if</span><span style="color:#CDD1D6"> ($stopOnFalse </span><span style="color:#E3A2F2">&amp;&amp;</span><span style="color:#CDD1D6"> $cancelable </span><span style="color:#E3A2F2">&amp;&amp;</span><span style="color:#92B1D3"> false</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $ret) {</span></span>
+<span class="line"><span style="color:#E3A2F2">    return</span><span style="color:#92B1D3"> false</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">if</span><span style="color:#CDD1D6"> ($cancelable </span><span style="color:#E3A2F2">&amp;&amp;</span><span style="color:#CDD1D6"> $event</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">isStopped</span><span style="color:#CDD1D6">()) {</span></span>
+<span class="line"><span style="color:#E3A2F2">    return</span><span style="color:#CDD1D6"> $ret;</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">null</span><span style="color:#E3A2F2"> !==</span><span style="color:#CDD1D6"> $ret) {</span></span>
+<span class="line"><span style="color:#CDD1D6">    $status </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $ret;</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>The code is the same in the extension (<code>phalcon/Events/Manager.zep</code> in cphalcon) and in the PHP version (<code>src/Events/Manager.php</code> in phalcon). Three points follow from those lines:</p>
+<ol>
+<li><strong>The last value that is not <code>null</code> wins.</strong> A listener that returns nothing does not change the result.</li>
+<li><strong><code>false</code> is final only in stop-on-false mode.</strong> The last <code>true</code> in the call of the dispatcher asks for that mode, so a later listener cannot overwrite the <code>false</code> of the security plugin. Most other events do not ask for it.</li>
+<li><strong><code>$event-&gt;stop()</code> stops the queue.</strong> The value of the listener that stopped the event becomes the result, also when it is <code>null</code>.</li>
+</ol>
+<h3 id="phalconmvcmodel"><code>Phalcon\Mvc\Model</code></h3>
+<p>A model has four observers for each event. When you call <code>save()</code>, the model calls <code>fireEventCancel(&#39;beforeSave&#39;)</code>, and the event goes to:</p>
+<ol>
+<li>the method of the model with the same name (<code>beforeSave()</code>),</li>
+<li>the behaviors of the model (<code>addBehavior()</code> with <code>Timestampable</code>, <code>SoftDelete</code> or your own),</li>
+<li>the events manager of the models manager, as <code>model:beforeSave</code>,</li>
+<li>the events manager for that model class only, which you set with <code>setCustomEventsManager()</code>.</li>
+</ol>
+<p>When one of the four gives <code>false</code>, <code>save()</code> returns <code>false</code>. For the two events managers, that is the result of <code>fire()</code>, with the rules above. For model events, the source of the event is the model, not the models manager.</p>
+<h2 id="a-worked-example">A worked example</h2>
+<p>Back to our invoices. In the <a href="/post/adapter-pattern-in-php/">Adapter</a> post, we sent a text message for an overdue invoice. Now the customer pays. When the payment goes through, we want to send a receipt and write an audit log. Before we take the money, we want a fraud check that can stop the payment. We will use the <code>PaymentGatewayInterface</code> from the <a href="/post/gateway-pattern-in-php/">Gateway</a> post to take the money.</p>
+<h3 id="the-subject">The subject</h3>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">namespace</span><span style="color:#96E498"> App</span><span style="color:#CDD1D6">\</span><span style="color:#96E498">Domain</span><span style="color:#CDD1D6">\</span><span style="color:#96E498">Invoice</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Payment\</span><span style="color:#96E498">PaymentGatewayInterface</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Domain\Payload\</span><span style="color:#96E498">Status</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Events\</span><span style="color:#96E498">AbstractEventsAware</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Events\</span><span style="color:#96E498">EventsAwareInterface</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">final</span><span style="color:#E3A2F2"> class</span><span style="color:#96E498"> InvoicePayment</span><span style="color:#E3A2F2"> extends</span><span style="color:#96E498"> AbstractEventsAware</span><span style="color:#E3A2F2"> implements</span><span style="color:#96E498"> EventsAwareInterface</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __construct</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#E3A2F2">        private</span><span style="color:#96E498"> PaymentGatewayInterface</span><span style="color:#CDD1D6"> $gateway</span></span>
+<span class="line"><span style="color:#CDD1D6">    ) {</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> pay</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">Invoice</span><span style="color:#CDD1D6"> $invoice)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> bool</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * A listener can cancel the payment. The last two arguments make</span></span>
+<span class="line"><span style="color:#77818C">         * the event cancelable, and make a `false` from any listener final.</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">false</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">fireManagerEvent</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;invoice:beforePay&#39;</span><span style="color:#CDD1D6">, $invoice, </span><span style="color:#92B1D3">true</span><span style="color:#CDD1D6">, </span><span style="color:#92B1D3">true</span><span style="color:#CDD1D6">)) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            return</span><span style="color:#92B1D3"> false</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">        $payload </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">gateway</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">charge</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">            $invoice</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">number,</span></span>
+<span class="line"><span style="color:#CDD1D6">            $invoice</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">total,</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;USD&#39;</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        if</span><span style="color:#CDD1D6"> (</span><span style="color:#96E498">Status</span><span style="color:#E3A2F2">::</span><span style="color:#CDD1D6">SUCCESS </span><span style="color:#E3A2F2">!==</span><span style="color:#CDD1D6"> $payload</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getStatus</span><span style="color:#CDD1D6">()) {</span></span>
+<span class="line"><span style="color:#E3A2F2">            return</span><span style="color:#92B1D3"> false</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * The money is taken. No listener can cancel this event.</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">fireManagerEvent</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;invoice:afterPay&#39;</span><span style="color:#CDD1D6">, $invoice, </span><span style="color:#92B1D3">false</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#92B1D3"> true</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p><code>AbstractEventsAware</code> gives us <code>setEventsManager()</code>, <code>getEventsManager()</code> and <code>fireManagerEvent()</code>. When there is no events manager, <code>fireManagerEvent()</code> returns <code>true</code>, so the payment works with no listeners.</p>
+<p><code>InvoicePayment</code> does not know about receipts, audit logs or fraud. It knows two event names.</p>
+<h3 id="the-observers">The observers</h3>
+<p>The fraud check is a plain object. The manager calls the method with the name of the event:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">namespace</span><span style="color:#96E498"> App</span><span style="color:#CDD1D6">\</span><span style="color:#96E498">Payment</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Domain\Invoice\</span><span style="color:#96E498">Invoice</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Domain\Invoice\</span><span style="color:#96E498">InvoicePayment</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Events\</span><span style="color:#96E498">Event</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">final</span><span style="color:#E3A2F2"> class</span><span style="color:#96E498"> FraudCheck</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __construct</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#E3A2F2">        private</span><span style="color:#E3A2F2"> float</span><span style="color:#CDD1D6"> $limit</span></span>
+<span class="line"><span style="color:#CDD1D6">    ) {</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> beforePay</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#96E498">        Event</span><span style="color:#CDD1D6"> $event,</span></span>
+<span class="line"><span style="color:#96E498">        InvoicePayment</span><span style="color:#CDD1D6"> $payment,</span></span>
+<span class="line"><span style="color:#96E498">        Invoice</span><span style="color:#CDD1D6"> $invoice</span></span>
+<span class="line"><span style="color:#CDD1D6">    )</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> bool</span><span style="color:#CDD1D6"> {</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> $invoice</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">total </span><span style="color:#E3A2F2">&lt;=</span><span style="color:#CDD1D6"> $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">limit;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>The receipt is a plain object too. It uses the <code>SmsSender</code> from the <a href="/post/adapter-pattern-in-php/">Adapter</a> post:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">namespace</span><span style="color:#96E498"> App</span><span style="color:#CDD1D6">\</span><span style="color:#96E498">Notification</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Domain\Invoice\</span><span style="color:#96E498">Invoice</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Domain\Invoice\</span><span style="color:#96E498">InvoicePayment</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Events\</span><span style="color:#96E498">Event</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Logger\</span><span style="color:#96E498">LoggerInterface</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">final</span><span style="color:#E3A2F2"> class</span><span style="color:#96E498"> ReceiptSender</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __construct</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#E3A2F2">        private</span><span style="color:#96E498"> SmsSender</span><span style="color:#CDD1D6"> $sms,</span></span>
+<span class="line"><span style="color:#E3A2F2">        private</span><span style="color:#96E498"> LoggerInterface</span><span style="color:#CDD1D6"> $logger</span></span>
+<span class="line"><span style="color:#CDD1D6">    ) {</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> afterPay</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#96E498">        Event</span><span style="color:#CDD1D6"> $event,</span></span>
+<span class="line"><span style="color:#96E498">        InvoicePayment</span><span style="color:#CDD1D6"> $payment,</span></span>
+<span class="line"><span style="color:#96E498">        Invoice</span><span style="color:#CDD1D6"> $invoice</span></span>
+<span class="line"><span style="color:#CDD1D6">    )</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span><span style="color:#CDD1D6"> {</span></span>
+<span class="line"><span style="color:#E3A2F2">        try</span><span style="color:#CDD1D6"> {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">sms</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">send</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">                $invoice</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">customerPhone,</span></span>
+<span class="line"><span style="color:#73D3F1">                sprintf</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">                    &#39;Payment received for invoice %s. Amount: %.2f&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#CDD1D6">                    $invoice</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">number,</span></span>
+<span class="line"><span style="color:#CDD1D6">                    $invoice</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">total</span></span>
+<span class="line"><span style="color:#CDD1D6">                )</span></span>
+<span class="line"><span style="color:#CDD1D6">            );</span></span>
+<span class="line"><span style="color:#CDD1D6">        } </span><span style="color:#E3A2F2">catch</span><span style="color:#CDD1D6"> (</span><span style="color:#96E498">SmsNotSent</span><span style="color:#CDD1D6"> $ex) {</span></span>
+<span class="line"><span style="color:#77818C">            /**</span></span>
+<span class="line"><span style="color:#77818C">             * The money is taken. A receipt that is not sent must not</span></span>
+<span class="line"><span style="color:#77818C">             * stop the payment.</span></span>
+<span class="line"><span style="color:#77818C">             */</span></span>
+<span class="line"><span style="color:#CDD1D6">            $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">logger</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">warning</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Receipt not sent: &#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#CDD1D6"> $ex</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getMessage</span><span style="color:#CDD1D6">());</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>The audit log listens to both events. It is a subscriber: it implements <code>Phalcon\Contracts\Events\Subscriber</code> and gives the manager a map of event names to method names:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">namespace</span><span style="color:#96E498"> App</span><span style="color:#CDD1D6">\</span><span style="color:#96E498">Payment</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Domain\Invoice\</span><span style="color:#96E498">Invoice</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Domain\Invoice\</span><span style="color:#96E498">InvoicePayment</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Contracts\Events\</span><span style="color:#96E498">Subscriber</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Events\</span><span style="color:#96E498">Event</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Logger\</span><span style="color:#96E498">LoggerInterface</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">final</span><span style="color:#E3A2F2"> class</span><span style="color:#96E498"> PaymentAudit</span><span style="color:#E3A2F2"> implements</span><span style="color:#96E498"> Subscriber</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __construct</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#E3A2F2">        private</span><span style="color:#96E498"> LoggerInterface</span><span style="color:#CDD1D6"> $logger</span></span>
+<span class="line"><span style="color:#CDD1D6">    ) {</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> attempt</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#96E498">        Event</span><span style="color:#CDD1D6"> $event,</span></span>
+<span class="line"><span style="color:#96E498">        InvoicePayment</span><span style="color:#CDD1D6"> $payment,</span></span>
+<span class="line"><span style="color:#96E498">        Invoice</span><span style="color:#CDD1D6"> $invoice</span></span>
+<span class="line"><span style="color:#CDD1D6">    )</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span><span style="color:#CDD1D6"> {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">logger</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">info</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Payment attempt: &#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#CDD1D6"> $invoice</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">number);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> static</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> getSubscribedEvents</span><span style="color:#CDD1D6">()</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> array</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> [</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;invoice:beforePay&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#CDD1D6"> [</span><span style="color:#EEC469">&#39;attempt&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">200</span><span style="color:#CDD1D6">],</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;invoice:afterPay&#39;</span><span style="color:#E3A2F2">  =&gt;</span><span style="color:#EEC469"> &#39;paid&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#CDD1D6">        ];</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> paid</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#96E498">        Event</span><span style="color:#CDD1D6"> $event,</span></span>
+<span class="line"><span style="color:#96E498">        InvoicePayment</span><span style="color:#CDD1D6"> $payment,</span></span>
+<span class="line"><span style="color:#96E498">        Invoice</span><span style="color:#CDD1D6"> $invoice</span></span>
+<span class="line"><span style="color:#CDD1D6">    )</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span><span style="color:#CDD1D6"> {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">logger</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">info</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;Invoice paid: &#39;</span><span style="color:#E3A2F2"> .</span><span style="color:#CDD1D6"> $invoice</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">number);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p><code>attempt()</code> has the priority 200. The default priority is 100, so the attempt is in the log before the fraud check runs, also when the fraud check stops the payment.</p>
+<h3 id="the-wiring">The wiring</h3>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">namespace</span><span style="color:#96E498"> App</span><span style="color:#CDD1D6">\</span><span style="color:#96E498">Providers</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Domain\Invoice\</span><span style="color:#96E498">InvoicePayment</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Notification\</span><span style="color:#96E498">ReceiptSender</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Notification\</span><span style="color:#96E498">SmsSender</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Payment\</span><span style="color:#96E498">FraudCheck</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Payment\</span><span style="color:#96E498">PaymentAudit</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Payment\</span><span style="color:#96E498">PaymentGatewayInterface</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Di\</span><span style="color:#96E498">DiInterface</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Di\</span><span style="color:#96E498">ServiceProviderInterface</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Events\</span><span style="color:#96E498">Manager</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> PaymentProvider</span><span style="color:#E3A2F2"> implements</span><span style="color:#96E498"> ServiceProviderInterface</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> register</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">DiInterface</span><span style="color:#CDD1D6"> $container)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $container</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">setShared</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#96E498">            InvoicePayment</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#E3A2F2">            function</span><span style="color:#CDD1D6"> () </span><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> ($container) {</span></span>
+<span class="line"><span style="color:#CDD1D6">                $logger        </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $container</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getShared</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;logger&#39;</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">                $eventsManager </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Manager</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">                /**</span></span>
+<span class="line"><span style="color:#77818C">                 * Enable the priorities before you attach a listener</span></span>
+<span class="line"><span style="color:#77818C">                 */</span></span>
+<span class="line"><span style="color:#CDD1D6">                $eventsManager</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">enablePriorities</span><span style="color:#CDD1D6">(</span><span style="color:#92B1D3">true</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">                $eventsManager</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">attach</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">                    &#39;invoice:beforePay&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#E3A2F2">                    new</span><span style="color:#96E498"> FraudCheck</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">10000</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">00</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#CDD1D6">                );</span></span>
+<span class="line"><span style="color:#CDD1D6">                $eventsManager</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">attach</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">                    &#39;invoice:afterPay&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#E3A2F2">                    new</span><span style="color:#96E498"> ReceiptSender</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">                        $container</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getShared</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">SmsSender</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">),</span></span>
+<span class="line"><span style="color:#CDD1D6">                        $logger</span></span>
+<span class="line"><span style="color:#CDD1D6">                    )</span></span>
+<span class="line"><span style="color:#CDD1D6">                );</span></span>
+<span class="line"><span style="color:#CDD1D6">                $eventsManager</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">addSubscriber</span><span style="color:#CDD1D6">(</span><span style="color:#E3A2F2">new</span><span style="color:#96E498"> PaymentAudit</span><span style="color:#CDD1D6">($logger));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">                $payment </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> InvoicePayment</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">                    $container</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getShared</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">PaymentGatewayInterface</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#CDD1D6">                );</span></span>
+<span class="line"><span style="color:#CDD1D6">                $payment</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">setEventsManager</span><span style="color:#CDD1D6">($eventsManager);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">                return</span><span style="color:#CDD1D6"> $payment;</span></span>
+<span class="line"><span style="color:#CDD1D6">            }</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>and in the bootstrap:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#CDD1D6">$container</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">register</span><span style="color:#CDD1D6">(</span><span style="color:#E3A2F2">new</span><span style="color:#96E498"> PaymentProvider</span><span style="color:#CDD1D6">());</span></span></code></pre></figure>
+<h3 id="the-wiring-with-the-container">The wiring with the Container</h3>
+<p>If you use the new <code>Phalcon\Container\Container</code>, as in the <a href="/post/decorator-pattern-in-php/">Decorator</a> post, autowiring and tags remove most of that code. The listeners become subscribers, so each one says which events it wants:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Contracts\Events\</span><span style="color:#96E498">Subscriber</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">final</span><span style="color:#E3A2F2"> class</span><span style="color:#96E498"> FraudCheck</span><span style="color:#E3A2F2"> implements</span><span style="color:#96E498"> Subscriber</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#77818C">    // ...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> static</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> getSubscribedEvents</span><span style="color:#CDD1D6">()</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> array</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> [</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;invoice:beforePay&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#EEC469"> &#39;beforePay&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#CDD1D6">        ];</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">final</span><span style="color:#E3A2F2"> class</span><span style="color:#96E498"> ReceiptSender</span><span style="color:#E3A2F2"> implements</span><span style="color:#96E498"> Subscriber</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#77818C">    // ...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> static</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> getSubscribedEvents</span><span style="color:#CDD1D6">()</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> array</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        return</span><span style="color:#CDD1D6"> [</span></span>
+<span class="line"><span style="color:#EEC469">            &#39;invoice:afterPay&#39;</span><span style="color:#E3A2F2"> =&gt;</span><span style="color:#EEC469"> &#39;afterPay&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#CDD1D6">        ];</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>The <code>Di</code> wiring above still works with these classes, because <code>attach()</code> still calls the method with the name of the event.</p>
+<p>The provider gives each listener a tag, and one extender attaches every tagged listener to the events manager:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">namespace</span><span style="color:#96E498"> App</span><span style="color:#CDD1D6">\</span><span style="color:#96E498">Providers</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Domain\Invoice\</span><span style="color:#96E498">InvoicePayment</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Notification\</span><span style="color:#96E498">ReceiptSender</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Payment\</span><span style="color:#96E498">FraudCheck</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Payment\</span><span style="color:#96E498">PaymentAudit</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Contracts\Container\Service\</span><span style="color:#96E498">Collection</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Contracts\Container\Service\</span><span style="color:#96E498">Provider</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Events\</span><span style="color:#96E498">Manager</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Events\</span><span style="color:#96E498">ManagerInterface</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">class</span><span style="color:#96E498"> PaymentProvider</span><span style="color:#E3A2F2"> implements</span><span style="color:#96E498"> Provider</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> provide</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">Collection</span><span style="color:#CDD1D6"> $services)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * One definition for each listener. Autowiring gives the</span></span>
+<span class="line"><span style="color:#77818C">         * constructor arguments. A scalar needs setArgument().</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#CDD1D6">        $services</span></span>
+<span class="line"><span style="color:#E3A2F2">            -&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">FraudCheck</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">, </span><span style="color:#96E498">FraudCheck</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#E3A2F2">            -&gt;</span><span style="color:#73D3F1">setArgument</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;limit&#39;</span><span style="color:#CDD1D6">, </span><span style="color:#EEC469">10000</span><span style="color:#CDD1D6">.</span><span style="color:#EEC469">00</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#E3A2F2">            -&gt;</span><span style="color:#73D3F1">addTag</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;events.subscriber&#39;</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#CDD1D6">        ;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $services</span></span>
+<span class="line"><span style="color:#E3A2F2">            -&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">ReceiptSender</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">, </span><span style="color:#96E498">ReceiptSender</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#E3A2F2">            -&gt;</span><span style="color:#73D3F1">addTag</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;events.subscriber&#39;</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#CDD1D6">        ;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $services</span></span>
+<span class="line"><span style="color:#E3A2F2">            -&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">PaymentAudit</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">, </span><span style="color:#96E498">PaymentAudit</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#E3A2F2">            -&gt;</span><span style="color:#73D3F1">addTag</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;events.subscriber&#39;</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#CDD1D6">        ;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * Attach every tagged listener to the events manager</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#CDD1D6">        $services</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">extend</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#96E498">            ManagerInterface</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#E3A2F2">            static</span><span style="color:#E3A2F2"> function</span><span style="color:#CDD1D6"> (</span><span style="color:#96E498">Manager</span><span style="color:#CDD1D6"> $manager, </span><span style="color:#96E498">Collection</span><span style="color:#CDD1D6"> $container)</span><span style="color:#E3A2F2">:</span><span style="color:#96E498"> Manager</span><span style="color:#CDD1D6"> {</span></span>
+<span class="line"><span style="color:#CDD1D6">                $manager</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">enablePriorities</span><span style="color:#CDD1D6">(</span><span style="color:#92B1D3">true</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">                foreach</span><span style="color:#CDD1D6"> ($container</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getByTag</span><span style="color:#CDD1D6">(</span><span style="color:#EEC469">&#39;events.subscriber&#39;</span><span style="color:#CDD1D6">) </span><span style="color:#E3A2F2">as</span><span style="color:#CDD1D6"> $subscriber) {</span></span>
+<span class="line"><span style="color:#CDD1D6">                    $manager</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">addSubscriber</span><span style="color:#CDD1D6">($subscriber);</span></span>
+<span class="line"><span style="color:#CDD1D6">                }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">                return</span><span style="color:#CDD1D6"> $manager;</span></span>
+<span class="line"><span style="color:#CDD1D6">            }</span></span>
+<span class="line"><span style="color:#CDD1D6">        );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">        /**</span></span>
+<span class="line"><span style="color:#77818C">         * Autowiring fills the constructor only. The events manager is</span></span>
+<span class="line"><span style="color:#77818C">         * set with a setter, so an extender sets it.</span></span>
+<span class="line"><span style="color:#77818C">         */</span></span>
+<span class="line"><span style="color:#CDD1D6">        $services</span></span>
+<span class="line"><span style="color:#E3A2F2">            -&gt;</span><span style="color:#73D3F1">set</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">InvoicePayment</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">, </span><span style="color:#96E498">InvoicePayment</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#E3A2F2">            -&gt;</span><span style="color:#73D3F1">addExtender</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#E3A2F2">                static</span><span style="color:#E3A2F2"> function</span><span style="color:#CDD1D6"> (</span><span style="color:#96E498">InvoicePayment</span><span style="color:#CDD1D6"> $payment, </span><span style="color:#96E498">Collection</span><span style="color:#CDD1D6"> $container)</span><span style="color:#E3A2F2">:</span><span style="color:#96E498"> InvoicePayment</span><span style="color:#CDD1D6"> {</span></span>
+<span class="line"><span style="color:#CDD1D6">                    $payment</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">setEventsManager</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#CDD1D6">                        $container</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">ManagerInterface</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">)</span></span>
+<span class="line"><span style="color:#CDD1D6">                    );</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">                    return</span><span style="color:#CDD1D6"> $payment;</span></span>
+<span class="line"><span style="color:#CDD1D6">                }</span></span>
+<span class="line"><span style="color:#CDD1D6">            )</span></span>
+<span class="line"><span style="color:#CDD1D6">        ;</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>and in the bootstrap:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> App\Providers\</span><span style="color:#96E498">PaymentProvider</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Container\</span><span style="color:#96E498">ContainerFactory</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> Phalcon\Container\Provider\</span><span style="color:#96E498">Web</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">$container </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">new</span><span style="color:#96E498"> ContainerFactory</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#E3A2F2">    -&gt;</span><span style="color:#73D3F1">addProvider</span><span style="color:#CDD1D6">(</span><span style="color:#E3A2F2">new</span><span style="color:#96E498"> Web</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#E3A2F2">    -&gt;</span><span style="color:#73D3F1">addProvider</span><span style="color:#CDD1D6">(</span><span style="color:#E3A2F2">new</span><span style="color:#96E498"> PaymentProvider</span><span style="color:#CDD1D6">())</span></span>
+<span class="line"><span style="color:#E3A2F2">    -&gt;</span><span style="color:#73D3F1">newContainer</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">$payment </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $container</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">get</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">InvoicePayment</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">);</span></span></code></pre></figure>
+<p>The <code>Web</code> provider registers the events manager. The bindings for <code>PaymentGatewayInterface</code>, <code>SmsSender</code> and <code>LoggerInterface</code> are in their own providers, with <code>bind()</code>. Four points about this wiring:</p>
+<ol>
+<li><strong>A new listener is one tagged definition.</strong> There is no list of <code>attach()</code> calls to edit, and <code>InvoicePayment</code> does not change.</li>
+<li><strong>Autowiring does not call setters.</strong> Without the extender on <code>InvoicePayment</code>, the service has no events manager. <code>fireManagerEvent()</code> then returns <code>true</code>, no listener runs, and there is no error. A scalar argument does not autowire either: without <code>setArgument()</code>, <code>FraudCheck</code> throws <code>CannotResolveParameter</code>.</li>
+<li><strong>Extend before the first <code>get()</code>.</strong> When something resolves the events manager first, <code>extend()</code> throws <code>CannotExtendResolved</code>.</li>
+<li><strong>The manager is shared, and the listeners are built early.</strong> The listeners and <code>enablePriorities(true)</code> apply to every component that uses the events manager of the <code>Web</code> provider. <code>getByTag()</code> builds every listener when it builds the manager, so the SMS client is built also in a request that does not take a payment.</li>
+</ol>
+<h3 id="how-do-we-use-this-in-our-code">How do we use this in our code?</h3>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#CDD1D6">$payment </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $container</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getShared</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">InvoicePayment</span><span style="color:#E3A2F2">::class</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">if</span><span style="color:#CDD1D6"> (</span><span style="color:#92B1D3">false</span><span style="color:#E3A2F2"> ===</span><span style="color:#CDD1D6"> $payment</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">pay</span><span style="color:#CDD1D6">($invoice)) {</span></span>
+<span class="line"><span style="color:#77818C">    // The fraud check or the gateway said no</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span></code></pre></figure>
+<p>For an invoice of 100.00, the calls go in this order:</p>
+<ol>
+<li><code>PaymentAudit::attempt()</code> (priority 200)</li>
+<li><code>FraudCheck::beforePay()</code> (priority 100)</li>
+<li>the gateway takes the money</li>
+<li><code>ReceiptSender::afterPay()</code> (priority 100, attached first)</li>
+<li><code>PaymentAudit::paid()</code> (priority 100, attached second)</li>
+</ol>
+<p>For an invoice of 20,000.00, the fraud check returns <code>false</code>. The audit log has the attempt, the gateway is not called, and <code>pay()</code> returns <code>false</code>.</p>
+<p>When we also want to update the ledger, we write one new class and attach it in the provider. <code>InvoicePayment</code> does not change.</p>
+<p>The test needs no receipt and no log. A closure on the <code>invoice</code> type receives every invoice event:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#CDD1D6">$events </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> Manager</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">$seen   </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> [];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">$events</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">attach</span><span style="color:#CDD1D6">(</span></span>
+<span class="line"><span style="color:#EEC469">    &#39;invoice&#39;</span><span style="color:#CDD1D6">,</span></span>
+<span class="line"><span style="color:#E3A2F2">    function</span><span style="color:#CDD1D6"> (</span><span style="color:#96E498">Event</span><span style="color:#CDD1D6"> $event) </span><span style="color:#E3A2F2">use</span><span style="color:#CDD1D6"> (</span><span style="color:#E3A2F2">&amp;</span><span style="color:#CDD1D6">$seen)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span><span style="color:#CDD1D6"> {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $seen[] </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $event</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">getType</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">$payment </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> InvoicePayment</span><span style="color:#CDD1D6">(</span><span style="color:#E3A2F2">new</span><span style="color:#96E498"> FakeGateway</span><span style="color:#CDD1D6">());</span></span>
+<span class="line"><span style="color:#CDD1D6">$payment</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">setEventsManager</span><span style="color:#CDD1D6">($events);</span></span>
+<span class="line"><span style="color:#CDD1D6">$payment</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">pay</span><span style="color:#CDD1D6">($invoice);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#77818C">// $seen is [&#39;beforePay&#39;, &#39;afterPay&#39;]</span></span></code></pre></figure>
+<p><code>FakeGateway</code> is a gateway that always returns <code>Status::SUCCESS</code>. Note that <code>getType()</code> returns the part after the colon.</p>
+<h2 id="rules-and-gotchas">Rules and gotchas</h2>
+<ul>
+<li><strong>The name needs a colon.</strong> The part before the colon is the type and the part after it is the event. A name without a colon throws <code>InvalidEventType</code>, but only when the manager has listeners. With no listeners, <code>fire()</code> returns <code>null</code> and you do not see the error.</li>
+<li><strong>A wrong method name is silent.</strong> When a plain object does not have the method, the manager skips it. <code>setStrict(true)</code> throws <code>NoListenersForEvent</code> when no listener is attached for the event name, but it does not check method names. A subscriber names its methods in <code>getSubscribedEvents()</code>, so a wrong name there fails with <code>Call to undefined method</code>.</li>
+<li><strong><code>false</code> is not final by default.</strong> The last value that is not <code>null</code> wins. Without stop-on-false, a listener after the fraud check that returns <code>true</code> lets a payment of 20,000.00 go through. That is why <code>pay()</code> sends <code>true</code> as the last argument. You can also call <code>setStopOnFalse(true)</code> on the manager, or call <code>$event-&gt;stop()</code> in the listener. <code>db:beforeQuery</code> is fired without stop-on-false, so a later listener can overwrite the <code>false</code> of an earlier one.</li>
+<li><strong>Enable the priorities first.</strong> The priorities are off by default, and when they are off, <code>attach()</code> and <code>addSubscriber()</code> ignore the priority you give. <code>enablePriorities(true)</code> does not sort the listeners that are already attached. A higher number runs first, and listeners with the same priority run in the order you attached them.</li>
+<li><strong>Only a cancelable event can stop.</strong> <code>invoice:afterPay</code> is not cancelable, and <code>$event-&gt;stop()</code> throws <code>EventNotCancelable</code>.</li>
+<li><strong>Listeners run in the same call.</strong> There is no queue. An exception from a listener goes up through <code>fire()</code> into the subject. If <code>ReceiptSender</code> did not catch <code>SmsNotSent</code>, <code>pay()</code> would throw after the gateway took the money. A slow listener makes the request slow. To send events to a queue, extend <code>Manager</code> and use the <code>beforeFire()</code> hook.</li>
+<li><strong><code>halt()</code> stays until <code>resume()</code>.</strong> <code>$event-&gt;stop()</code> stops one event. <code>halt()</code> stops every event of that manager. In a long-running worker, the manager lives for more than one request, so call <code>resume()</code>.</li>
+<li><strong>The source is not always the component.</strong> <code>fireManagerEvent()</code> sends the component as the source and your argument as the data. Model events send the model as the source.</li>
+<li><strong>The new features need a recent version of cphalcon.</strong> Subscribers, <code>fireAll()</code>, <code>halt()</code>, <code>setStopOnFalse()</code> and <code>setStrict()</code> came in 5.13.0. <code>dispatch()</code> came in 5.14.1, and the stop-on-false argument of <code>fire()</code> and <code>fireManagerEvent()</code> came in 5.20.3. The PHP version has all of them.</li>
+</ul>
+<h2 id="what-it-costs">What it costs</h2>
+<p>An observer removes the dependency between the subject and the code that reacts to it. That also removes what you can read. <strong>That is not free</strong>:</p>
+<ul>
+<li><strong>Hidden flow.</strong> <code>pay()</code> does not tell you what runs when you call it. Only the wiring does. <code>getListenerMap()</code> gives you each event name and its listeners at run time.</li>
+<li><strong>A loose contract.</strong> Nothing checks the arguments of a listener, and the data is <code>mixed</code>. When you rename an event, the listeners of the old name stop and nothing fails.</li>
+<li><strong>Order becomes a dependency.</strong> If one listener needs another to run first, the priorities hold that rule, and nobody sees it in the code of the listener.</li>
+<li><strong>Return values are easy to get wrong.</strong> “The last value that is not <code>null</code> wins” is not what most people expect. Test the cancel path, not only the success path.</li>
+</ul>
+<p>Rule of thumb: use events for side effects, and for a yes or no from a listener. If the subject needs data back from a listener, inject an interface.</p>
+<h2 id="when-not-to-reach-for-it">When not to reach for it</h2>
+<ul>
+<li><strong>There is only one reaction, and it is always necessary.</strong> Call it. A dependency in the constructor is easier to read and to test than an event with one listener.</li>
+<li><strong>The subject needs a result.</strong> <code>fireAll()</code> and <code>collectResponses()</code> give you all the return values, but a typed interface tells the reader what comes back.</li>
+<li><strong>You want to change one call of a narrow interface.</strong> That is a <a href="/post/decorator-pattern-in-php/">decorator</a>. A decorator wraps one object and keeps its interface. An observer reacts to an event and does not change the subject.</li>
+</ul>
+<h2 id="elsewhere-in-the-framework">Elsewhere in the framework</h2>
+<ul>
+<li>The database adapters fire <code>db:beforeQuery</code>, <code>db:afterQuery</code> and the transaction events. Attach one listener to <code>db</code> to log or profile every query.</li>
+<li><code>Phalcon\Cache\Cache</code> fires a <code>before</code> and an <code>after</code> event for <code>get()</code>, <code>set()</code>, <code>has()</code> and <code>delete()</code>, and for <code>getMultiple()</code>, <code>setMultiple()</code> and <code>deleteMultiple()</code>.</li>
+<li><code>Phalcon\Acl\Adapter\Memory</code> fires <code>acl:beforeCheckAccess</code> in stop-on-false mode, the same as the dispatcher.</li>
+<li><code>Phalcon\ADR\EventfulHandler</code> fires <code>adr:beforeExecuteAction</code> and <code>adr:afterExecuteAction</code> around each action.</li>
+<li><code>Manager::dispatch()</code> sends your own event object to the listeners of its class name, and stops when the event implements <code>Phalcon\Contracts\Events\Stoppable</code> and says that it is stopped. That is the same shape as PSR-14.</li>
+</ul>
+<h2 id="the-textbook-version-and-ours">The textbook version and ours</h2>
+<p>Earlier we said that Phalcon does not use the textbook version of the pattern. Here is the difference.</p>
+<h3 id="the-textbook-version">The textbook version</h3>
+<p>PHP has it built in, as <code>SplSubject</code> and <code>SplObserver</code>. The subject keeps the list of observers and calls <code>update()</code> on each one:</p>
+<figure class="code-block"><div class="code-head"><span class="code-name">php</span><button class="code-copy" type="button" data-copy>Copy</button></div><pre class="astro-code niden" style="background-color:#040507;color:#cdd1d6;overflow-x:auto" tabindex="0" data-language="php"><code><span class="line"><span style="color:#E3A2F2">final</span><span style="color:#E3A2F2"> class</span><span style="color:#96E498"> InvoicePayment</span><span style="color:#E3A2F2"> implements</span><span style="color:#96E498"> SplSubject</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> ?</span><span style="color:#96E498">Invoice</span><span style="color:#CDD1D6"> $invoice </span><span style="color:#E3A2F2">=</span><span style="color:#92B1D3"> null</span><span style="color:#CDD1D6">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    private</span><span style="color:#96E498"> SplObjectStorage</span><span style="color:#CDD1D6"> $observers;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> __construct</span><span style="color:#CDD1D6">()</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">observers </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> SplObjectStorage</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> attach</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">SplObserver</span><span style="color:#CDD1D6"> $observer)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">observers</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">attach</span><span style="color:#CDD1D6">($observer);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> detach</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">SplObserver</span><span style="color:#CDD1D6"> $observer)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">observers</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">detach</span><span style="color:#CDD1D6">($observer);</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> notify</span><span style="color:#CDD1D6">()</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#E3A2F2">        foreach</span><span style="color:#CDD1D6"> ($</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">observers </span><span style="color:#E3A2F2">as</span><span style="color:#CDD1D6"> $observer) {</span></span>
+<span class="line"><span style="color:#CDD1D6">            $observer</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">update</span><span style="color:#CDD1D6">($</span><span style="color:#92B1D3">this</span><span style="color:#CDD1D6">);</span></span>
+<span class="line"><span style="color:#CDD1D6">        }</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> pay</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">Invoice</span><span style="color:#CDD1D6"> $invoice)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">        // take the money</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#CDD1D6">invoice </span><span style="color:#E3A2F2">=</span><span style="color:#CDD1D6"> $invoice;</span></span>
+<span class="line"><span style="color:#CDD1D6">        $</span><span style="color:#92B1D3">this</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">notify</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E3A2F2">final</span><span style="color:#E3A2F2"> class</span><span style="color:#96E498"> ReceiptSender</span><span style="color:#E3A2F2"> implements</span><span style="color:#96E498"> SplObserver</span></span>
+<span class="line"><span style="color:#CDD1D6">{</span></span>
+<span class="line"><span style="color:#E3A2F2">    public</span><span style="color:#E3A2F2"> function</span><span style="color:#73D3F1"> update</span><span style="color:#CDD1D6">(</span><span style="color:#96E498">SplSubject</span><span style="color:#CDD1D6"> $subject)</span><span style="color:#E3A2F2">:</span><span style="color:#E3A2F2"> void</span></span>
+<span class="line"><span style="color:#CDD1D6">    {</span></span>
+<span class="line"><span style="color:#77818C">        // the observer reads the state from the subject: $subject-&gt;invoice</span></span>
+<span class="line"><span style="color:#CDD1D6">    }</span></span>
+<span class="line"><span style="color:#CDD1D6">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#CDD1D6">$payment </span><span style="color:#E3A2F2">=</span><span style="color:#E3A2F2"> new</span><span style="color:#96E498"> InvoicePayment</span><span style="color:#CDD1D6">();</span></span>
+<span class="line"><span style="color:#CDD1D6">$payment</span><span style="color:#E3A2F2">-&gt;</span><span style="color:#73D3F1">attach</span><span style="color:#CDD1D6">(</span><span style="color:#E3A2F2">new</span><span style="color:#96E498"> ReceiptSender</span><span style="color:#CDD1D6">());</span></span></code></pre></figure>
+<p>Compare this with the <code>InvoicePayment</code> of our worked example. Ours holds an events manager, not a list. It fires two named events, and the manager calls <code>ReceiptSender::afterPay()</code> with the event, the source and the invoice. <code>ReceiptSender</code> implements no interface.</p>
+<table><thead><tr><th></th><th>Textbook (<code>SplSubject</code>)</th><th>Phalcon (<code>Events\Manager</code>)</th></tr></thead><tbody><tr><td>Who keeps the list</td><td>The subject</td><td>The events manager</td></tr><tr><td>What the observer implements</td><td><code>SplObserver::update()</code></td><td>Nothing. A closure, a callable, a method named after the event, or a <code>Subscriber</code></td></tr><tr><td>Which events</td><td>One <code>notify()</code>. Every observer receives every change</td><td>Named events. A listener attaches to one event (<code>invoice:afterPay</code>) or to the type (<code>invoice</code>)</td></tr><tr><td>Data</td><td>The observer reads it from the subject</td><td>The manager pushes it to the listener</td></tr><tr><td>Return value</td><td><code>void</code></td><td>A value, and a <code>false</code> can cancel the action</td></tr><tr><td>Subjects for each list</td><td>One</td><td>Many. One manager can serve the dispatcher, the database and your services</td></tr></tbody></table>
+<h3 id="what-each-one-gives-you">What each one gives you</h3>
+<p><strong>The textbook version</strong> is easy to read: you see <code>attach()</code> and <code>notify()</code> in the code. The types are checked, so a wrong method name is an error in your IDE. Each subject has its own list, so nothing is shared. But every observer receives every change through one <code>update()</code>, the observer must know the class of the subject, every subject writes <code>attach()</code>, <code>detach()</code> and <code>notify()</code> again, and there is no cancel and no priority.</p>
+<p><strong>The events manager</strong> keeps the subject small, lets a listener pick the events it wants, and lets one listener serve many subjects. It also gives you hooks into code you do not own, such as the dispatcher. But the names are strings, the subject does not show what runs, the settings of the manager apply to every component that shares it, and the rules for return values surprise people.</p>
+<p>Use the textbook version when you own the subject, it has a few observers, and they all react to the same change. Use the events manager when you have many subjects, when you need hooks into the framework, or when a listener must be able to say no.</p>
+<h3 id="where-we-are-going">Where we are going</h3>
+<p>We do not plan to turn the events manager into the textbook version. The manager in the middle is what makes it useful. We want to make its disadvantages smaller, in the next major versions:</p>
+<ul>
+<li><strong>Classes in place of strings.</strong> Your own event class, routed by its class, as in PSR-14. Some of the work is already in the framework: <code>dispatch()</code>, <code>Stoppable</code> and <code>Subscriber</code>. A listener for all the events of a component stays possible, as a listener on a parent class or an interface.</li>
+<li><strong>The result is on the event.</strong> <code>dispatch()</code> returns the event, and a listener cancels with <code>stop()</code>. Return values then have no meaning. Before we get there, a cancel will be final: the first listener that says no wins.</li>
+<li><strong>Less shared state.</strong> The manager keeps the list of listeners and nothing more. Settings that apply to the whole manager today, such as stop-on-false, the priority switch and <code>halt()</code>, move to the event or go away.</li>
+</ul>
+<p>This is the direction, not the final design. The details will follow when that work starts.</p>
+<h2 id="takeaway">Takeaway</h2>
+<p>An observer lets a subject announce what happened and lets other code react to it. Phalcon puts the list of observers in the events manager, so the dispatcher, the models, the database and your own services can fire events with no knowledge of the listeners. Keep the subject small, keep each listener on one job, enable the priorities before you attach, and make a <code>false</code> final when a listener must be able to say no.</p></div><section class="related" data-astro-cid-g5songws><div class="mono-label" data-astro-cid-g5songws>Related - design patterns</div><a class="related-row" href="/post/adapter-pattern-in-php/" data-astro-cid-g5songws><time class="related-date" datetime="2026-11-14T12:00:00.000Z" data-astro-cid-g5songws>2026-11-14</time><span class="related-title" data-astro-cid-g5songws>Design Patterns - Adapter</span></a><a class="related-row" href="/post/registry-pattern-in-php/" data-astro-cid-g5songws><time class="related-date" datetime="2026-10-26T12:00:00.000Z" data-astro-cid-g5songws>2026-10-26</time><span class="related-title" data-astro-cid-g5songws>Design Patterns - Registry</span></a><a class="related-row" href="/post/decorator-pattern-in-php/" data-astro-cid-g5songws><time class="related-date" datetime="2026-09-15T00:01:02.200Z" data-astro-cid-g5songws>2026-09-15</time><span class="related-title" data-astro-cid-g5songws>Design Patterns - Decorator</span></a></section><nav class="pager" aria-label="More posts" data-astro-cid-g5songws><a class="card" href="/post/adapter-pattern-in-php/" data-astro-cid-g5songws><span class="mono-label" data-astro-cid-g5songws>Previous</span><span class="card-title" data-astro-cid-g5songws>Design Patterns - Adapter</span></a><div class="card next empty" data-astro-cid-g5songws><span class="mono-label" data-astro-cid-g5songws>Next</span><span class="card-title" data-astro-cid-g5songws>Nothing newer</span></div></nav></article><div class="rail" data-astro-cid-g5songws><nav class="toc" aria-label="On this page" data-astro-cid-7k3pnqyz><div class="mono-label" data-astro-cid-7k3pnqyz>On this page</div><ul class="list" data-astro-cid-7k3pnqyz><li data-astro-cid-7k3pnqyz><a class="entry" href="#the-pattern-in-one-paragraph" data-toc-link="the-pattern-in-one-paragraph" data-astro-cid-7k3pnqyz>The pattern in one paragraph</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#why-we-use-it" data-toc-link="why-we-use-it" data-astro-cid-7k3pnqyz>Why we use it</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#where-do-we-see-this-in-phalcon" data-toc-link="where-do-we-see-this-in-phalcon" data-astro-cid-7k3pnqyz>Where do we see this in Phalcon</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#phalconmvcdispatcher" data-toc-link="phalconmvcdispatcher" data-astro-cid-7k3pnqyz>Phalcon\Mvc\Dispatcher</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#what-happens-inside" data-toc-link="what-happens-inside" data-astro-cid-7k3pnqyz>What happens inside</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#phalconmvcmodel" data-toc-link="phalconmvcmodel" data-astro-cid-7k3pnqyz>Phalcon\Mvc\Model</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#a-worked-example" data-toc-link="a-worked-example" data-astro-cid-7k3pnqyz>A worked example</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#the-subject" data-toc-link="the-subject" data-astro-cid-7k3pnqyz>The subject</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#the-observers" data-toc-link="the-observers" data-astro-cid-7k3pnqyz>The observers</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#the-wiring" data-toc-link="the-wiring" data-astro-cid-7k3pnqyz>The wiring</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#the-wiring-with-the-container" data-toc-link="the-wiring-with-the-container" data-astro-cid-7k3pnqyz>The wiring with the Container</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#how-do-we-use-this-in-our-code" data-toc-link="how-do-we-use-this-in-our-code" data-astro-cid-7k3pnqyz>How do we use this in our code?</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#rules-and-gotchas" data-toc-link="rules-and-gotchas" data-astro-cid-7k3pnqyz>Rules and gotchas</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#what-it-costs" data-toc-link="what-it-costs" data-astro-cid-7k3pnqyz>What it costs</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#when-not-to-reach-for-it" data-toc-link="when-not-to-reach-for-it" data-astro-cid-7k3pnqyz>When not to reach for it</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#elsewhere-in-the-framework" data-toc-link="elsewhere-in-the-framework" data-astro-cid-7k3pnqyz>Elsewhere in the framework</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#the-textbook-version-and-ours" data-toc-link="the-textbook-version-and-ours" data-astro-cid-7k3pnqyz>The textbook version and ours</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#the-textbook-version" data-toc-link="the-textbook-version" data-astro-cid-7k3pnqyz>The textbook version</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#what-each-one-gives-you" data-toc-link="what-each-one-gives-you" data-astro-cid-7k3pnqyz>What each one gives you</a></li><li data-astro-cid-7k3pnqyz><a class="entry nested" href="#where-we-are-going" data-toc-link="where-we-are-going" data-astro-cid-7k3pnqyz>Where we are going</a></li><li data-astro-cid-7k3pnqyz><a class="entry" href="#takeaway" data-toc-link="takeaway" data-astro-cid-7k3pnqyz>Takeaway</a></li></ul></nav><script type="module">var e=[...document.querySelectorAll(`[data-toc-link]`)];if(e.length>0){let t=e.map(e=>document.getElementById(e.dataset.tocLink??``)).filter(e=>e!==null),n=t=>{e.forEach(e=>{e.classList.toggle(`active`,e.dataset.tocLink===t)})},r=new IntersectionObserver(e=>{let t=e.filter(e=>e.isIntersecting).sort((e,t)=>e.boundingClientRect.top-t.boundingClientRect.top);t[0]?.target.id&&n(t[0].target.id)},{rootMargin:`-24px 0px -70% 0px`,threshold:0});t.forEach(e=>r.observe(e))}</script></div></div><script type="module">document.querySelectorAll(`[data-copy]`).forEach(e=>{e.addEventListener(`click`,async()=>{let t=e.closest(`figure`)?.querySelector(`pre`)?.innerText??``;try{await navigator.clipboard.writeText(t)}catch{return}e.textContent=`Copied`,window.setTimeout(()=>{e.textContent=`Copy`},1500)})});</script></main><footer class="footer" data-astro-cid-jo6i4kqk><div data-astro-cid-jo6i4kqk>&copy; 2022&ndash;present niden.net</div><div data-astro-cid-jo6i4kqk>Astro</div></footer></div><div class="backdrop" data-search-backdrop hidden data-astro-cid-ac66eqjo><div class="modal" role="dialog" aria-modal="true" aria-label="Search" data-search-modal data-astro-cid-ac66eqjo><div class="input-row" data-astro-cid-ac66eqjo><span class="slash" aria-hidden="true" data-astro-cid-ac66eqjo>/</span><input class="input" type="search" placeholder="Search posts and tags" autocomplete="off" spellcheck="false" aria-label="Search posts and tags" data-search-input data-astro-cid-ac66eqjo><kbd class="kbd" data-astro-cid-ac66eqjo>esc</kbd></div><div class="results" data-search-results role="listbox" data-astro-cid-ac66eqjo></div><div class="hints" data-astro-cid-ac66eqjo><span data-astro-cid-ac66eqjo>&uarr;&darr; navigate</span><span data-astro-cid-ac66eqjo>&crarr; open</span></div></div></div><script type="module">var e=document.querySelector(`[data-search-backdrop]`),t=document.querySelector(`[data-search-modal]`),n=document.querySelector(`[data-search-input]`),r=document.querySelector(`[data-search-results]`);if(e&&t&&n&&r){let t=null,i=[],a=0,o=null,s=e=>e.replace(/[&<>"']/g,e=>({"&":`&amp;`,"<":`&lt;`,">":`&gt;`,'"':`&quot;`,"'":`&#39;`})[e]),c=(e,t)=>{let n=e.toLowerCase().indexOf(t.toLowerCase());return t===``||n===-1?s(e):[s(e.slice(0,n)),`<mark>`,s(e.slice(n,n+t.length)),`</mark>`,s(e.slice(n+t.length))].join(``)},l=async()=>(t===null&&(t=await(await fetch(`/search.json`)).json()),t),u=()=>{i.forEach((e,t)=>{e.classList.toggle(`selected`,t===a),e.setAttribute(`aria-selected`,String(t===a))}),i[a]?.scrollIntoView({block:`nearest`})},d=e=>{if(t===null)return;let n=e.trim().toLowerCase(),o=n===``?t.posts.slice(0,6):t.posts.filter(e=>e.title.toLowerCase().includes(n)||e.excerpt.toLowerCase().includes(n)).slice(0,8),l=n===``?[]:t.tags.filter(e=>e.tag.toLowerCase().includes(n)).slice(0,5),d=[];o.length>0&&d.push(`<div class="group-label">Posts</div>`,...o.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-title">${c(e.title,n)}</span><span class="result-date">${s(e.date)}</span></a>`)),l.length>0&&d.push(`<div class="group-label">Tags</div>`,...l.map(e=>`<a class="result" href="${e.url}" role="option"><span class="result-pill">${c(e.tag,n)}</span><span class="result-date">${e.count} posts</span></a>`)),r.innerHTML=d.length>0?d.join(``):`<div class="empty">No matches.</div>`,i=[...r.querySelectorAll(`.result`)],a=0,u()},f=async t=>{o=t,e.hidden=!1,document.body.style.overflow=`hidden`,n.value=``,n.focus(),await l(),d(``)},p=()=>{e.hidden=!0,document.body.style.overflow=``,o?.focus(),o=null};document.querySelectorAll(`[data-search-open]`).forEach(e=>{e.addEventListener(`click`,t=>{t.preventDefault(),f(e)})}),n.addEventListener(`input`,()=>d(n.value)),e.addEventListener(`mousedown`,t=>{t.target===e&&p()}),document.addEventListener(`keydown`,t=>{let r=t.target instanceof HTMLElement&&[`INPUT`,`TEXTAREA`,`SELECT`].includes(t.target.tagName);(t.metaKey||t.ctrlKey)&&t.key.toLowerCase()===`k`?(t.preventDefault(),e.hidden?f(null):p()):t.key===`/`&&e.hidden&&!r?(t.preventDefault(),f(null)):e.hidden||(t.key===`Escape`&&(t.preventDefault(),p()),t.key===`ArrowDown`&&i.length>0&&(t.preventDefault(),a=(a+1)%i.length,u()),t.key===`ArrowUp`&&i.length>0&&(t.preventDefault(),a=(a-1+i.length)%i.length,u()),t.key===`Enter`&&i[a]&&(t.preventDefault(),window.location.href=i[a].href),t.key===`Tab`&&(t.preventDefault(),n.focus()))})}</script><script type="module" src="/_astro/Mermaid.astro_astro_type_script_index_0_lang.C9L6WzEF.js"></script></body></html>
